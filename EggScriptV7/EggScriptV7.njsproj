@@ -32,6 +32,7 @@
     <None Include="node_main.js" />
     <Content Include=".clasp.json" />
     <Content Include=".claspignore" />
+    <Content Include=".gitignore" />
     <Content Include="appsscript.json" />
     <Content Include="Readme.html" />
     <Content Include="source\Index.html" />
