@@ -11,7 +11,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>149cdc27-5cd4-45f1-a8bf-7b257fe8a95f</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>node_main.ts</StartupFile>
+    <StartupFile>node_main.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -29,7 +29,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="node_main.ts" />
+    <None Include="node_main.js" />
     <Content Include=".clasp.json" />
     <Content Include=".claspignore" />
     <Content Include="appsscript.json" />
@@ -46,7 +46,6 @@
     </TypeScriptCompile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="build\" />
     <Folder Include="source\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
