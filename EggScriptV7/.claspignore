@@ -1,0 +1,4 @@
+**/**
+!build/*
+!appsscript.json
+!Readme.html
