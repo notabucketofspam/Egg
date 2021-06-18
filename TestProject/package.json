@@ -1,0 +1,22 @@
+{
+  "name": "test-project",
+  "version": "0.0.0",
+  "description": "TestProject",
+  "main": "app.js",
+  "author": {
+    "name": "sbp"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "push": "npm run build && clasp push",
+    "clean": "tsc --build --clean",
+    "prebuild": "replace-in-file \"declare var console\" \"//declare var _console\" node_modules/@types/google-apps-script/google-apps-script.base.d.ts",
+    "postbuild": "(ROBOCOPY /IS build\\TestProject\\source final > nul) & (exit 0)"
+  },
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.34",
+    "@types/node": "^14.17.3",
+    "replace-in-file": "^6.2.0",
+    "typescript": "^4.0.5"
+  }
+}
