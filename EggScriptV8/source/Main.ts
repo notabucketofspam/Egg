@@ -1,13 +1,13 @@
 /**
-  * Serve HTML.
-  * @returns {GoogleAppsScript.HTML.HtmlOutput} The web app HTML page
-  */
+ * Serve HTML.
+ * @returns {GoogleAppsScript.HTML.HtmlOutput} The web app HTML page
+ */
 function doGet() {
   return HtmlService.createHtmlOutputFromFile("html/Index");
 }
 /**
-  * ID of the spreadsheet, taken from the URL.
-  */
+ * ID of the spreadsheet, taken from the URL.
+ */
 const spreadsheetId = "1ye8EY7-MXrOCxKTuLBVjQdRElEZJaQ4-Rq5DmANfqK4";
 /**
  * Add data from the web app form to the spreadsheet and perform calculations.
@@ -15,94 +15,107 @@ const spreadsheetId = "1ye8EY7-MXrOCxKTuLBVjQdRElEZJaQ4-Rq5DmANfqK4";
  */
 function processFormSubmission(form: any) {
   let spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
-  let requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
+  const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
   // Add sheet if one with title as form["sheet-select"] is not found;
   // if this condition is true, then the new sheet must be processed immediately, 
   // and the spreadsheet must be reloaded
-  let validateSheetRequestArray = EggScript.newValidateSheetRequestArray(spreadsheet, form["sheet-select"]);
+  const validateSheetRequestArray = EggScript.newValidateSheetRequestArray(spreadsheet, form["sheet-select"]);
   if (validateSheetRequestArray.length) {
     Bus3.batchUpdate(validateSheetRequestArray, spreadsheetId);
     spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
   }
   // Append the form submission data to the appropriate sheet
-  let formSubmissionSheet = Bus3.getSheetFromTitle(spreadsheet, form["sheet-select"]);
-  let formSubmissionRowData = Bus3.newRowData();
-  let winLoseCellData = Bus3.newCellData(Boolean(form["win-lose"]));
-  let stockCountStartCellData = Bus3.newCellData(form["stock-count-start"]);
-  let stockCountEndCellData = Bus3.newCellData(form["stock-count-end"]);
+  const formSubmissionSheet = Bus3.getSheetFromTitle(spreadsheet, form["sheet-select"]);
+  const formSubmissionRowData = Bus3.newRowData();
+  const winLoseCellData = Bus3.newCellData(Boolean(form["win-lose"]));
+  const stockCountStartCellData = Bus3.newCellData(form["stock-count-start"]);
+  const stockCountEndCellData = Bus3.newCellData(form["stock-count-end"]);
   formSubmissionRowData.values.push(winLoseCellData, stockCountStartCellData, stockCountEndCellData);
-  let formSubmissionRows = [formSubmissionRowData];
-  let formSubmissionFields = "userEnteredValue";
-  let formSheetNewSubmissionRowNumber = Bus3.getDimensionLength(formSubmissionSheet, "A") + 1;
-  let formSubmissionGridRange = Bus3.newGridRange(formSubmissionSheet, 
+  const formSubmissionRows = [formSubmissionRowData];
+  const formSubmissionFields = "userEnteredValue";
+  const formSheetNewSubmissionRowNumber = Bus3.getDimensionLength(formSubmissionSheet, "A") + 1;
+  const formSubmissionGridRange = Bus3.newGridRange(formSubmissionSheet, 
     "A" + formSheetNewSubmissionRowNumber + ":C" + formSheetNewSubmissionRowNumber);
+  // Check if formSubmissionSheet is out of rows
+  if (formSubmissionSheet.data[0].rowData.length >= formSubmissionSheet.properties.gridProperties.rowCount) {
+    Bus3.requestArrayPush(requestArray, "appendDimension",
+      Bus3.newAppendDimensionRequest(formSubmissionSheet, "ROWS", 1));
+  }
   Bus3.requestArrayPush(requestArray, "updateCells",
     Bus3.newUpdateCellsRequest(formSubmissionRows, formSubmissionFields, formSubmissionGridRange));
-  // Push an entry to formSubmissionStack
-  let extraDataSheet = Bus3.getSheetFromTitle(spreadsheet, "extra-data");
-  let formSubmissionStackRowData = Bus3.newRowData();
+  // Push an entry to form-submission-stack
+  const formSubmissionStackSheet = Bus3.getSheetFromTitle(spreadsheet, "form-submission-stack");
+  const formSubmissionStackRowData = Bus3.newRowData();
   formSubmissionStackRowData.values.push(Bus3.newCellData(form["sheet-select"]));
-  let formSubmissionStackRows = [formSubmissionStackRowData];
-  let formSubmissionStackFields = "userEnteredValue";
-  let formSubmissionStackGridRange = Bus3.newGridRange(extraDataSheet, 
-    "D" + (extraDataSheet.data[0].rowData[0].values[3].toString() === "{}" ? 1 : 
-    Bus3.getDimensionLength(extraDataSheet, "D") + 1));
+  const formSubmissionStackRows = [formSubmissionStackRowData];
+  const formSubmissionStackFields = "userEnteredValue";
+  const formSubmissionStackGridRange = Bus3.newGridRange(formSubmissionStackSheet,
+    "A" + String(Bus3.isEmptyRange(formSubmissionStackSheet, "A1") ? 1 :
+      Bus3.getDimensionLength(formSubmissionStackSheet, "A") + 1));
+  // Check to see if formSubmissionStackSheet is out of rows
+  if (formSubmissionStackSheet.data[0].rowData.length >= formSubmissionStackSheet.properties.gridProperties.rowCount) {
+    Bus3.requestArrayPush(requestArray, "appendDimension",
+      Bus3.newAppendDimensionRequest(formSubmissionStackSheet, "ROWS", 1));
+  }
   Bus3.requestArrayPush(requestArray, "updateCells",
     Bus3.newUpdateCellsRequest(formSubmissionStackRows, formSubmissionStackFields, formSubmissionStackGridRange));
   // Update the calculation sheets
+  const formulaCalculationRequestArray = EggScript.newFormulaCalculationRequestArray(spreadsheet, formSubmissionSheet,
+    EggScript.getLastEntryRowFromFormSheet(formSubmissionSheet));
   // requestArrayPush() isn't used here because the formula calculations are already a Request[]
-  Array.prototype.push.apply(requestArray,
-    EggScript.newFormulaCalculationRequestArray(spreadsheet, form["sheet-select"]));
+  Array.prototype.push.apply(requestArray, formulaCalculationRequestArray);
   // Update the stock price chart
   Bus3.requestArrayPush(requestArray, "updateChartSpec", EggScript.newUpdateStockPriceChartRequest(spreadsheet));
   // Update the spreadsheet
   Bus3.batchUpdate(requestArray, spreadsheetId);
 }
 /**
-  * Revert the last data entry on the spreadsheet.
-  * @returns {number} gaffeCounter, i.e. how many mistakes have been made so far
-  */
+ * Revert the last data entry on the spreadsheet.
+ * @returns {number} gaffeCounter, i.e. how many mistakes have been made so far
+ */
 function processFormUndo() {
-  let spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
-  let requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
-  let extraDataSheet = Bus3.getSheetFromTitle(spreadsheet, "extra-data");
+  const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
+  const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
+  const extraDataSheet = Bus3.getSheetFromTitle(spreadsheet, "extra-data");
   // Effectively ++gaffeCounter
-  let gaffeCounter = extraDataSheet.data[0].rowData && extraDataSheet.data[0].rowData[0].values[5] &&
-    extraDataSheet.data[0].rowData[0].values[5].userEnteredValue ?
-    extraDataSheet.data[0].rowData[0].values[5].userEnteredValue.numberValue + 1 : 1;
-  let gaffeCounterRowData = Bus3.newRowData();
+  const gaffeCounter = extraDataSheet.data[0].rowData && extraDataSheet.data[0].rowData[0].values[3] &&
+    extraDataSheet.data[0].rowData[0].values[3].userEnteredValue ?
+    extraDataSheet.data[0].rowData[0].values[3].userEnteredValue.numberValue + 1 : 1;
+  const gaffeCounterRowData = Bus3.newRowData();
   gaffeCounterRowData.values.push(Bus3.newCellData(gaffeCounter));
-  let gaffeCounterRows = [gaffeCounterRowData];
-  let gaffeCounterFields = "userEnteredValue";
-  let gaffeCounterGridRange = Bus3.newGridRange(extraDataSheet, "F1");
+  const gaffeCounterRows = [gaffeCounterRowData];
+  const gaffeCounterFields = "userEnteredValue";
+  const gaffeCounterGridRange = Bus3.newGridRange(extraDataSheet, "D1");
   Bus3.requestArrayPush(requestArray, "updateCells",
     Bus3.newUpdateCellsRequest(gaffeCounterRows, gaffeCounterFields, gaffeCounterGridRange));
-  // Pop an entry from formSubmissionStack
-  let formSubmissionStackLength = Bus3.getDimensionLength(extraDataSheet, "D");
+  // Pop an entry from form-submission-stack
+  const formSubmissionStackSheet = Bus3.getSheetFromTitle(spreadsheet, "form-submission-stack");
+  const formSubmissionStackLength = Bus3.getDimensionLength(formSubmissionStackSheet, "A");
   Bus3.requestArrayPush(requestArray, "updateCells",
-    Bus3.newClearCellRequest(extraDataSheet, "D" + formSubmissionStackLength));
+    Bus3.newClearCellRequest(formSubmissionStackSheet, "A" + formSubmissionStackLength));
   // Clear the last row of the relevant sheet
-  let formSubmissionStackLastFormTitle = 
-    extraDataSheet.data[0].rowData[formSubmissionStackLength - 1].values[3].userEnteredValue.stringValue;
-  let formSubmissionStackLastFormSheet = Bus3.getSheetFromTitle(spreadsheet, formSubmissionStackLastFormTitle);
+  const formSubmissionStackLastFormTitle = 
+    formSubmissionStackSheet.data[0].rowData[formSubmissionStackLength - 1].values[0].userEnteredValue.stringValue;
+  const formSubmissionStackLastFormSheet = Bus3.getSheetFromTitle(spreadsheet, formSubmissionStackLastFormTitle);
   Bus3.requestArrayPush(requestArray, "updateCells",
-    Bus3.newClearDimensionRequest(formSubmissionStackLastFormSheet, 
+    Bus3.newClearDimensionRequest(formSubmissionStackLastFormSheet,
     Bus3.getDimensionLength(formSubmissionStackLastFormSheet, "A")));
   // Pop an entry from the relevant column in each of the calculation sheets
-  Array.prototype.push.apply(requestArray,
-    EggScript.newUndoCalculationRequestArray(spreadsheet, formSubmissionStackLastFormTitle));
+  const undoCalculationRequestArray = EggScript.newUndoCalculationRequestArray(spreadsheet,
+    formSubmissionStackLastFormSheet);
+  Array.prototype.push.apply(requestArray, undoCalculationRequestArray);
   // Update the spreadsheet
   Bus3.batchUpdate(requestArray, spreadsheetId);
   return gaffeCounter;
 }
 /**
-  * Clear / delete all user-entered data
-  */
+ * Clear / delete all user-entered data.
+ */
 function resetSpreadsheet() {
   // Disabling this for now so as to not accidentally delete all the data points
   return;
-  let spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
-  let requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
+  const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
+  const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
   spreadsheet.sheets.forEach(function(sheet) {
     switch (sheet.properties.title) {
       case "stock-price-chart":
@@ -111,9 +124,12 @@ function resetSpreadsheet() {
         // leave it alone for now, although it really should be better dealt with later
         break;
       case "extra-data":
-        // Clear gaffeCounter and formSubmissionStack
-        Bus3.requestArrayPush(requestArray, "updateCells", Bus3.newClearCellRequest(sheet, "F1"));
-        Bus3.requestArrayPush(requestArray, "updateCells", Bus3.newClearDimensionRequest(sheet, "D"));
+        // Clear gaffeCounter
+        Bus3.requestArrayPush(requestArray, "updateCells", Bus3.newClearCellRequest(sheet, "D1"));
+        break;
+      case "form-submission-stack":
+        // Clear form-submission-stack
+        Bus3.requestArrayPush(requestArray, "updateCells", Bus3.newClearDimensionRequest(sheet, "A"));
         break;
       case "stock-price-initial":
       case "stock-loss":
@@ -131,7 +147,7 @@ function resetSpreadsheet() {
         break;
       default:
         // Delete all form submission data sheets
-        let deleteSheetRequest = Sheets.newDeleteSheetRequest();
+        const deleteSheetRequest = Sheets.newDeleteSheetRequest();
         deleteSheetRequest.sheetId = sheet.properties.sheetId;
         Bus3.requestArrayPush(requestArray, "deleteSheet", deleteSheetRequest);
         break;
@@ -140,22 +156,69 @@ function resetSpreadsheet() {
   Bus3.batchUpdate(requestArray, spreadsheetId);
 }
 /**
-  * Do the thing
-  */
+ * Reevaluate all of the calculations, but leave user-entered data untouched.
+ * Useful for when the price model is changed.
+ */
+function resetCalculationSheets() {
+  const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
+  const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
+  EggScript.calculationTitleArray.forEach(function(calculationTitle) {
+    // Do nothing to the initial price
+    if (calculationTitle === "stock-price-initial")
+      return;
+    const calculationSheet = Bus3.getSheetFromTitle(spreadsheet, calculationTitle);
+    calculationSheet.data[0].rowData[0].values.forEach(function(formSheetTitleCellData, calculationSheetValuesIndex) {
+      // Clear column on the calculation sheet
+      const clearDimensionRows: GoogleAppsScript.Sheets.Schema.RowData[] = [];
+      // Start index at 1 to skip title at top of sheet
+      for (let clearDimensionRowIndex = 1;
+        clearDimensionRowIndex < calculationSheet.properties.gridProperties.rowCount; ++clearDimensionRowIndex) {
+        clearDimensionRows.push(Bus3.newRowData());
+      }
+      const clearDimensionFields = "userEnteredValue";
+      const clearDimensionColumn = Bus3.fromDimensionIndex(calculationSheetValuesIndex, "COLUMNS");
+      // Begin at A1 row 2 to skip title again
+      const clearDimensionGridRange = Bus3.newGridRange(calculationSheet,
+        `${clearDimensionColumn}2:${clearDimensionColumn}`);
+      Bus3.requestArrayPush(requestArray, "updateCells",
+        Bus3.newUpdateCellsRequest(clearDimensionRows, clearDimensionFields, clearDimensionGridRange));
+      // Enter the calculations again
+      const formSheet = Bus3.getSheetFromTitle(spreadsheet, formSheetTitleCellData.userEnteredValue.stringValue);
+      const formSheetColumnLength = Bus3.getDimensionLength(formSheet, "A");
+      for (let formSheetEntryRowIndex = 0; formSheetEntryRowIndex < formSheetColumnLength; ++formSheetEntryRowIndex) {
+        const formulaCalculationRequestArray = EggScript.newFormulaCalculationRequestArray(spreadsheet, formSheet,
+          Bus3.fromDimensionIndex(formSheetEntryRowIndex, "ROWS"));
+        Array.prototype.push.apply(requestArray, formulaCalculationRequestArray);
+      }
+    });
+  });
+  Bus3.batchUpdate(requestArray, spreadsheetId);
+}
+/**
+ * Do the thing
+ */
 function testFunction() {
-  let spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
-  let requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
-  let sheet = Bus3.getSheetFromTitle(spreadsheet, "test-sheet");
+  const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
+  const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
+  const sheet = Bus3.getSheetFromTitle(spreadsheet, "test-sheet");
   // Basic test of Bus3
   if (0) {
     Logger.log(sheet);
   }
+  // Test empty object
+  if (0) {
+    Logger.log(Bus3.isEmptyRange(sheet, "F4:F5"));
+  }
+  // Get the length of a column
+  if (0) {
+    Logger.log(Bus3.getDimensionLength(sheet, 3));
+  }
   // Add dimension and cell data
   // TIL that order of requests matters; must have appendDimension before updateCells
-  if (1) {
-    let appendDimensionRequest = Bus3.newAppendDimensionRequest(sheet, "COLUMNS", 1);
+  if (0) {
+    const appendDimensionRequest = Bus3.newAppendDimensionRequest(sheet, "COLUMNS", 1);
     Bus3.requestArrayPush(requestArray, "appendDimension", appendDimensionRequest);
-    let updateSingleCellRequest = Bus3.newUpdateSingleCellRequest(sheet, "test again", "AB2");
+    const updateSingleCellRequest = Bus3.newUpdateSingleCellRequest(sheet, "test again", "AA1");
     Bus3.requestArrayPush(requestArray, "updateCells", updateSingleCellRequest);
   }
   Bus3.batchUpdate(requestArray, spreadsheetId);
