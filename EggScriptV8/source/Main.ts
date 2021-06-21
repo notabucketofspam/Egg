@@ -194,32 +194,3 @@ function resetCalculationSheets() {
   });
   Bus3.batchUpdate(requestArray, spreadsheetId);
 }
-/**
- * Do the thing
- */
-function testFunction() {
-  const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
-  const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
-  const sheet = Bus3.getSheetFromTitle(spreadsheet, "test-sheet");
-  // Basic test of Bus3
-  if (0) {
-    Logger.log(sheet);
-  }
-  // Test empty object
-  if (0) {
-    Logger.log(Bus3.isEmptyRange(sheet, "F4:F5"));
-  }
-  // Get the length of a column
-  if (0) {
-    Logger.log(Bus3.getDimensionLength(sheet, 3));
-  }
-  // Add dimension and cell data
-  // TIL that order of requests matters; must have appendDimension before updateCells
-  if (0) {
-    const appendDimensionRequest = Bus3.newAppendDimensionRequest(sheet, "COLUMNS", 1);
-    Bus3.requestArrayPush(requestArray, "appendDimension", appendDimensionRequest);
-    const updateSingleCellRequest = Bus3.newUpdateSingleCellRequest(sheet, "test again", "AA1");
-    Bus3.requestArrayPush(requestArray, "updateCells", updateSingleCellRequest);
-  }
-  Bus3.batchUpdate(requestArray, spreadsheetId);
-}

@@ -168,7 +168,7 @@ namespace EggScript {
     Bus3.requestArrayPush(requestArray, "updateCells", spdRequest);
     // sp = stock price
     const spSheet = Bus3.getSheetFromTitle(spreadsheet, "stock-price");
-    const spFormula = "=TRUNC(IF(LT(" + "IF(GTE(" + formEntryRowEnd + ",'extra-data'!B1), " +
+    const spFormula = "=TRUNC(IF(LT(" + "IF(GTE(" + formEntryRowEnd + ",'extra-data'!B1)," +
       Bus3.indirectConcatenate("stock-price", calculationColumn, calculationRowEnd + "-1") + "+" +
       Bus3.indirectConcatenate("stock-price-delta", calculationColumn, calculationRowEnd) + "," +
       Bus3.indirectConcatenate("stock-price-initial", calculationColumn, "2") +
