@@ -18,6 +18,8 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "EggScriptV8", "EggScriptV8\
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "EggonomicsV4R0", "EggonomicsV4R0\EggonomicsV4R0.njsproj", "{D0404E8F-5556-485F-9A7A-462730B65061}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "EggMicroV4R0", "EggMicroV4R0\EggMicroV4R0.njsproj", "{A07B1C45-7657-434E-AAF7-6E748B041053}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{D0404E8F-5556-485F-9A7A-462730B65061}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0404E8F-5556-485F-9A7A-462730B65061}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0404E8F-5556-485F-9A7A-462730B65061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A07B1C45-7657-434E-AAF7-6E748B041053}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A07B1C45-7657-434E-AAF7-6E748B041053}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A07B1C45-7657-434E-AAF7-6E748B041053}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A07B1C45-7657-434E-AAF7-6E748B041053}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
