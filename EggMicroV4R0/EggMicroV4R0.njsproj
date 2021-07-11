@@ -11,7 +11,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>a07b1c45-7657-434e-aaf7-6e748b041053</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>source\index.ts</StartupFile>
+    <StartupFile>source\Main.ts</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -29,11 +29,18 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="source\index.ts" />
+    <None Include="source\Main.ts" />
     <Content Include=".detaignore" />
     <Content Include=".deta\prog_info" />
+    <Content Include=".deta\state" />
     <Content Include=".env" />
     <Content Include=".gitignore" />
+    <Content Include="html\Dummy.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="html\index.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="index.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -41,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include=".deta\" />
-    <Folder Include="build\" />
+    <Folder Include="html\" />
     <Folder Include="source\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />

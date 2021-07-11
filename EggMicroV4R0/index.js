@@ -1,8 +1,2 @@
-// install express with `npm install express` 
-const express = require('express')
-const app = express()
-
-app.get('/', (req, res) => res.send('Hello World!'))
-
-// export 'app'
-module.exports = app
+// Essentially a dummy file to allow for better organization elsewhere
+module.exports = require("build/Main.js").app;

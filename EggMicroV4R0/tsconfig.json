@@ -3,10 +3,9 @@
     "strict": true,
     "module": "commonjs",
     "target": "ES2021",
-    "lib": [ "ES2021" ],
-    "outDir": "build"
+    "lib": [ "ES2021", "DOM" ],
+    "outDir": "build",
+    "typeRoots": [ "./node_modules/@types", "./node_modules/deta/dist" ]
   },
-  "include": [
-    "source"
-  ]
+  "include": [ "source" ]
 }
