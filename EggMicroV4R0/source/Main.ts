@@ -16,18 +16,23 @@ webapp.use(express.urlencoded());
 webapp.use(express.static(path.join(`${__dirname}/../html`)));
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
   // TODO sanitize form submission
-  const putResponse = await eggbase.put(JSON.parse(request.body));
-  // TODO when available, respond with the key of the newly-created DB entry
-  // This will allow for the undo action to be performed correctly
-  response.type("application/json").send({ key: (putResponse as ObjectType).key });
+  response.type("application/json").send({
+    key: ((await eggbase.put(JSON.parse(request.body))) as ObjectType).key
+  });
 });
 webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {
   await Promise.all([
     eggbase.delete(JSON.parse(request.body).key),
-    eggbase.update({ "stockCountStart": eggbase.util.increment() }, "_gaffeCounter")
+    eggbase.update({ "extraData.gaffeCounter": eggbase.util.increment() }, "_gaffeCounter")
   ]);
   response.type("application/json").send({
-    gaffeCounter: ((await eggbase.get("_gaffeCounter")) as ObjectType).stockCountStart
+    gaffeCounter: (((await eggbase.get("_gaffeCounter")) as ObjectType).extraData as ObjectType).gaffeCounter
+  });
+});
+webapp.get("/stock-prices", async function (request, response) {
+  // TODO do stock price calculations
+  response.type("application/json").send({
+    
   });
 });
 // Make webapp available to index.js in root directory

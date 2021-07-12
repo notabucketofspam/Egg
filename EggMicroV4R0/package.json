@@ -9,8 +9,8 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "push": "npm run build && deta deploy",
-    "update-dependencies": "ncu -u & npm i"
+    "push": "tsc --build && deta deploy",
+    "update-dependencies": "ncu -u && npm i"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

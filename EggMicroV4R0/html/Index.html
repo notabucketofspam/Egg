@@ -4,77 +4,263 @@
 <head>
   <meta charset="utf-8" />
   <title></title>
+<style>
+td, thead {
+  border: 1px solid black;
+}
+td {
+  width: 12ch;
+  height: 1em;
+}
+tr:nth-child(even) {
+  background-color: #eee;
+}
+</style>
 </head>
 <body>
 <h1>EggMicroV4R0</h1>
 <hr />
-<form id="submission-form" onsubmit="formSubmitHandler(this)" method="POST">
-  <div>
-    <label for="territory-select">Territory</label>
-    <select id="territory-select" name="territorySelect">
-      <option value='{"territory": "none", "industry": "none"}' style="background-color: unset;" selected>
-        ---
-      </option>
-      <option value='{"territory": "Alpha", "industry": "Brown"}' style="background-color: unset;">
-        Alpha
-      </option>
-      <option value='{"territory": "Bravo", "industry": "Black"}' style="background-color: unset;">
-        Bravo
-      </option>
-      <option value='{"territory": "Charlie", "industry": "Teal"}' style="background-color: unset;">
-        Charlie
-      </option>
-    </select>
+<div style="display: flex;">
+  <div id="form-submission-main-area" style="width: 250px;">
+    <form id="submission-form" onsubmit="formSubmitHandler(this)" method="POST">
+      <div>
+        <label for="territory-select">Territory</label>
+        <select id="territory-select" name="territorySelect">
+          <option value='{"territory": "none", "industry": "none"}' style="background-color: unset;" selected>
+            ---
+          </option>
+          <option value='{"territory": "Alfa", "industry": "Brown"}' style="background-color: unset;">
+            Alfa
+          </option>
+          <option value='{"territory": "Bravo", "industry": "Brown"}' style="background-color: unset;">
+            Bravo
+          </option>
+          <option value='{"territory": "Charlie", "industry": "Black"}' style="background-color: unset;">
+            Charlie
+          </option>
+          <option value='{"territory": "Delta", "industry": "Cyan"}' style="background-color: unset;">
+            Delta
+          </option>
+          <option value='{"territory": "Echo", "industry": "Cyan"}' style="background-color: unset;">
+            Echo
+          </option>
+          <option value='{"territory": "Foxtrot", "industry": "Cyan"}' style="background-color: unset;">
+            Foxtrot
+          </option>
+          <option value='{"territory": "Golf", "industry": "Magenta"}' style="background-color: unset;">
+            Golf
+          </option>
+          <option value='{"territory": "Hotel", "industry": "White"}' style="background-color: unset;">
+            Hotel
+          </option>
+          <option value='{"territory": "India", "industry": "Magenta"}' style="background-color: unset;">
+            India
+          </option>
+          <option value='{"territory": "Juliett", "industry": "Magenta"}' style="background-color: unset;">
+            Juliett
+          </option>
+          <option value='{"territory": "Kilo", "industry": "Black"}' style="background-color: unset;">
+            Kilo
+          </option>
+          <option value='{"territory": "Lima", "industry": "Orange"}' style="background-color: unset;">
+            Lima
+          </option>
+          <option value='{"territory": "Mike", "industry": "Orange"}' style="background-color: unset;">
+            Mike
+          </option>
+          <option value='{"territory": "November", "industry": "Orange"}' style="background-color: unset;">
+            November
+          </option>
+          <option value='{"territory": "Oscar", "industry": "Red"}' style="background-color: unset;">
+            Oscar
+          </option>
+          <option value='{"territory": "Papa", "industry": "Red"}' style="background-color: unset;">
+            Papa
+          </option>
+          <option value='{"territory": "Quebec", "industry": "Red"}' style="background-color: unset;">
+            Quebec
+          </option>
+          <option value='{"territory": "Romeo", "industry": "Black"}' style="background-color: unset;">
+            Romeo
+          </option>
+          <option value='{"territory": "Sierra", "industry": "Yellow"}' style="background-color: unset;">
+            Sierra
+          </option>
+          <option value='{"territory": "Tango", "industry": "Yellow"}' style="background-color: unset;">
+            Tango
+          </option>
+          <option value='{"territory": "Uniform", "industry": "White"}' style="background-color: unset;">
+            Uniform
+          </option>
+          <option value='{"territory": "Victor", "industry": "Yellow"}' style="background-color: unset;">
+            Victor
+          </option>
+          <option value='{"territory": "Whiskey", "industry": "Green"}' style="background-color: unset;">
+            Whiskey
+          </option>
+          <option value='{"territory": "X-ray", "industry": "Green"}' style="background-color: unset;">
+            X-ray
+          </option>
+          <option value='{"territory": "Yankee", "industry": "Green"}' style="background-color: unset;">
+            Yankee
+          </option>
+          <option value='{"territory": "Zulu", "industry": "Black"}' style="background-color: unset;">
+            Zulu
+          </option>
+          <option value='{"territory": "One", "industry": "Blue"}' style="background-color: unset;">
+            Zero
+          </option>
+          <option value='{"territory": "One", "industry": "Blue"}' style="background-color: unset;">
+            One
+          </option>
+        </select>
+      </div>
+      <div>
+        <label for="win-lose">Won the match</label>
+        <input id="win-lose" name="winLose" type="checkbox" />
+      </div>
+      <div>
+        <label for="stock-count-start">Stock count start</label>
+        <input id="stock-count-start" name="stockCountStart" type="number" min="0" max="10" value="0" />
+      </div>
+      <div>
+        <label for="stock-count-end">Stock count end</label>
+        <input id="stock-count-end" name="stockCountEnd" type="number" min="0" max="10" value="0" />
+      </div>
+      <div>
+        <input id="submit-input" type="submit" value="Plug it in, coach" />
+      </div>
+    </form>
+    <input id="do-form-error-check" type="checkbox" checked />
+    <label for="do-form-error-check">Error check</label>
   </div>
-  <div>
-    <label for="win-lose">Won the match</label>
-    <input id="win-lose" name="winLose" type="checkbox" />
-  </div>
-  <div>
-    <label for="stock-count-start">Stock count start</label>
-    <input id="stock-count-start" name="stockCountStart" class="stock-counter"
-      type="number" min="0" max="10" value="0" />
-  </div>
-  <div>
-    <label for="stock-count-end">Stock count end</label>
-    <input id="stock-count-end" name="stockCountEnd" class="stock-counter"
-      type="number" min="0" max="10" value="0" />
-  </div>
-  <div>
-    <input id="submit-input" type="submit" value="Plug it in, coach" />
-  </div>
-</form>
-<input id="do-form-error-check" type="checkbox" checked />
-<label for="do-form-error-check">Error check</label>
+  <div id="form-submission-message-area">
+    <div id="submit-start-message" style="display: none;">
+      Form submitted, please wait...
+    </div>
+    <div id="submit-complete-message" style="display: none;">
+      Your taxes have been filed
+      <br />
+      <input type="button" onclick="formUndoHandler()" value="Undo" />
+    </div>
+    <div id="undo-message" style="display: none;">
+      Don't mess it up this time, pal
+      <br />
+      Gaffe counter: <span id="gaffe-counter"></span>
+    </div>
+    <div id="form-error-check-message-area" style="display: none;">
+      <div id="invalid-territory-select-message" style="display: none;">
+        Pick a territory bruh
+      </div>
+      <div id="invalid-win-lose-message" style="display: none;">
+        "Yes officer I won the game with zero stocks left I swear"
+      </div>
+      <div id="invalid-stock-count-start-message" style="display: none;">
+        If you started with zero stocks that means you were dead #wakemeupinside
+      </div>
+      <div id="invalid-stock-count-end-message" style="display: none;">
+        You can't end up with more stocks than you started with. That's called theft and it's very illegal.
+      </div>
+    </div>
+    <div id="failure-message" style="display: none;"></div>
+  </div></div>
 <hr />
-<div id="submit-start-message" style="display: none;">
-  Form submitted, please wait...
-</div>
-<div id="submit-complete-message" style="display: none;">
-  Your taxes have been filed
-  <br />
-  <input type="button" onclick="formUndoHandler()" value="Undo" />
-</div>
-<div id="undo-message" style="display: none;">
-  Don't mess it up this time, pal
-  <br />
-  Gaffe counter: <span id="gaffe-counter"></span>
-</div>
-<div id="form-error-check-message-area" style="display: none;">
-  <div id="invalid-territory-select-message" style="display: none;">
-    Pick a territory bruh
-  </div>
-  <div id="invalid-win-lose-message" style="display: none;">
-    "Yes officer I won the game with zero stocks left I swear"
-  </div>
-  <div id="invalid-stock-count-start-message" style="display: none;">
-    If you started with zero stocks that means you were dead #wakemeupinside
-  </div>
-  <div id="invalid-stock-count-end-message" style="display: none;">
-    You can't end up with more stocks than you started with. That's called theft and it's very illegal.
-  </div>
-</div>
-<div id="failure-message" style="display: none;"></div>
+<table id="stock-price-table" style="border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th colspan="2">Stock prices</th>
+      <th colspan="2">
+        <input type="button" onclick="getStockPriceHandler()" value="Get the latest" />
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Alfa</td>
+      <td id="stock-price-alfa"></td>
+      <td>Oscar</td>
+      <td id="stock-price-oscar"></td>
+    </tr>
+    <tr>
+      <td>Bravo</td>
+      <td id="stock-price-bravo"></td>
+      <td>Papa</td>
+      <td id="stock-price-papa"></td>
+    </tr>
+    <tr>
+      <td>Charlie</td>
+      <td id="stock-price-charlie"></td>
+      <td>Quebec</td>
+      <td id="stock-price-quebec"></td>
+    </tr>
+    <tr>
+      <td>Delta</td>
+      <td id="stock-price-delta"></td>
+      <td>Romeo</td>
+      <td id="stock-price-romeo"></td>
+    </tr>
+    <tr>
+      <td>Echo</td>
+      <td id="stock-price-echo"></td>
+      <td>Sierra</td>
+      <td id="stock-price-sierra"></td>
+    </tr>
+    <tr>
+      <td>Foxtrot</td>
+      <td id="stock-price-foxtrot"></td>
+      <td>Tango</td>
+      <td id="stock-price-tango"></td>
+    </tr>
+    <tr>
+      <td>Golf</td>
+      <td id="stock-price-golf"></td>
+      <td>Uniform</td>
+      <td id="stock-price-uniform"></td>
+    </tr>
+    <tr>
+      <td>Hotel</td>
+      <td id="stock-price-hotel"></td>
+      <td>Victor</td>
+      <td id="stock-price-victor"></td>
+    </tr>
+    <tr>
+      <td>India</td>
+      <td id="stock-price-india"></td>
+      <td>Whiskey</td>
+      <td id="stock-price-whiskey"></td>
+    </tr>
+    <tr>
+      <td>Juliett</td>
+      <td id="stock-price-juliett"></td>
+      <td>X-ray</td>
+      <td id="stock-price-x-ray"></td>
+    </tr>
+    <tr>
+      <td>Kilo</td>
+      <td id="stock-price-kilo"></td>
+      <td>Yankee</td>
+      <td id="stock-price-yankee"></td>
+    </tr>
+    <tr>
+      <td>Lima</td>
+      <td id="stock-price-lima"></td>
+      <td>Zulu</td>
+      <td id="stock-price-zulu"></td>
+    </tr>
+    <tr>
+      <td>Mike</td>
+      <td id="stock-price-mike"></td>
+      <td>Zero</td>
+      <td id="stock-price-zero"></td>
+    </tr>
+    <tr>
+      <td>November</td>
+      <td id="stock-price-november"></td>
+      <td>One</td>
+      <td id="stock-price-one"></td>
+    </tr>
+  </tbody>
+</table>
 <script>
 var submitInputFlag;
 var formSubmitCompleteSetTimeoutHandle;
@@ -92,11 +278,6 @@ var lastFormSubmissionKey;
     if (submitInputFlag)
       event.preventDefault();
   });
-  Array.from(document.getElementsByClassName("stock-counter")).forEach(function(element) {
-    element.addEventListener("invalid", function() {
-      element.setCustomValidity("That's not how math works");
-    });
-  });
 })();
 /**
  * Deal with the form actually being submittted
@@ -113,6 +294,7 @@ function formSubmitHandler(form) {
     formObject.stockCountEnd = Number.parseInt(formObject.stockCountEnd);
     formObject.winLose = formObject.winLose === "on";
     formObject.timestamp = Date.now();
+    formObject.extraData = { };
     submitInputFlag = true;
     document.getElementById("submit-start-message").style = "display: block;";
     document.getElementById("undo-message").style = "display: none;";
@@ -229,6 +411,22 @@ function formErrorCheck(form) {
     document.getElementById("form-error-check-message-area").style = "display: none;";
   }
   return (formErrorRate > 0);
+}
+/**
+ * Retrieve new values for the stock price table
+ */
+function getStockPriceHandler() {
+  fetch("/stock-prices", {
+    method: "GET"
+  })
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(result) {
+    // Soon tm
+    console.log(result);
+  })
+  .catch(failureMessageHandler);
 }
 </script>
 </body>
