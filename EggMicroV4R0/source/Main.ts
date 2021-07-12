@@ -22,9 +22,13 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
   response.type("application/json").send({ key: (putResponse as ObjectType).key });
 });
 webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {
-  console.log(JSON.parse(request.body));
-  // TODO find a way to store gaffeCounter somewhere
-  response.type("application/json").send({ gaffeCounter: 0 });
+  await Promise.all([
+    eggbase.delete(JSON.parse(request.body).key),
+    eggbase.update({ "stockCountStart": eggbase.util.increment() }, "_gaffeCounter")
+  ]);
+  response.type("application/json").send({
+    gaffeCounter: ((await eggbase.get("_gaffeCounter")) as ObjectType).stockCountStart
+  });
 });
 // Make webapp available to index.js in root directory
 module.exports = {

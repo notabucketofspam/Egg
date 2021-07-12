@@ -1,1 +1,1 @@
-{"id":"39996472-1399-49ed-8976-de2b08e8d176","space":6468,"runtime":"nodejs12.x","name":"EggMicroV4R0","path":"v86nf8","project":"b0prbssf","account":"144798365827","region":"us-west-1","deps":["express@^4.17.1","luxon@^1.28.0"],"envs":null,"public":true,"log_level":"debug","cron":""}
+{"id":"39996472-1399-49ed-8976-de2b08e8d176","space":6468,"runtime":"nodejs12.x","name":"EggMicroV4R0","path":"v86nf8","project":"b0prbssf","account":"144798365827","region":"us-west-1","deps":["express@^4.17.1"],"envs":null,"public":true,"log_level":"debug","cron":""}
