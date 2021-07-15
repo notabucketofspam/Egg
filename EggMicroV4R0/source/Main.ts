@@ -12,8 +12,15 @@ webapp.enable("case sensitive routing");
 webapp.use(express.urlencoded());
 // Deal with static HTML page requests
 webapp.use(express.static(path.join(`${__dirname}/../html`)));
-// Taken directly from:
-// https://spin.atomicobject.com/2020/01/16/timeout-promises-nodejs/
+/**
+ * Race a promise against the clock
+ * Taken directly from:
+ * https://spin.atomicobject.com/2020/01/16/timeout-promises-nodejs/
+ * @param {number} timeoutMs How long it'll wait before rejecting
+ * @param {() => Promise<t>} promise The promise-returning function
+ * @param {string} failureMessage What to display upon rejection
+ * @returns {Promise<t>} Promise which may or may not have been rejected
+ */
 const promiseWithTimeout = <T>(timeoutMs: number, promise: () => Promise<T>, failureMessage?: string) => {
   let timeoutHandle: NodeJS.Timeout;
   const timeoutPromise = new Promise<never>((resolve, reject) => {
@@ -27,6 +34,13 @@ const promiseWithTimeout = <T>(timeoutMs: number, promise: () => Promise<T>, fai
     return result;
   });
 }
+/**
+ * Try to lock eggbase from other requests accessing it
+ * Probably doesn't work as intended, who knows
+ * @param {Express.Request} request Express Request object (currently unused)
+ * @param {Express.Response} response Express Response object
+ * @returns {Promise<boolean>} Promise that says whether or not the lock was acquired
+ */
 async function acquireLock(request: Express.Request, response: Express.Response) {
   const lockPromise = function () {
     return new Promise(async function (resolve, reject) {
@@ -45,6 +59,12 @@ async function acquireLock(request: Express.Request, response: Express.Response)
   await eggbase.update({ "extraData.lock": true }, "_variables");
   return lockSuccess;
 }
+/**
+ * Release the lock on eggbase (or at least make an effort to)
+ * @param {Express.Request} request The Express Request object (currently unused)
+ * @param {Express.Response} response And Express Response object (currently unused)
+ * @returns {Promise<void>} A promise which says absolutely nothing (since this theoretically can't fail)
+ */
 async function unlock(request: Express.Request, response: Express.Response) {
   await eggbase.update({ "extraData.lock": false }, "_variables");
 }
@@ -83,7 +103,9 @@ webapp.post("/undo", async function (request: Express.Request, response: Express
 webapp.get("/stock-prices", async function (request: Express.Request, response: Express.Response) {
   response.type("application/json").send(((await eggbase.get("_stockPrices")) as ObjectType).extraData);
 });
-// Make webapp available to index.js in root directory
+/**
+ * Make webapp available to index.js in root directory
+ */
 module.exports = {
   app: webapp
 };
