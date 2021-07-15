@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "target": "ES2021",
     "lib": [ "ES2021", "DOM" ],
     "outDir": "build",
-    "typeRoots": [ "./node_modules/@types", "./node_modules/deta/dist" ]
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/deta/dist"
+    ],
+    "removeComments": true
   },
   "include": [ "source" ]
 }

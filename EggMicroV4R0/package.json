@@ -2,10 +2,16 @@
   "name": "egg-micro-v4-r0",
   "version": "0.0.0",
   "description": "EggMicroV4R0",
-  "main": "build/Main.js",
+  "main": "index.js",
   "author": {
     "name": "sbp"
   },
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
@@ -20,5 +26,6 @@
   },
   "dependencies": {
     "express": "^4.17.1"
-  }
+  },
+  "type": "commonjs"
 }
