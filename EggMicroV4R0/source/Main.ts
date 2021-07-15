@@ -34,48 +34,43 @@ const promiseWithTimeout = <T>(timeoutMs: number, promise: () => Promise<T>, fai
     return result;
   });
 }
+import * as fs from "fs";
 /**
  * Try to lock eggbase from other requests accessing it
  * Probably doesn't work as intended, who knows
- * @param {Express.Request} request Express Request object (currently unused)
- * @param {Express.Response} response Express Response object
  * @returns {Promise<boolean>} Promise that says whether or not the lock was acquired
  */
-async function acquireLock(request: Express.Request, response: Express.Response) {
+async function acquireLock() {
   const lockPromise = function () {
     return new Promise(async function (resolve, reject) {
-      while ((((await eggbase.get("_variables")) as ObjectType).extraData as ObjectType).lock as boolean);
+      while (fs.existsSync("/tmp/lock.txt"));
+      fs.appendFileSync("/tmp/lock.txt", "locked");
       resolve(0);
     });
   };
   let lockSuccess = true;
-  await promiseWithTimeout(9250, lockPromise, "Unable to acquire lock")
-  .catch(function (reason) {
+  await promiseWithTimeout(9750, lockPromise, "Unable to acquire lock")
+  .catch(function () {
     lockSuccess = false;
-    response.status(500).send({
-      reason
-    });
   });
-  await eggbase.update({ "extraData.lock": true }, "_variables");
   return lockSuccess;
 }
 /**
- * Release the lock on eggbase (or at least make an effort to)
- * @param {Express.Request} request The Express Request object (currently unused)
- * @param {Express.Response} response And Express Response object (currently unused)
- * @returns {Promise<void>} A promise which says absolutely nothing (since this theoretically can't fail)
+ * Release the lock on eggbase
+ * @returns {void} Absolutely nothing (since this theoretically can't fail)
  */
-async function unlock(request: Express.Request, response: Express.Response) {
-  await eggbase.update({ "extraData.lock": false }, "_variables");
+function releaseLock() {
+  fs.rmSync("/tmp/lock.txt");
 }
 import SPC from "./StockPriceCalculator";
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
   // FIX sanitize form submission
-  if (!await acquireLock(request, response))
+  if (!await acquireLock()) {
+    response.sendStatus(500);
     return;
+  }
   const key = ((await eggbase.put(JSON.parse(request.body))) as ObjectType).key as string;
   // TODO do stock price calculations
-  // FIX Use _variables.extraData.lock for all in-place DB modifications (e.g. get -> put)
   // `fetch the relevant industry results somehow...`
   // const stockPriceDelta = SPD.delta(`put something here`);
   // let stockPriceUpdates = { };
@@ -83,29 +78,30 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
   // stockPriceUpdates[stockName] = eggbase.util.increment(stockPriceDelta);
   // stockName must be a string
   // eggbase.update(stockPriceUpdates, "_stockPrices");
+  releaseLock();
   response.type("application/json").send({
     key
   });
-  await unlock(request, response);
 });
 webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {
-  if (!await acquireLock(request, response))
+  if (!await acquireLock()) {
+    response.sendStatus(500);
     return;
+  }
   await Promise.all([
     eggbase.delete(JSON.parse(request.body).key),
     eggbase.update({ "extraData.gaffeCounter": eggbase.util.increment() }, "_variables")
   ]);
+  const gaffeCounter = (((await eggbase.get("_variables")) as ObjectType).extraData as ObjectType).gaffeCounter;
+  releaseLock();
   response.type("application/json").send({
-    gaffeCounter: (((await eggbase.get("_variables")) as ObjectType).extraData as ObjectType).gaffeCounter
+    gaffeCounter
   });
-  await unlock(request, response);
 });
 webapp.get("/stock-prices", async function (request: Express.Request, response: Express.Response) {
   response.type("application/json").send(((await eggbase.get("_stockPrices")) as ObjectType).extraData);
 });
-/**
- * Make webapp available to index.js in root directory
- */
+// Make webapp available to index.js in root directory
 module.exports = {
   app: webapp
 };
