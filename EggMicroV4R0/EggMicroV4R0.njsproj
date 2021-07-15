@@ -56,7 +56,7 @@
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="source\StockPriceCalculator.ts">
+    <TypeScriptCompile Include="source\StockPrice.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>

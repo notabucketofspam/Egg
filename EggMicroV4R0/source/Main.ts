@@ -1,15 +1,15 @@
+import { ObjectType } from "deta/dist/types/types/basic";
 // Deta setup
 import Base from "deta/dist/types/base";
-import { ObjectType } from "deta/dist/types/types/basic";
 const { Deta } = require("deta");
 const eggbase: Base = Deta().Base("EggBase");
 // Express setup
-import path = require("path");
 import * as Express from "express";
 import express = require("express");
 const webapp: Express.Application = express();
 webapp.enable("case sensitive routing");
 webapp.use(express.urlencoded());
+import path = require("path");
 // Deal with static HTML page requests
 webapp.use(express.static(path.join(`${__dirname}/../html`)));
 /**
@@ -17,9 +17,9 @@ webapp.use(express.static(path.join(`${__dirname}/../html`)));
  * Taken directly from:
  * https://spin.atomicobject.com/2020/01/16/timeout-promises-nodejs/
  * @param {number} timeoutMs How long it'll wait before rejecting
- * @param {() => Promise<t>} promise The promise-returning function
+ * @param {() => Promise<T>} promise The promise-returning function
  * @param {string} failureMessage What to display upon rejection
- * @returns {Promise<t>} Promise which may or may not have been rejected
+ * @returns {Promise<T>} Promise which may or may not have been rejected
  */
 const promiseWithTimeout = <T>(timeoutMs: number, promise: () => Promise<T>, failureMessage?: string) => {
   let timeoutHandle: NodeJS.Timeout;
@@ -42,13 +42,14 @@ import * as fs from "fs";
  */
 async function acquireLock() {
   const lockPromise = function () {
-    return new Promise(async function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       while (fs.existsSync("/tmp/lock.txt"));
       fs.appendFileSync("/tmp/lock.txt", "locked");
       resolve(0);
     });
   };
   let lockSuccess = true;
+  // Not 10000ms below because otherwise the micro might time out
   await promiseWithTimeout(9750, lockPromise, "Unable to acquire lock")
   .catch(function () {
     lockSuccess = false;
@@ -62,7 +63,8 @@ async function acquireLock() {
 function releaseLock() {
   fs.rmSync("/tmp/lock.txt");
 }
-import SPC from "./StockPriceCalculator";
+import StockPrice from "./StockPrice";
+// Handle a form submission from the client
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
   // FIX sanitize form submission
   if (!await acquireLock()) {
@@ -71,18 +73,28 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
   }
   const key = ((await eggbase.put(JSON.parse(request.body))) as ObjectType).key as string;
   // TODO do stock price calculations
-  // `fetch the relevant industry results somehow...`
-  // const stockPriceDelta = SPD.delta(`put something here`);
-  // let stockPriceUpdates = { };
+  // const stockPriceDelta = StockPrice.delta(`put something here`);
+  // const stockPriceUpdates = { };
   // Loop over stockPriceUpdates adding stuff like this:
   // stockPriceUpdates[stockName] = eggbase.util.increment(stockPriceDelta);
   // stockName must be a string
   // eggbase.update(stockPriceUpdates, "_stockPrices");
+  const industryFetchQuery = { industry: (JSON.parse(request.body) as StockPrice.Submission).industry };
+  let industryFetchResponse = await eggbase.fetch(industryFetchQuery);
+  const industryAllFetchResults = (new StockPrice.ExtendableArray()).extend(industryFetchResponse.items);
+  while (industryFetchResponse.last) {
+    industryFetchResponse = await eggbase.fetch(industryFetchQuery, { last: industryFetchResponse.last });
+    industryAllFetchResults.extend(industryFetchResponse.items);
+  }
+  const industryLastFourResults = industryAllFetchResults.sort(function (a, b) {
+    return (b.timestamp) - (a.timestamp);
+  }).slice(0, 4) as StockPrice.Submission[];
+  console.log(industryLastFourResults);
+  StockPrice.delta(industryLastFourResults);
   releaseLock();
-  response.type("application/json").send({
-    key
-  });
+  response.type("application/json").send({ key });
 });
+// Handle client-side submission mistake
 webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {
   if (!await acquireLock()) {
     response.sendStatus(500);
@@ -94,10 +106,9 @@ webapp.post("/undo", async function (request: Express.Request, response: Express
   ]);
   const gaffeCounter = (((await eggbase.get("_variables")) as ObjectType).extraData as ObjectType).gaffeCounter;
   releaseLock();
-  response.type("application/json").send({
-    gaffeCounter
-  });
+  response.type("application/json").send({ gaffeCounter });
 });
+// Give the client the latest stick prices
 webapp.get("/stock-prices", async function (request: Express.Request, response: Express.Response) {
   response.type("application/json").send(((await eggbase.get("_stockPrices")) as ObjectType).extraData);
 });
