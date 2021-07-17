@@ -1,3 +1,4 @@
+import { ObjectType } from "deta/dist/types/types/basic";
 import EggUtil from "./EggUtil";
 /**
  * Bunch of utilities for calculationg stock price and stuff
@@ -20,12 +21,13 @@ namespace StockPrice {
   };
   /**
    * Calculate change in price for the relevant stocks given a list of the last four industry results
-   * @param {EggUtil.Submission[]} results An array of the latest four industry results
-   * @returns {object} A thing that contains a bunch of numbers
+   * @param {EggUtil.Submission[]} results An array of the latest handful of industry results
+   * @returns {ObjectType} A thing that contains a bunch of numbers
    */
   export function delta(results: EggUtil.Submission[]) {
-    const delta = {};
+    const delta: ObjectType = {};
     // TODO do stock price calculations
+    const industry = results[0].industry;
     return delta;
   }
 }

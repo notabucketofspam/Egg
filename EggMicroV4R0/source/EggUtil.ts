@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import Base from "deta/dist/types/base";
 /**
  * Bunch of semi-useful / oddly-specific tools
  */
@@ -105,6 +106,25 @@ namespace EggUtil {
    */
   export function releaseLock() {
     fs.unlinkSync("/tmp/lock.txt");
+  }
+  /**
+   * Grab the last couple of submissions using Deta's suboptimal <1.0.0 API
+   * @param {Base} database The Deta Base to utilize
+   * @param {string} industry Whatever industry you're looking for
+   * @param {number=} inclusionRange How many results to return
+   * @returns {EggUtil.ExtendableArray} Array with a handful of submisions
+   */
+  export async function fetchLastIndustryResults(database: Base, industry: string, inclusionRange = 4) {
+    const industryResults = new EggUtil.ExtendableArray();
+    const fetchQuery = { industry };
+    const fetchResponse = await (database.fetch as any)(fetchQuery, Infinity, 4266);
+    // industryResults is spliced early so that there are only inclusionRange 
+    // number of items in it after every iteration; this prevents industryResults
+    // from growing too large and crashing the app
+    for await (const buffer of fetchResponse)
+      industryResults.extend(buffer).sort((a, b) => b.timestamp - a.timestamp)
+        .splice(inclusionRange, industryResults.length - inclusionRange).reverse();
+    return industryResults;
   }
 }
 export default EggUtil;

@@ -1,5 +1,5 @@
-// Deta setup
 import { ObjectType } from "deta/dist/types/types/basic";
+// Deta setup
 import Base from "deta/dist/types/base";
 const { Deta } = require("deta");
 const eggbase: Base = Deta().Base("EggBase");
@@ -12,6 +12,7 @@ webapp.use(express.urlencoded());
 import path = require("path");
 // Deal with static HTML page requests
 webapp.use(express.static(path.join(`${__dirname}/../html`)));
+// Egg setup
 import EggUtil from "./EggUtil";
 import StockPrice from "./StockPrice";
 // Handle a form submission from the client
@@ -21,46 +22,30 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
     response.sendStatus(500);
     return;
   }
+  // Slap that submission right in the machine
   const key = ((await eggbase.put(JSON.parse(request.body))) as ObjectType).key as string;
-  // Grab the last four results
-  // FIX fetch will fail eventually by running out of memory (one variable contains all results)
-  // Consider looping to sort the results early and then slice the last four
-  const allIndustryResults = new EggUtil.ExtendableArray();
-  const fetchQuery = { industry: (JSON.parse(request.body) as EggUtil.Submission).industry };
-  const fetchResponse = await (eggbase.fetch as any)(fetchQuery, Infinity, 4266);
-  for await (const buffer of fetchResponse)
-    allIndustryResults.extend(buffer);
-  const lastFourResults = allIndustryResults.sort((a, b) => b.timestamp - a.timestamp).slice(0, 4).reverse();
-  // Calculate price changes and update
-  const delta = StockPrice.delta(lastFourResults);
-  console.log(delta);
-  const updates = {};
-  Object.entries(delta).forEach(function([key, value]) {
-    Object.defineProperty(updates, `extraData.${key}`, {
-      value: eggbase.util.increment(value as number)
-    });
+  // Grab the last few results
+  const results = await EggUtil.fetchLastIndustryResults(eggbase, JSON.parse(request.body).industry);
+  // Calculate price changes and update the DB
+  const delta = StockPrice.delta(results);
+  const updates: ObjectType = {};
+  Object.entries(delta).forEach(function ([key, value]) {
+    updates[`extraData.${key}`] = eggbase.util.increment(value as number);
   });
-  console.log(updates);
   //eggbase.update(updates, "!stockPrices");
   EggUtil.releaseLock();
   response.type("application/json").send({ key });
 });
+
 // Do the thing #1
 webapp.get("/test1", async function (request: Express.Request, response: Express.Response) {
-  const fetchQuery = { industry: "Brown" };
-  const allIndustryResults = new EggUtil.ExtendableArray();
-  const fetchResponse = await (eggbase.fetch as any)(fetchQuery, Infinity, 4266);
-  for await (const buffer of fetchResponse)
-    allIndustryResults.extend(buffer);
-  const lastFourResults = allIndustryResults.sort((a, b) => b.timestamp - a.timestamp).slice(0, 4).reverse();
-  console.log("lastFourResults", lastFourResults);
-  const delta = StockPrice.delta(lastFourResults);
+  const results = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
+  console.log("results", results);
+  const delta = StockPrice.delta(results);
   console.log("delta", delta);
-  const updates = {};
+  const updates: ObjectType = {};
   Object.entries(delta).forEach(function ([key, value]) {
-    Object.defineProperty(updates, `extraData.${key}`, {
-      value: eggbase.util.increment(value as number)
-    });
+    updates[`extraData.${key}`] = eggbase.util.increment(value as number);
   });
   console.log("updates", updates);
   response.sendStatus(200);
