@@ -1,6 +1,6 @@
 import * as fs from "fs";
 /**
- * 
+ * Bunch of semi-useful / oddly-specific tools
  */
 namespace EggUtil {
   /**
@@ -81,7 +81,7 @@ namespace EggUtil {
   }
   /**
    * Used with acquireLock function
-   * @returns {Promise<boolean>} Some sort of Promise
+   * @returns {Promise<unknown>} Some sort of Promise
    */
   function lockPromise() {
     return new Promise(function (resolve, reject) {

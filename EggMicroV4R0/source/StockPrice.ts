@@ -19,12 +19,14 @@ namespace StockPrice {
     Yellow: ["Sierra", "Tango", "Victor"]
   };
   /**
-   * Calculate stock price delta for the relevant stocks given a list of the last four industry results
-   * @param {Submission[]} results An array of the latest four industry results
-   * @returns {Object} A thing that contains a bunch of numbers
+   * Calculate change in price for the relevant stocks given a list of the last four industry results
+   * @param {EggUtil.Submission[]} results An array of the latest four industry results
+   * @returns {object} A thing that contains a bunch of numbers
    */
-  export function delta(latest: EggUtil.Submission[]) {
-
+  export function delta(results: EggUtil.Submission[]) {
+    const delta = {};
+    // TODO do stock price calculations
+    return delta;
   }
 }
 export default StockPrice;
