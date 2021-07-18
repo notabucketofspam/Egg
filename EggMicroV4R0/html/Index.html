@@ -55,7 +55,7 @@ td {
       <div>
         <label for="territory-select">Territory</label>
         <select id="territory-select" name="territorySelect">
-          <option value='{"territory": "none", "industry": "none"}' style="background-color: unset;" selected>
+          <option value='{"territory": "none", "industry": "none"}' class="none" selected>
             ---
           </option>
           <option value='{"territory": "Alpha", "industry": "Brown"}' class="Brown">
@@ -160,8 +160,8 @@ td {
         <input id="submit-input" type="submit" value="Plug it in, coach" />
       </div>
     </form>
-    <input id="do-form-error-check" type="checkbox" checked />
-    <label for="do-form-error-check">Error check</label>
+    <!-- <input id="do-form-error-check" type="checkbox" checked />
+    <label for="do-form-error-check">Error check</label> -->
   </div>
   <div id="form-submission-message-area">
     <div id="submit-start-message" style="display: none;">
