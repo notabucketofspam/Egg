@@ -38,6 +38,7 @@
     <Content Include="html\Dummy.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="html\favicon.ico" />
     <Content Include="html\index.html">
       <SubType>Code</SubType>
     </Content>

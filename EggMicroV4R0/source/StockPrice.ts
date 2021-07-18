@@ -1,4 +1,3 @@
-import { ObjectType } from "deta/dist/types/types/basic";
 import EggUtil from "./EggUtil";
 /**
  * Bunch of utilities for calculationg stock price and stuff
@@ -7,7 +6,7 @@ namespace StockPrice {
   /**
    * List of what territories belong to which industries
    */
-  const industryRegistry = {
+  const industryRegistry: Record<string, string[]> = {
     Black: ["Charlie", "Kilo", "Romeo", "Zulu"],
     Blue: ["Zero", "One"],
     Brown: ["Alpha", "Bravo"],
@@ -21,13 +20,16 @@ namespace StockPrice {
   };
   /**
    * Calculate change in price for the relevant stocks given a list of the last four industry results
-   * @param {EggUtil.Submission[]} results An array of the latest handful of industry results
+   * @param {EggUtil.ExtArray<EggUtil.Submission>} results An array of the latest handful of industry results
    * @returns {ObjectType} A thing that contains a bunch of numbers
    */
-  export function delta(results: EggUtil.Submission[]) {
-    const delta: ObjectType = {};
+  export function delta(results: EggUtil.ExtArray<EggUtil.Submission>) {
     // TODO do stock price calculations
-    const industry = results[0].industry;
+    const delta: Record<string, number> = {};
+    const inclusionRange = results.length;
+    industryRegistry[results[0].industry].forEach(function (industry) {
+
+    });
     return delta;
   }
 }

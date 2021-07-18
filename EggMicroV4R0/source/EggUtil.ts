@@ -1,3 +1,4 @@
+// Thanks to here for making ObjectType unnecessary: https://stackoverflow.com/a/44441178
 import * as fs from "fs";
 import Base from "deta/dist/types/base";
 /**
@@ -5,25 +6,29 @@ import Base from "deta/dist/types/base";
  */
 namespace EggUtil {
   /**
-   * Basically just an array that can have other arrays slapped onto it
-   * Partially taken from here and here:
-   * https://stackoverflow.com/questions/1374126/how-to-extend-an-existing-javascript-array-with-another-array-without-creating/17368101#17368101
-   * https://stackoverflow.com/questions/767486/how-do-you-check-if-a-variable-is-an-array-in-javascript
+   * Basically just an array with a few more features (i.e. extendability)
    */
-  export class ExtendableArray extends Array {
+  export class ExtArray<T> extends Array<T> {
     constructor() {
       super();
     }
     /**
+     * The last item in the array
+     */
+    last: T = this[this.length - 1];
+    /**
      * Stick another array on the end of this one
+     * Partially taken from here and here:
+     * https://stackoverflow.com/a/17368101
+     * https://stackoverflow.com/a/26633883
      * @param {any[]} otherArray The other array to merge with
-     * @returns {StockPrice.ExtendableArray} itself, so that it can be chained
+     * @returns {ExtendableArray<T>} itself, so that it can be chained
      */
     extend(otherArray: any[]) {
       if (Array.isArray(otherArray)) {
-        const newLocal = this;
-        otherArray.forEach(function (item) {
-          newLocal.push(item);
+        const self = this;
+        otherArray.forEach(function (item: any) {
+          self.push(item);
         });
       } else {
         throw new TypeError("otherArray is not an array");
@@ -33,7 +38,7 @@ namespace EggUtil {
     /**
      * Leech items from one array into another
      * @param {any[]} otherArray The array to take items from
-     * @returns {StockPrice.ExtendableArray} itself, for chaining
+     * @returns {ExtendableArray<T>} itself, for chaining
      */
     drain(otherArray: any[]) {
       if (Array.isArray(otherArray)) {
@@ -44,6 +49,57 @@ namespace EggUtil {
       }
       return this;
     }
+  }
+  /**
+   * Race a promise against the clock
+   * Modified from here:
+   * https://spin.atomicobject.com/2020/01/16/timeout-promises-nodejs/
+   * @param {number} timeoutMs How long it'll wait before rejecting
+   * @param {string} failureMessage What to display upon rejection
+   * @param {(...args: any[]) => Promise<T>} promise The promise-returning function
+   * @param {any[]} [args] The arguments for the promise
+   * @returns {Promise<T>} Promise which may or may not have been rejected
+   */
+  function promiseWithTimeout<T>(timeoutMs: number, failureMessage: string, promise: (...args: any[]) => Promise<T>,
+    ...args: any[]) {
+    let timeoutHandle: NodeJS.Timeout;
+    const timeoutPromise = new Promise<never>((resolve, reject) => {
+      timeoutHandle = setTimeout(() => reject(new Error(failureMessage)), timeoutMs);
+    });
+    return Promise.race([
+      promise(args),
+      timeoutPromise,
+    ]).then((result) => {
+      clearTimeout(timeoutHandle);
+      return result;
+    });
+  }
+  /**
+   * Used with acquireLock() function
+   * @returns {Promise<boolean>} Some sort of Promise
+   */
+  function lockPromise() {
+    return new Promise<boolean>(function (resolve, reject) {
+      while (fs.existsSync("/tmp/lock.txt"));
+      fs.appendFileSync("/tmp/lock.txt", "locked");
+      resolve(true);
+    });
+  }
+  /**
+   * Try to lock the DB from other requests accessing it
+   * Probably doesn't work as intended, who knows
+   * @returns {Promise<boolean>} Promise that says whether or not the lock was acquired
+   */
+  export function acquireLock() {
+    // Not 10000ms below because otherwise the Micro might time out
+    return promiseWithTimeout(8533, "Unable to acquire lock", lockPromise);
+  }
+  /**
+   * Release the lock on the DB
+   * @returns {void} Absolutely nothing (since this theoretically can't fail)
+   */
+  export function releaseLock() {
+    fs.unlinkSync("/tmp/lock.txt");
   }
   /**
    * A user-entered form submission
@@ -59,72 +115,21 @@ namespace EggUtil {
     winLose: boolean;
   }
   /**
-   * Race a promise against the clock
-   * Taken directly from:
-   * https://spin.atomicobject.com/2020/01/16/timeout-promises-nodejs/
-   * @param {number} timeoutMs How long it'll wait before rejecting
-   * @param {() => Promise<T>} promise The promise-returning function
-   * @param {string} failureMessage What to display upon rejection
-   * @returns {Promise<T>} Promise which may or may not have been rejected
-   */
-  const promiseWithTimeout = <T>(timeoutMs: number, promise: () => Promise<T>, failureMessage?: string) => {
-    let timeoutHandle: NodeJS.Timeout;
-    const timeoutPromise = new Promise<never>((resolve, reject) => {
-      timeoutHandle = setTimeout(() => reject(new Error(failureMessage)), timeoutMs);
-    });
-    return Promise.race([
-      promise(),
-      timeoutPromise,
-    ]).then((result) => {
-      clearTimeout(timeoutHandle);
-      return result;
-    });
-  }
-  /**
-   * Used with acquireLock function
-   * @returns {Promise<unknown>} Some sort of Promise
-   */
-  function lockPromise() {
-    return new Promise(function (resolve, reject) {
-      while (fs.existsSync("/tmp/lock.txt"));
-      fs.appendFileSync("/tmp/lock.txt", "locked");
-      resolve(true);
-    });
-  };
-  /**
-   * Try to lock the DB from other requests accessing it
-   * Probably doesn't work as intended, who knows
-   * @returns {Promise<boolean>} Promise that says whether or not the lock was acquired
-   */
-  export function acquireLock() {
-    // Not 10000ms below because otherwise the micro might time out
-    return promiseWithTimeout(8666, lockPromise, "Unable to acquire lock");
-  }
-  /**
-   * Release the lock on the DB
-   * @returns {void} Absolutely nothing (since this theoretically can't fail)
-   */
-  export function releaseLock() {
-    fs.unlinkSync("/tmp/lock.txt");
-  }
-  /**
-   * Grab the last couple of submissions using Deta's suboptimal <1.0.0 API
+   * Grab the last couple of submissions using Deta's suboptimal <1.0.0 Base API
    * @param {Base} database The Deta Base to utilize
    * @param {string} industry Whatever industry you're looking for
-   * @param {number=} inclusionRange How many results to return
-   * @returns {EggUtil.ExtendableArray} Array with a handful of submisions
+   * @param {number} [inclusionRange=4] How many results to return
+   * @returns {Promise<ExtArray<Submission>>} Array with a handful of submisions
    */
   export async function fetchLastIndustryResults(database: Base, industry: string, inclusionRange = 4) {
-    const industryResults = new EggUtil.ExtendableArray();
-    const fetchQuery = { industry };
-    const fetchResponse = await (database.fetch as any)(fetchQuery, Infinity, 4266);
-    // industryResults is spliced early so that there are only inclusionRange 
-    // number of items in it after every iteration; this prevents industryResults
-    // from growing too large and crashing the app
+    const results = new ExtArray<Submission>();
+    const fetchResponse = await (database.fetch as any)({ industry }, Infinity, 4266);
+    // results is spliced early so that there are only inclusionRange number
+    // of items in it after every iteration; this prevents results from
+    // growing too large and crashing the app
     for await (const buffer of fetchResponse)
-      industryResults.extend(buffer).sort((a, b) => b.timestamp - a.timestamp)
-        .splice(inclusionRange, industryResults.length - inclusionRange).reverse();
-    return industryResults;
+      results.extend(buffer).sort((a, b) => b.timestamp - a.timestamp).splice(inclusionRange);
+    return results.reverse() as typeof results;
   }
 }
 export default EggUtil;
