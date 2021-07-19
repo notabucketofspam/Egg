@@ -96,7 +96,6 @@ namespace EggUtil {
   }
   /**
    * Release the lock on the DB
-   * @returns {void} Absolutely nothing (since this theoretically can't fail)
    */
   export function releaseLock() {
     fs.unlinkSync("/tmp/lock.txt");

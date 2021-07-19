@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{53B74DE3-36B9-45C1-8076-1FF74839CAAF}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "EggScriptV7", "EggScriptV7\EggScriptV7.njsproj", "{149CDC27-5CD4-45F1-A8BF-7B257FE8A95F}"
