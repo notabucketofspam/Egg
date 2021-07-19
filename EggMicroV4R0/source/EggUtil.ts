@@ -13,10 +13,6 @@ namespace EggUtil {
       super();
     }
     /**
-     * The last item in the array
-     */
-    last: T = this[this.length - 1];
-    /**
      * Stick another array on the end of this one
      * Partially taken from here and here:
      * https://stackoverflow.com/a/17368101
@@ -122,13 +118,14 @@ namespace EggUtil {
    */
   export async function fetchLastIndustryResults(database: Base, industry: string, inclusionRange = 4) {
     const results = new ExtArray<Submission>();
+    const deletables = new ExtArray<Submission>();
     const fetchResponse = await (database.fetch as any)({ industry }, Infinity, 4266);
     // results is spliced early so that there are only inclusionRange number
     // of items in it after every iteration; this prevents results from
     // growing too large and crashing the app
     for await (const buffer of fetchResponse)
-      results.extend(buffer).sort((a, b) => b.timestamp - a.timestamp).splice(inclusionRange);
-    return results.reverse() as typeof results;
+      deletables.extend(results.extend(buffer).sort((a, b) => b.timestamp - a.timestamp).splice(inclusionRange));
+    return [results.reverse() as typeof results, deletables];
   }
 }
 export default EggUtil;

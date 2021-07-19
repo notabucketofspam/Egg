@@ -24,23 +24,30 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
   // Slap that submission right in the machine
   const key = (await eggbase.put(JSON.parse(request.body)) as Record<string, string>).key;
   // Grab the last few results
-  const results = await EggUtil.fetchLastIndustryResults(eggbase, JSON.parse(request.body).industry);
+  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, JSON.parse(request.body).industry);
   // Calculate price changes
   const delta = StockPrice.delta(results);
-  // Update the DB
-  const updates: Record<string, any> = {};
+  // Update stock prices in the DB
+  const stockPriceUpdates: Record<string, any> = {};
   Object.entries(delta).forEach(function ([key, value]) {
-    updates[`extraData.${key}`] = eggbase.util.increment(value);
+    stockPriceUpdates[`extraData.${key}`] = eggbase.util.increment(value);
   });
-  //eggbase.update(updates, "!stockPrices");
+  await eggbase.update(stockPriceUpdates, "!stockPrices");
+  // Delete old entries in the DB
+  const deletePromiseArray: Promise<null>[] = [];
+  deletables.forEach(function (entry: EggUtil.Submission) {
+    deletePromiseArray.push(eggbase.delete(entry.key));
+  });
+  await Promise.allSettled(deletePromiseArray);
   EggUtil.releaseLock();
   response.type("application/json").send({ key });
 });
 // Do the thing #1
 webapp.get("/test1", async function (request: Express.Request, response: Express.Response) {
   const now = Date.now();
-  const results = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
+  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
   console.log("results", results);
+  console.log("deletables", deletables);
   const delta = StockPrice.delta(results);
   console.log("delta", delta);
   const updates: Record<string, any> = {};
@@ -56,7 +63,7 @@ webapp.post("/undo", async function (request: Express.Request, response: Express
     response.sendStatus(500);
     return;
   }
-  await Promise.all([
+  await Promise.allSettled([
     eggbase.delete(JSON.parse(request.body).key),
     eggbase.update({ "extraData.gaffeCounter": eggbase.util.increment() }, "!variables")
   ]);
