@@ -21,12 +21,11 @@ namespace StockPrice {
   /**
    * Calculate change in price for the relevant stocks given a list of the last four industry results
    * @param {EggUtil.ExtArray<EggUtil.Submission>} results An array of the latest handful of industry results
-   * @returns {ObjectType} A thing that contains a bunch of numbers
+   * @returns {Record<string, number>} A thing that contains a bunch of numbers
    */
   export function delta(results: EggUtil.ExtArray<EggUtil.Submission>) {
     // TODO do stock price calculations
     const delta: Record<string, number> = {};
-    const inclusionRange = results.length;
     industryRegistry[results[0].industry].forEach(function (industry) {
 
     });

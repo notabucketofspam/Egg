@@ -2,8 +2,8 @@
   "compilerOptions": {
     "strict": true,
     "module": "CommonJS",
-    "target": "ES2021",
-    "lib": [ "ES2021", "DOM" ],
+    "target": "ESNext",
+    "lib": [ "ESNext", "DOM" ],
     "outDir": "build",
     "typeRoots": [
       "./node_modules/@types",

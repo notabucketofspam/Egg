@@ -106,7 +106,7 @@ namespace EggUtil {
    */
   export interface Submission {
     key: string;
-    extraData: Object;
+    extraData: Record<string, any>;
     industry: string;
     stockCountEnd: number;
     stockCountStart: number;
