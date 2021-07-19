@@ -425,14 +425,14 @@ function failureMessageHandler(error) {
  * @returns {boolean} Whether or not the form has errors in it
  */
 function formErrorCheck(form) {
-  if (!document.getElementById("do-form-error-check").checked) {
+  /* if (!document.getElementById("do-form-error-check").checked) {
     document.getElementById("form-error-check-message-area").style = "display: none;";
     document.getElementById("invalid-territory-select-message").style = "display: none;";
     document.getElementById("invalid-win-lose-message").style = "display: none;";
     document.getElementById("invalid-stock-count-start-message").style = "display: none;"
     document.getElementById("invalid-stock-count-end-message").style = "display: none;";
-    return;
-  }
+    return false;
+  } */
   let formErrorRate = 0;
   // No character selected
   if (form.elements["territory-select"].selectedOptions[0].value === '{"territory": "none", "industry": "none"}') {
