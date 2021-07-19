@@ -13,7 +13,7 @@ webapp.enable("case sensitive routing");
 webapp.use(express.urlencoded());
 // Deal with static HTML page requests
 import path = require("path");
-webapp.use(express.static(path.normalize(`${__dirname}/../html`)));
+webapp.use(express.static(path.normalize(`${__dirname}/../html`), { index: "index.html" }));
 // Handle a form submission from the client
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
   // FIX sanitize form submission
@@ -35,8 +35,8 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
   await eggbase.update(stockPriceUpdates, "!stockPrices");
   // Delete old entries in the DB
   const deletePromiseArray: Promise<null>[] = [];
-  deletables.forEach(function (entry: EggUtil.Submission) {
-    deletePromiseArray.push(eggbase.delete(entry.key));
+  deletables.forEach(function (submission) {
+    deletePromiseArray.push(eggbase.delete(submission.key));
   });
   await Promise.allSettled(deletePromiseArray);
   EggUtil.releaseLock();
@@ -46,16 +46,21 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
 webapp.get("/test1", async function (request: Express.Request, response: Express.Response) {
   const now = Date.now();
   const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
-  console.log("results", results);
-  console.log("deletables", deletables);
+  //console.log("results", results);
+  //console.log("deletables", deletables);
   const delta = StockPrice.delta(results);
   console.log("delta", delta);
   const updates: Record<string, any> = {};
   Object.entries(delta).forEach(function ([key, value]) {
     updates[`extraData.${key}`] = eggbase.util.increment(value);
   });
-  console.log("updates", updates);
+  //console.log("updates", updates);
   response.status(200).send({ time: `${Date.now() - now}ms` } );
+});
+import * as fs from "fs";
+webapp.get("/test2", async function (request: Express.Request, response: Express.Response) {
+  console.log(fs.readFileSync(path.normalize(`${__dirname}/../html/index.html`), { encoding: "utf8" }));
+  response.sendStatus(200);
 });
 // Handle client-side submission mistake
 webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {

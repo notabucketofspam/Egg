@@ -100,9 +100,9 @@ namespace EggUtil {
    * A user-entered form submission
    */
   export interface Submission {
-    key: string;
     extraData: Record<string, any>;
     industry: string;
+    key: string;
     stockCountEnd: number;
     stockCountStart: number;
     territory: string;
@@ -114,15 +114,12 @@ namespace EggUtil {
    * @param {Base} database The Deta Base to utilize
    * @param {string} industry Whatever industry you're looking for
    * @param {number} [inclusionRange=4] How many results to return
-   * @returns {Promise<ExtArray<Submission>>} Array with a handful of submisions
+   * @returns {Promise<ExtArray<Submission>[]>} ExtArray with a handful of submisions and some stuff to delete
    */
   export async function fetchLastIndustryResults(database: Base, industry: string, inclusionRange = 4) {
     const results = new ExtArray<Submission>();
     const deletables = new ExtArray<Submission>();
     const fetchResponse = await (database.fetch as any)({ industry }, Infinity, 4266);
-    // results is spliced early so that there are only inclusionRange number
-    // of items in it after every iteration; this prevents results from
-    // growing too large and crashing the app
     for await (const buffer of fetchResponse)
       deletables.extend(results.extend(buffer).sort((a, b) => b.timestamp - a.timestamp).splice(inclusionRange));
     return [results.reverse() as typeof results, deletables];
