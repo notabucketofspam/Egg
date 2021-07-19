@@ -291,11 +291,16 @@ td {
   </tbody>
 </table>
 <script>
+/** @type {boolean} */
 var submitInputFlag;
-var formSubmitCompleteSetTimeoutHandle;
-var formUndoSetTimeoutHandle;
-var failureMessageSetTimeoutHandle;
+/** @type {string} */
 var lastFormSubmissionKey;
+/** @type {number} */
+var formSubmitCompleteSetTimeoutHandle;
+/** @type {number} */
+var formUndoSetTimeoutHandle;
+/** @type {number} */
+var failureMessageSetTimeoutHandle;
 /**
  * Add some event listeners
  */
@@ -310,52 +315,46 @@ var lastFormSubmissionKey;
 })();
 /**
  * Deal with the form actually being submittted
+ * @param {HTMLFormElement} form The submission form object
  */
 function formSubmitHandler(form) {
   document.getElementById("failure-message").style = "display: none;"
-  if (formErrorCheck(form)) {
+  if (formErrorCheck(form))
     return;
-  } else {
-    let formObject = Object.fromEntries((new FormData(form)).entries());
-    formObject.industry = JSON.parse(formObject.territorySelect).industry;
-    formObject.territory = JSON.parse(formObject.territorySelect).territory;
-    delete formObject.territorySelect;
-    formObject.stockCountStart = Number.parseInt(formObject.stockCountStart);
-    formObject.stockCountEnd = Number.parseInt(formObject.stockCountEnd);
-    formObject.winLose = formObject.winLose === "on";
-    formObject.timestamp = Date.now();
-    formObject.extraData = { };
-    submitInputFlag = true;
-    document.getElementById("submit-start-message").style = "display: block;";
-    document.getElementById("undo-message").style = "display: none;";
-    document.getElementById("submit-complete-message").style = "display: none;";
-    // Replacement for google.script.run from the old version 
-    fetch("/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formObject)
-    })
-    .then(function(response) {
-      if (!response.ok)
-        throw new Error(`${response.status} ${response.statusText}`);
-      return response.json();
-    })
-    .then(function(result) {
-      lastFormSubmissionKey = result;
-      submitInputFlag = false;
-      form.reset();
-      document.getElementById("submit-start-message").style = "display: none;";
-      document.getElementById("submit-complete-message").style = "display: block;";
-      clearTimeout(formSubmitCompleteSetTimeoutHandle);
-      formSubmitCompleteSetTimeoutHandle = setTimeout(function() {
-        document.getElementById("submit-complete-message").style = "display: none;";
-      }, 15*1000);
-    })
-    .catch(function(error) {
-      submitInputFlag = false;
-      failureMessageHandler(error);
-    });
-  }
+  const formObject = Object.fromEntries((new FormData(form)).entries());
+  formObject.industry = JSON.parse(formObject.territorySelect).industry;
+  formObject.territory = JSON.parse(formObject.territorySelect).territory;
+  delete formObject.territorySelect;
+  formObject.stockCountStart = Number.parseInt(formObject.stockCountStart);
+  formObject.stockCountEnd = Number.parseInt(formObject.stockCountEnd);
+  formObject.winLose = formObject.winLose === "on";
+  formObject.timestamp = Date.now();
+  formObject.extraData = {};
+  submitInputFlag = true;
+  document.getElementById("submit-start-message").style = "display: block;";
+  document.getElementById("undo-message").style = "display: none;";
+  document.getElementById("submit-complete-message").style = "display: none;";
+  // Replacement for google.script.run() from EggScriptV8 
+  fetch("/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formObject)
+  })
+  .then(validateResponse)
+  .then(function(result) {
+    lastFormSubmissionKey = result;
+    form.reset();
+    document.getElementById("submit-start-message").style = "display: none;";
+    document.getElementById("submit-complete-message").style = "display: block;";
+    clearTimeout(formSubmitCompleteSetTimeoutHandle);
+    formSubmitCompleteSetTimeoutHandle = setTimeout(function() {
+      document.getElementById("submit-complete-message").style = "display: none;";
+    }, 15*1000);
+  })
+  .catch(failureMessageHandler)
+  .finally(function() {
+    submitInputFlag = false;
+  });
 }
 /**
  * Deal with the case where a mistake is made on form submission
@@ -367,26 +366,46 @@ function formUndoHandler(){
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(lastFormSubmissionKey)
   })
-  .then(function(response) {
-    if (!response.ok)
-      throw new Error(`${response.status} ${response.statusText}`);
-    return response.json();
-  })
+  .then(validateResponse)
   .then(function(result) {
     document.getElementById("gaffe-counter").innerText = result.gaffeCounter;
   })
-  .catch(function(error) {
-    submitInputFlag = false;
-    failureMessageHandler(error);
+  .catch(failureMessageHandler)
+  .finally(function() {
+    document.getElementById("undo-message").style = "display: block;";
+    clearTimeout(formUndoSetTimeoutHandle);
+    formUndoSetTimeoutHandle = setTimeout(function() {
+      document.getElementById("undo-message").style = "display: none;";
+    }, 15*1000);
   });
-  document.getElementById("undo-message").style = "display: block;";
-  clearTimeout(formUndoSetTimeoutHandle);
-  formUndoSetTimeoutHandle = setTimeout(function() {
-    document.getElementById("undo-message").style = "display: none;";
-  }, 15*1000);
+}
+/**
+ * Retrieve new values for the stock price table
+ */
+function getStockPriceHandler() {
+  fetch("/stock-prices", {
+    method: "GET"
+  })
+  .then(validateResponse)
+  .then(function(result) {
+    for (const property in result) {
+      document.getElementById(`stock-price-${property.toLowerCase()}`).innerText = result[property];
+    }
+  })
+  .catch(failureMessageHandler);
+}
+/**
+ * Make sure that the response is ok
+ * @param {Response} response Get this from any fetch()
+ * @returns {Promise<any>} Object on success, error message on failure
+ */
+async function validateResponse(response) {
+  return response.ok ? response.json() :
+    Promise.reject(`${response.status} ${response.statusText}\n${await response.text()}`);
 }
 /**
  * Deal with server-side screw up
+ * @param {Error} error Any error that may have been raised during the submission process
  */
 function failureMessageHandler(error) {
   document.getElementById("submit-start-message").style = "display: none;";
@@ -397,11 +416,13 @@ function failureMessageHandler(error) {
   clearTimeout(failureMessageSetTimeoutHandle);
   failureMessageSetTimeoutHandle = setTimeout(function() {
     document.getElementById("failure-message").style = "display: none;";
-  }, 60*1000);
+  }, 120*1000);
 }
 /**
  * Client-side assurance of proper form submission
  * Can probably be thwarted by a malicious party, but whatever
+ * @param {HTMLFormElement} form The submitted form
+ * @returns {boolean} Whether or not the form has errors in it
  */
 function formErrorCheck(form) {
   if (!document.getElementById("do-form-error-check").checked) {
@@ -442,34 +463,12 @@ function formErrorCheck(form) {
     document.getElementById("invalid-stock-count-end-message").style = "display: none;";
   }
   // Display errors when applicable
-  if (formErrorRate > 0){ 
+  if (formErrorRate > 0) { 
     document.getElementById("form-error-check-message-area").style = "display: block;";
   } else {
     document.getElementById("form-error-check-message-area").style = "display: none;";
   }
   return (formErrorRate > 0);
-}
-/**
- * Retrieve new values for the stock price table
- */
-function getStockPriceHandler() {
-  fetch("/stock-prices", {
-    method: "GET"
-  })
-  .then(function(response) {
-    if (!response.ok)
-      throw new Error(`${response.status} ${response.statusText}`);
-    return response.json();
-  })
-  .then(function(result) {
-    for (const property in result) {
-      document.getElementById(`stock-price-${property.toLowerCase()}`).innerText = result[property];
-    }
-  })
-  .catch(function(error) {
-    submitInputFlag = false;
-    failureMessageHandler(error);
-  });
 }
 </script>
 </body>
