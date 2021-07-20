@@ -10,10 +10,9 @@ import * as Express from "express";
 import express = require("express");
 const webapp: Express.Application = express();
 webapp.enable("case sensitive routing");
-webapp.use(express.urlencoded());
 // Deal with static HTML page requests
 import path = require("path");
-webapp.use(express.static(path.normalize(`${__dirname}/../html`), { index: "index.html" }));
+webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "index.html" }));
 // Handle a form submission from the client
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
   // FIX sanitize form submission

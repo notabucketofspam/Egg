@@ -29,22 +29,18 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="www\Dummy.html" />
+    <Content Include="www\favicon.ico" />
+    <Content Include="www\image\EggLogoV2.png" />
+    <Content Include="www\image\favicon.ico" />
+    <Content Include="www\image\favicon.png" />
+    <Content Include="www\index.html" />
     <None Include="source\Main.ts" />
     <Content Include=".detaignore" />
     <Content Include=".deta\prog_info" />
     <Content Include=".deta\state" />
     <Content Include=".env" />
     <Content Include=".gitignore" />
-    <Content Include="html\Dummy.html">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="html\favicon.ico" />
-    <Content Include="html\index.html">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="image\EggLogoV2.png" />
-    <Content Include="image\favicon.ico" />
-    <Content Include="image\favicon.png" />
     <Content Include="index.js" />
     <Content Include="misc\_stockPricesInitial.json">
       <SubType>Code</SubType>
@@ -55,10 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include=".deta\" />
-    <Folder Include="html\" />
-    <Folder Include="image\" />
     <Folder Include="misc\" />
     <Folder Include="source\" />
+    <Folder Include="www\" />
+    <Folder Include="www\image\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="source\EggUtil.ts" />
