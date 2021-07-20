@@ -29,6 +29,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="misc\_sampleSubmission.json" />
     <Content Include="www\Dummy.html" />
     <Content Include="www\favicon.ico" />
     <Content Include="www\image\EggLogoV2.png" />

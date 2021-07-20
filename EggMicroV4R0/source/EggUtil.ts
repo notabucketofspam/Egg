@@ -154,11 +154,12 @@ namespace EggUtil {
   export function errorCheck(submission: Submission) {
     const errorMessages: string[] = [];
     // All properties of submission must exist
-    if (!(typeof submission === "object" && submission.toString() === "{}")) {
+    if (!(typeof submission === "object" && Object.keys(submission).length !== 0)) {
       errorMessages.push("submission is either not an object or contains no data.");
       return errorMessages;
     }
-    const extraDataExists = typeof submission.extraData === "object" && submission.extraData.toString() === "{}";
+    const extraDataExists = typeof submission.extraData === "object" &&
+      Object.keys(submission.extraData).length === 0;
     if (!extraDataExists)
       errorMessages.push("extraData is either not an object or contains invalid data.");
     const industryExists = typeof submission.industry === "string";
