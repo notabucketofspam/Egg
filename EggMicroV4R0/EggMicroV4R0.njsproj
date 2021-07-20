@@ -42,6 +42,9 @@
     <Content Include="html\index.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="image\EggLogoV2.png" />
+    <Content Include="image\favicon.ico" />
+    <Content Include="image\favicon.png" />
     <Content Include="index.js" />
     <Content Include="misc\_stockPricesInitial.json">
       <SubType>Code</SubType>
@@ -53,6 +56,7 @@
   <ItemGroup>
     <Folder Include=".deta\" />
     <Folder Include="html\" />
+    <Folder Include="image\" />
     <Folder Include="misc\" />
     <Folder Include="source\" />
   </ItemGroup>
