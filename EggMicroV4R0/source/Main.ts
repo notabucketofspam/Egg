@@ -15,33 +15,44 @@ import path = require("path");
 webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "index.html" }));
 // Handle a form submission from the client
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
-  // FIX sanitize form submission
   if (!await EggUtil.acquireLock()) {
     response.sendStatus(500);
     return;
   }
+  const submission = JSON.parse(request.body);
+  const errorMessages = EggUtil.errorCheck(submission);
+  if (errorMessages.length) {
+    response.status(400).send(errorMessages.join("\n<br />\n"));
+    return;
+  }
   // Slap that submission right in the machine
-  const key = (await eggbase.put(JSON.parse(request.body)) as Record<string, string>).key;
+  const key = (await eggbase.put(submission) as Record<string, string>).key;
+  // Temporary lockdown until enough submissions come in
+  EggUtil.releaseLock();
+  response.type("application/json").send({ key });
+  return;
   // Grab the last few results
-  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, JSON.parse(request.body).industry);
+  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, submission.industry);
   // Calculate price changes
   const delta = StockPrice.delta(results);
   // Update stock prices in the DB
+  const stockPrices = ((await eggbase.get("!stockPrices")) as any).extraData as Record<string, number>;
   const stockPriceUpdates: Record<string, any> = {};
-  Object.entries(delta).forEach(function ([key, value]) {
-    stockPriceUpdates[`extraData.${key}`] = eggbase.util.increment(value);
+  Object.entries(delta).forEach(function ([territory, value]) {
+    stockPriceUpdates[`extraData.${territory}`] =
+      eggbase.util.increment(stockPrices[territory] + value < 5 ? 0 : value);
   });
-  await eggbase.update(stockPriceUpdates, "!stockPrices");
+  const promiseArray: Promise<null>[] = [];
+  promiseArray.push(eggbase.update(stockPriceUpdates, "!stockPrices"));
   // Delete old entries in the DB
-  const deletePromiseArray: Promise<null>[] = [];
   deletables.forEach(function (submission) {
-    deletePromiseArray.push(eggbase.delete(submission.key));
+    promiseArray.push(eggbase.delete(submission.key));
   });
-  await Promise.allSettled(deletePromiseArray);
+  await Promise.allSettled(promiseArray);
   EggUtil.releaseLock();
   response.type("application/json").send({ key });
 });
-// Do the thing #1
+// Test section
 webapp.get("/test1", async function (request: Express.Request, response: Express.Response) {
   const now = Date.now();
   const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
@@ -49,16 +60,28 @@ webapp.get("/test1", async function (request: Express.Request, response: Express
   //console.log("deletables", deletables);
   const delta = StockPrice.delta(results);
   console.log("delta", delta);
-  const updates: Record<string, any> = {};
-  Object.entries(delta).forEach(function ([key, value]) {
-    updates[`extraData.${key}`] = eggbase.util.increment(value);
-  });
-  //console.log("updates", updates);
+  //const stockPriceUpdates: Record<string, any> = {};
+  //Object.entries(delta).forEach(function ([key, value]) {
+  //  stockPriceUpdates[`extraData.${key}`] = eggbase.util.increment(value);
+  //});
+  //console.log("stockPriceUpdates", stockPriceUpdates);
   response.status(200).send({ time: `${Date.now() - now}ms` } );
 });
 import * as fs from "fs";
 webapp.get("/test2", async function (request: Express.Request, response: Express.Response) {
-  console.log(fs.readFileSync(path.normalize(`${__dirname}/../html/index.html`), { encoding: "utf8" }));
+  console.log(fs.readFileSync(path.normalize(`${__dirname}/../www/index.html`), { encoding: "utf8" }));
+  response.sendStatus(200);
+});
+webapp.get("/test3", async function (request: Express.Request, response: Express.Response) {
+  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
+  console.log("results.last()", results.last());
+  console.log("deletables.last()", deletables.last());
+  response.sendStatus(200);
+});
+webapp.post("/test4", async function (request: Express.Request, response: Express.Response) {
+  const submission = JSON.parse(request.body);
+  const errorMessages = EggUtil.errorCheck(submission);
+  console.log(errorMessages.join("\n"));
   response.sendStatus(200);
 });
 // Handle client-side submission mistake
@@ -71,13 +94,13 @@ webapp.post("/undo", async function (request: Express.Request, response: Express
     eggbase.delete(JSON.parse(request.body).key),
     eggbase.update({ "extraData.gaffeCounter": eggbase.util.increment() }, "!variables")
   ]);
-  const gaffeCounter = (await eggbase.get("!variables") as Record<string, any>).extraData.gaffeCounter;
+  const gaffeCounter = (await eggbase.get("!variables") as any).extraData.gaffeCounter;
   EggUtil.releaseLock();
   response.type("application/json").send({ gaffeCounter });
 });
 // Give the client the latest stock prices
 webapp.get("/stock-prices", async function (request: Express.Request, response: Express.Response) {
-  response.type("application/json").send((await eggbase.get("!stockPrices") as Record<string, any>).extraData);
+  response.type("application/json").send((await eggbase.get("!stockPrices") as any).extraData);
 });
 // Make webapp available to index.js in root directory
 module.exports = {

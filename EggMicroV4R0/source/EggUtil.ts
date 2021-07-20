@@ -9,21 +9,21 @@ namespace EggUtil {
    * Basically just an array with a few more features (i.e. extendability)
    */
   export class ExtArray<T> extends Array<T> {
-    constructor() {
-      super();
+    constructor(...items: T[]) {
+      super(...items);
     }
     /**
      * Stick another array on the end of this one
      * Partially taken from here and here:
      * https://stackoverflow.com/a/17368101
      * https://stackoverflow.com/a/26633883
-     * @param {any[]} otherArray The other array to merge with
-     * @returns {ExtendableArray<T>} itself, so that it can be chained
+     * @param {T[]} otherArray The other array to merge with
+     * @returns {ExtArray<T>} itself, so that it can be chained
      */
-    extend(otherArray: any[]) {
+    extend(otherArray: T[]) {
       if (Array.isArray(otherArray)) {
         const self = this;
-        otherArray.forEach(function (item: any) {
+        otherArray.forEach(function (item: T) {
           self.push(item);
         });
       } else {
@@ -33,17 +33,24 @@ namespace EggUtil {
     }
     /**
      * Leech items from one array into another
-     * @param {any[]} otherArray The array to take items from
-     * @returns {ExtendableArray<T>} itself, for chaining
+     * @param {T[]} otherArray The array to take items from
+     * @returns {ExtArray<T>} itself, for chaining
      */
-    drain(otherArray: any[]) {
+    drain(otherArray: T[]) {
       if (Array.isArray(otherArray)) {
         while (otherArray.length)
-          this.push(otherArray.shift());
+          this.push(otherArray.shift() as T);
       } else {
         throw new TypeError("otherArray is not an array");
       }
       return this;
+    }
+    /**
+     * Get the final item in the array
+     * @returns {T} The last item
+     */
+    last() {
+      return this[this.length - 1];
     }
   }
   /**
@@ -63,9 +70,9 @@ namespace EggUtil {
       timeoutHandle = setTimeout(() => reject(new Error(failureMessage)), timeoutMs);
     });
     return Promise.race([
-      promise(args),
+      promise(...args),
       timeoutPromise,
-    ]).then((result) => {
+    ]).then(function (result) {
       clearTimeout(timeoutHandle);
       return result;
     });
@@ -123,6 +130,79 @@ namespace EggUtil {
     for await (const buffer of fetchResponse)
       deletables.extend(results.extend(buffer).sort((a, b) => b.timestamp - a.timestamp).splice(inclusionRange));
     return [results.reverse() as typeof results, deletables];
+  }
+  /**
+   * List of what territories belong to which industries
+   */
+  export const industryRegistry: Record<string, string[]> = {
+    Black: ["Charlie", "Kilo", "Romeo", "Zulu"],
+    Blue: ["Zero", "One"],
+    Brown: ["Alpha", "Bravo"],
+    Cyan: ["Delta", "Echo", "Foxtrot"],
+    Green: ["Whiskey", "X-ray", "Yankee"],
+    Magenta: ["Golf", "India", "Juliett"],
+    Orange: ["Lima", "Mike", "November"],
+    Red: ["Oscar", "Papa", "Quebec"],
+    White: ["Hotel", "Uniform"],
+    Yellow: ["Sierra", "Tango", "Victor"]
+  };
+  /**
+   * Verify integrity of user-submitted data
+   * @param {Submission} submission The form submission to validate
+   * @returns {string[]} List of problems found with the submission
+   */
+  export function errorCheck(submission: Submission) {
+    const errorMessages: string[] = [];
+    // All properties of submission must exist
+    if (!(typeof submission === "object" && submission.toString() === "{}")) {
+      errorMessages.push("submission is either not an object or contains no data.");
+      return errorMessages;
+    }
+    const extraDataExists = typeof submission.extraData === "object" && submission.extraData.toString() === "{}";
+    if (!extraDataExists)
+      errorMessages.push("extraData is either not an object or contains invalid data.");
+    const industryExists = typeof submission.industry === "string";
+    if (!industryExists)
+      errorMessages.push("industry is not a string.");
+    const stockCountEndExists = typeof submission.stockCountEnd === "number";
+    if (!stockCountEndExists)
+      errorMessages.push("stockCountEnd is not a number.");
+    const stockCountStartExists = typeof submission.stockCountStart === "number";
+    if (!stockCountStartExists)
+      errorMessages.push("stockCountStart is not a number.");
+    const territoryExists = typeof submission.territory === "string";
+    if (!territoryExists)
+      errorMessages.push("territory is not a string.");
+    const timestampExists = typeof submission.timestamp === "number";
+    if (!timestampExists)
+      errorMessages.push("timestamp is not a number.");
+    const winLoseExists = typeof submission.winLose === "boolean";
+    if (!winLoseExists)
+      errorMessages.push("winLose is not a boolean.");
+    // Numeric values must be in range
+    const stockCountEndInRange = stockCountEndExists && submission.stockCountEnd >= 0 &&
+      submission.stockCountEnd <= 10;
+    const stockCountStartInRange = stockCountStartExists && submission.stockCountStart >= 1 &&
+      submission.stockCountStart <= 10;
+    // Stock count end out of range
+    if (stockCountEndExists && !stockCountEndInRange)
+      errorMessages.push("Stock count end out of range.");
+    // Stock count start out of range
+    if (stockCountStartExists && !stockCountStartInRange)
+      errorMessages.push("Stock count start out of range.");
+    // Not an industry or territory
+    if (industryExists)
+      if (!Object.keys(industryRegistry).includes(submission.industry))
+        errorMessages.push(`${submission.industry} is not an industry.`);
+      else if (territoryExists && !industryRegistry[submission.industry].includes(submission.territory))
+        errorMessages.push(`${submission.industry} does not contain ${submission.territory}.`);
+    // Won with zero stocks left
+    if (winLoseExists && stockCountEndInRange && submission.winLose && submission.stockCountEnd === 0)
+      errorMessages.push("Cannot win with zero stocks left.");
+    // Ended with more stocks than stared with
+    if (stockCountEndInRange && stockCountStartInRange && submission.stockCountEnd > submission.stockCountStart)
+      errorMessages.push("Cannot end with more stocks than started with.");
+    return errorMessages;
   }
 }
 export default EggUtil;
