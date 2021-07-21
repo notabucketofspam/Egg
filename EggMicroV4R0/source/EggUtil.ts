@@ -200,7 +200,7 @@ namespace EggUtil {
     // Won with zero stocks left
     if (winLoseExists && stockCountEndInRange && submission.winLose && submission.stockCountEnd === 0)
       errorMessages.push("Cannot win with zero stocks left.");
-    // Ended with more stocks than stared with
+    // Ended with more stocks than started with
     if (stockCountEndInRange && stockCountStartInRange && submission.stockCountEnd > submission.stockCountStart)
       errorMessages.push("Cannot end with more stocks than started with.");
     return errorMessages;

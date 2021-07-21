@@ -15,6 +15,9 @@ import path = require("path");
 webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "index.html" }));
 // Handle a form submission from the client
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
+  // Temportary lockdown until delta bug gets resolved
+  response.type("application/json").send({ key: "sorry nothing" });
+  return;
   if (!await EggUtil.acquireLock()) {
     response.sendStatus(500);
     return;
@@ -28,19 +31,18 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
   // Slap that submission right in the machine
   const key = (await eggbase.put(submission) as Record<string, string>).key;
   // Temporary lockdown until enough submissions come in
-  EggUtil.releaseLock();
-  response.type("application/json").send({ key });
-  return;
+  //EggUtil.releaseLock();
+  //response.type("application/json").send({ key });
+  //return;
   // Grab the last few results
   const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, submission.industry);
   // Calculate price changes
   const delta = StockPrice.delta(results);
   // Update stock prices in the DB
   const stockPrices = ((await eggbase.get("!stockPrices")) as any).extraData as Record<string, number>;
-  const stockPriceUpdates: Record<string, any> = {};
+  const stockPriceUpdates: Record<string, number> = {};
   Object.entries(delta).forEach(function ([territory, value]) {
-    stockPriceUpdates[`extraData.${territory}`] =
-      eggbase.util.increment(stockPrices[territory] + value < 5 ? 0 : value);
+    stockPriceUpdates[`extraData.${territory}`] = Math.max(stockPrices[territory] + value, 5);
   });
   const promiseArray: Promise<null>[] = [];
   promiseArray.push(eggbase.update(stockPriceUpdates, "!stockPrices"));
@@ -55,7 +57,7 @@ webapp.post("/submit", async function (request: Express.Request, response: Expre
 // Test section
 webapp.get("/test1", async function (request: Express.Request, response: Express.Response) {
   const now = Date.now();
-  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
+  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Blue");
   //console.log("results", results);
   //console.log("deletables", deletables);
   const delta = StockPrice.delta(results);
@@ -86,6 +88,9 @@ webapp.post("/test4", async function (request: Express.Request, response: Expres
 });
 // Handle client-side submission mistake
 webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {
+  // Temportary lockdown until delta bug gets resolved
+  response.type("application/json").send({ gaffeCounter: -1 });
+  return;
   if (!await EggUtil.acquireLock()) {
     response.sendStatus(500);
     return;

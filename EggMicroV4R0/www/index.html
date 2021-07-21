@@ -402,7 +402,7 @@ function getStockPriceHandler() {
  */
 async function validateResponse(response) {
   return response.ok ? response.json() :
-    Promise.reject(`${response.status} ${response.statusText}\n${await response.text()}`);
+    Promise.reject(`${response.status} ${response.statusText}\n<br />\n${await response.text()}`);
 }
 /**
  * Deal with server-side screw up
