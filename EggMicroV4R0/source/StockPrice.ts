@@ -15,8 +15,8 @@ namespace StockPrice {
    * @param {DeltaOptions} [options] Set the various multipliers
    * @returns {Record<string, number>} A thing that contains a bunch of numbers
    */
-  export function delta(results: EggUtil.ExtArray<EggUtil.Submission>,
-    options: DeltaOptions = { winMult: 4, loseMult: 3.8, industryWinMult: 2, industryLoseMult: 1.9 }) {
+  export function delta(results: EggUtil.ExtArray<EggUtil.Submission>, options: DeltaOptions =
+    { winMult: 4, loseMult: 3.8, industryWinMult: 2, industryLoseMult: 1.9 }, inclusionRange = 4) {
     const delta: Record<string, number> = {};
     // Can safely calculate these constants outside of the center forEach loop
     const winCount = results.map(function (submission) {
@@ -50,6 +50,8 @@ namespace StockPrice {
             return element * stockLossWeightArray[index];
           }).reduce((a, b) => a + b) / stockLossWeightArray.reduce((a, b) => a + b) :
           averageStockLossArray.reduce((a, b) => a + b) / averageStockLossArray.length;
+        weightedAverageStockLoss = weightedAverageStockLoss ? weightedAverageStockLoss : 
+          Math.pow(2, 1 - inclusionRange);
         winLoseDividend = Math.pow(options.winMult, winCount) - Math.pow(options.loseMult, loseCount);
       } else {
         winLoseDividend = Math.pow(options.industryWinMult, industryWinCount) -
