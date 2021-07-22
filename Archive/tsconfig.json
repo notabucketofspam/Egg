@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "CommonJS",
+    "target": "ESNext",
+    "lib": [ "ESNext", "DOM" ],
+    "outDir": "build",
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "removeComments": true
+  },
+  "include": [ "source" ]
+}

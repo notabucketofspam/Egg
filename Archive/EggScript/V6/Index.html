@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <h1>
+      EggScript V6
+    </h1>
+    <hr>
+    <form id="submission-form" onsubmit="formSubmitHandler(this)">
+      <div>
+        <label for="sheet-select">Character</label>
+        <select id="sheet-select" name="sheet-select">
+          <option value="no-char">---</option>
+          <option value="char-a">Char A</option>
+          <option value="char-b">Char B</option>
+          <option value="char-c">Char C</option>
+          <option value="dr-eggman">Dr.Eggman</option>
+          <option value="captain-falcon">Captain Falcon</option>
+          <option value="john-cena">John Cena</option>
+          <option value="hatsune-miku">Hatsune Miku</option>
+          <option value="phil-swift">Phil Swift</option>
+          <option value="cool-dude">Cool Dude</option>
+        </select>
+      </div>
+      <div>
+        <label for="win-lose">Win-lose</label>
+        <input id="win-lose" name="win-lose" type="checkbox" />
+      </div>
+      <div>
+        <label for="stock-count-start">Stock count start</label>
+        <input id="stock-count-start" name="stock-count-start" class="stock-counter"
+          type="number" min="0" max="20" value="0" />
+      </div>
+      <div>
+        <label for="stock-count-end">Stock count end</label>
+        <input id="stock-count-end" name="stock-count-end" class="stock-counter"
+          type="number" min="0" max="20" value="0" />
+      </div>
+      <div>
+        <input id="submit-input" type="submit" value="Plug it in, coach" />
+      </div>
+    </form>
+    <input id="do-form-error-check" type="checkbox" />
+    <label for="do-form-error-check">Error check</label>
+    <hr>
+    <div id="submit-start-message" style="display: none;">
+      Form submitted, please wait...
+    </div>
+    <div id="submit-complete-message" style="display: none;">
+      Your taxes have been filed
+      <br>
+      <input type="button" onclick="formUndoHandler()" value="Undo" />
+    </div>
+    <div id="undo-message" style="display: none;">
+      Don't mess it up this time, pal
+      <br>
+      Gaffe counter: <span id="gaffe-counter"></span>
+    </div>
+    <div id="form-error-check-message-area" style="display: none;">
+      <div id="invalid-sheet-select-message" style="display: none;">
+        Pick a character ffs bruh
+      </div>
+      <div id="invalid-win-lose-message" style="display: none;">
+        "Yes officer I won the game with zero stocks left I swear"
+      </div>
+      <div id="invalid-stock-count-start-message" style="display: none;">
+        If you started with zero stocks that means you were dead #wakemeupinside
+      </div>
+      <div id="invalid-stock-count-end-message-one" style="display: none;">
+        You can't end up with more stocks than you started with. That's called theft and it's very illegal.
+      </div>
+      <div id="invalid-stock-count-end-message-two" style="display: none;">
+        You can't lose with more than zero stocks unless you smashed that L+R+A+start combo.
+      </div>
+    </div>
+    <div id="failure-message" style="display: none;"></div>
+    <img id="no-cool-dudes-sign" style="display: none;" height="144" width="auto"
+      src="https://storage.googleapis.com/eggonomics/resources/AbsolutelyNoCoolDudesVeryIllegal.png" />
+  </body>
+</html>
+
+<script>
+var submitInputFlag;
+var formSubmitCompleteSetTimeoutHandle;
+var formUndoSetTimeoutHandle;
+var failureMessageSetTimeoutHandle;
+var noCoolDudesSignSetTimeoutHandle;
+(function() {
+  document.getElementById("submission-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+  });
+  document.getElementById("submit-input").addEventListener("click", function(event) {
+    if (submitInputFlag) event.preventDefault();
+  });
+  Array.from(document.getElementsByClassName("stock-counter")).forEach(element => {
+    element.addEventListener("invalid", function(event) {
+      element.setCustomValidity("That's not how math works");
+    });
+  });
+})();
+function formSubmitHandler(form) {
+  if (formErrorCheck(form)) {
+    return;
+  } else {
+    submitInputFlag = true;
+    document.getElementById("submit-start-message").style = "display: block;";
+    document.getElementById("undo-message").style = "display: none;";
+    document.getElementById("submit-complete-message").style = "display: none;";
+    google.script.run.withSuccessHandler(function() {
+      submitInputFlag = false;
+      form.reset();
+      document.getElementById("submit-start-message").style = "display: none;";
+      document.getElementById("submit-complete-message").style = "display: block;";
+      clearTimeout(formSubmitCompleteSetTimeoutHandle);
+      formSubmitCompleteSetTimeoutHandle = setTimeout(function() {
+        document.getElementById("submit-complete-message").style = "display: none;";
+      }, 10*1000);
+    }).withFailureHandler(function(error) {
+      submitInputFlag = false;
+      failureMessageHandler(error);
+    }).processFormSubmission(form);
+  }
+}
+function formUndoHandler(){
+  document.getElementById("submit-complete-message").style = "display: none;";
+  google.script.run.withSuccessHandler(function(gaffeCounter) {
+    document.getElementById("gaffe-counter").innerText = gaffeCounter;
+  }).withFailureHandler(failureMessageHandler).processFormUndo();
+  document.getElementById("undo-message").style = "display: block;";
+  clearTimeout(formUndoSetTimeoutHandle);
+  formUndoSetTimeoutHandle = setTimeout(function() {
+    document.getElementById("undo-message").style = "display: none;";
+  }, 10*1000);
+}
+function failureMessageHandler(error) {
+  document.getElementById("submit-start-message").style = "display: none;";
+  document.getElementById("submit-complete-message").style = "display: none;";
+  document.getElementById("undo-message").style = "display: none;";
+  document.getElementById("failure-message").innerHTML = error.toString();
+  document.getElementById("failure-message").style = "display: block;";
+  clearTimeout(failureMessageSetTimeoutHandle);
+  failureMessageSetTimeoutHandle = setTimeout(function() {
+    document.getElementById("failure-message").style = "display: none;";
+  }, 10*1000);
+}
+function formErrorCheck(form) {
+  if (!document.getElementById("do-form-error-check").checked) {
+    document.getElementById("form-error-check-message-area").style = "display: none;";
+    document.getElementById("no-cool-dudes-sign").style = "display: none;";
+    document.getElementById("invalid-sheet-select-message").style = "display: none;";
+    document.getElementById("invalid-win-lose-message").style = "display: none;";
+    document.getElementById("invalid-stock-count-start-message").style = "display: none;"
+    document.getElementById("invalid-stock-count-end-message-one").style = "display: none;";
+    document.getElementById("invalid-stock-count-end-message-two").style = "display: none;";
+    return;
+  }
+  let formErrorRate = 0;
+  if (form.elements["sheet-select"].selectedOptions[0].value == "cool-dude") {
+    document.getElementById("no-cool-dudes-sign").style = "display: block;";
+    clearTimeout(noCoolDudesSignSetTimeoutHandle);
+    noCoolDudesSignSetTimeoutHandle = setTimeout(function() {
+      document.getElementById("no-cool-dudes-sign").style = "display: none;";
+    }, 10*1000);
+    return true;
+  }
+  if (form.elements["sheet-select"].selectedOptions[0].value == "no-char") {
+    document.getElementById("invalid-sheet-select-message").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("invalid-sheet-select-message").style = "display: none;";
+  }
+  if (form.elements["win-lose"].checked && parseInt(form.elements["stock-count-end"].value) == 0) {
+    document.getElementById("invalid-win-lose-message").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("invalid-win-lose-message").style = "display: none;";
+  }
+  if (parseInt(form.elements["stock-count-start"].value) == 0) {
+    document.getElementById("invalid-stock-count-start-message").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("invalid-stock-count-start-message").style = "display: none;";
+  }
+  if (parseInt(form.elements["stock-count-end"].value) > parseInt(form.elements["stock-count-start"].value)) {
+    document.getElementById("invalid-stock-count-end-message-one").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("invalid-stock-count-end-message-one").style = "display: none;";
+  }
+  if (parseInt(form.elements["stock-count-end"].value) > 0 && !form.elements["win-lose"].checked) {
+    document.getElementById("invalid-stock-count-end-message-two").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("invalid-stock-count-end-message-two").style = "display: none;";
+  }
+  if (formErrorRate > 0){ 
+    document.getElementById("form-error-check-message-area").style = "display: block;";
+  } else {
+    document.getElementById("form-error-check-message-area").style = "display: none;";
+  }
+  return (formErrorRate > 0);
+}
+</script>

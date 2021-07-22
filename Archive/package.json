@@ -1,0 +1,18 @@
+{
+  "name": "archive",
+  "version": "0.0.0",
+  "description": "Archive",
+  "main": "build/app.js",
+  "author": {
+    "name": "sbp"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "update-dependencies": "ncu -u && npm i"
+  },
+  "devDependencies": {
+    "@types/node": "^16.4.1",
+    "typescript": "^4.3.5"
+  }
+}
