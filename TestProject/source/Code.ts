@@ -21,3 +21,9 @@ function testFunction() {
   console.log(globalThis);
   console.log(Bus3.defaultSpreadsheetFieldMask);
 }
+/**
+ * Do another thing
+ */
+function testFn2() {
+  Library.libraryFn();
+}

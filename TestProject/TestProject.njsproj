@@ -47,6 +47,7 @@
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\library.ts" />
     <TypeScriptCompile Include="source\sauce.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
