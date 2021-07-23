@@ -29,13 +29,15 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="html\Index.html" />
+    <Content Include="html\StockPrice.html" />
+    <Content Include="html\Style.html" />
     <Content Include="util\fix-types.js" />
     <None Include="app.js" />
     <Content Include=".clasp.json" />
     <Content Include=".claspignore" />
     <Content Include=".gitignore" />
     <Content Include="appsscript.json" />
-    <Content Include="html\index.html" />
     <Content Include="package.json" />
     <Content Include="postbuild.bat" />
     <Content Include="Readme.html" />

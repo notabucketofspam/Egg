@@ -1,0 +1,359 @@
+<hr />
+<div id="form-submit-div" style="display: flex;">
+  <div id="form-submission-main-area" style="width: 250px;">
+    <form id="submission-form" onsubmit="formSubmitHandler(this)" method="POST">
+      <div>
+        <label for="territory-select">Territory</label>
+        <select id="territory-select" name="territorySelect">
+          <option class="none" value='{"territory": "none", "industry": "none"}' selected>---</option>
+          <option class="Brown" value='{"territory": "Alpha", "industry": "Brown"}'>Alpha</option>
+          <option class="Brown" value='{"territory": "Bravo", "industry": "Brown"}'>Bravo</option>
+          <option class="Black" value='{"territory": "Charlie", "industry": "Black"}'>Charlie</option>
+          <option class="Cyan" value='{"territory": "Delta", "industry": "Cyan"}'>Delta</option>
+          <option class="Cyan" value='{"territory": "Echo", "industry": "Cyan"}'>Echo</option>
+          <option class="Cyan" value='{"territory": "Foxtrot", "industry": "Cyan"}'>Foxtrot</option>
+          <option class="Magenta" value='{"territory": "Golf", "industry": "Magenta"}'>Golf</option>
+          <option class="White" value='{"territory": "Hotel", "industry": "White"}'>Hotel</option>
+          <option class="Magenta" value='{"territory": "India", "industry": "Magenta"}'>India</option>
+          <option class="Magenta" value='{"territory": "Juliett", "industry": "Magenta"}'>Juliett</option>
+          <option class="Black" value='{"territory": "Kilo", "industry": "Black"}'>Kilo</option>
+          <option class="Orange" value='{"territory": "Lima", "industry": "Orange"}'>Lima</option>
+          <option class="Orange" value='{"territory": "Mike", "industry": "Orange"}'>Mike</option>
+          <option class="Orange" value='{"territory": "November", "industry": "Orange"}'>November</option>
+          <option class="Red" value='{"territory": "Oscar", "industry": "Red"}'>Oscar</option>
+          <option class="Red" value='{"territory": "Papa", "industry": "Red"}'>Papa</option>
+          <option class="Red" value='{"territory": "Quebec", "industry": "Red"}'>Quebec</option>
+          <option class="Black" value='{"territory": "Romeo", "industry": "Black"}'>Romeo</option>
+          <option class="Yellow" value='{"territory": "Sierra", "industry": "Yellow"}'>Sierra</option>
+          <option class="Yellow" value='{"territory": "Tango", "industry": "Yellow"}'>Tango</option>
+          <option class="White" value='{"territory": "Uniform", "industry": "White"}'>Uniform</option>
+          <option class="Yellow" value='{"territory": "Victor", "industry": "Yellow"}'>Victor</option>
+          <option class="Green" value='{"territory": "Whiskey", "industry": "Green"}'>Whiskey</option>
+          <option class="Green" value='{"territory": "X-ray", "industry": "Green"}'>X-ray</option>
+          <option class="Green" value='{"territory": "Yankee", "industry": "Green"}'>Yankee</option>
+          <option class="Black" value='{"territory": "Zulu", "industry": "Black"}'>Zulu</option>
+          <option class="Blue" value='{"territory": "One", "industry": "Blue"}'>Zero</option>
+          <option class="Blue" value='{"territory": "One", "industry": "Blue"}'>One</option>
+        </select>
+      </div>
+      <div>
+        <label for="win-lose">Won the match</label>
+        <input id="win-lose" name="winLose" type="checkbox" />
+      </div>
+      <div>
+        <label for="stock-count-start">Stock count start</label>
+        <input id="stock-count-start" name="stockCountStart" type="number" min="0" max="10" value="0" />
+      </div>
+      <div>
+        <label for="stock-count-end">Stock count end</label>
+        <input id="stock-count-end" name="stockCountEnd" type="number" min="0" max="10" value="0" />
+      </div>
+      <div>
+        <input id="form-submit-input" type="submit" value="Plug it in, coach" />
+      </div>
+    </form>
+  </div>
+  <div id="form-submission-message-area">
+    <div id="form-submit-start-message" style="display: none;">
+      Form submitted, please wait...
+    </div>
+    <div id="form-submit-complete-message" style="display: none;">
+      Your taxes have been filed
+      <br />
+      <input type="button" onclick="formUndoHandler()" value="Undo" />
+    </div>
+    <div id="form-undo-message" style="display: none;">
+      Don't mess it up this time, pal
+      <br />
+      Gaffe counter: <span id="form-gaffe-counter"></span>
+    </div>
+    <div id="form-error-check-message-area" style="display: none;">
+      <div id="form-invalid-territory-select-message" style="display: none;">
+        Pick a territory bruh
+      </div>
+      <div id="form-invalid-win-lose-message" style="display: none;">
+        "Yes officer I won the game with zero stocks left I swear"
+      </div>
+      <div id="form-invalid-stock-count-start-message" style="display: none;">
+        If you started with zero stocks that means you were dead #wakemeupinside
+      </div>
+      <div id="form-invalid-stock-count-end-message" style="display: none;">
+        You can't end up with more stocks than you started with. That's called theft and it's very illegal.
+      </div>
+    </div>
+    <div id="form-failure-message" style="display: none;"></div>
+  </div>
+</div>
+<hr />
+<table id="stock-price-table" style="border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th colspan="2">Stock prices</th>
+      <th colspan="2">
+        <input type="button" onclick="getStockPriceHandler()" value="Get the latest" />
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="Brown">Alpha</td>
+      <td class="Brown" id="stock-price-Alpha"></td>
+      <td class="Red">Oscar</td>
+      <td class="Red" id="stock-price-Oscar"></td>
+    </tr>
+    <tr>
+      <td class="Brown">Bravo</td>
+      <td class="Brown" id="stock-price-Bravo"></td>
+      <td class="Red">Papa</td>
+      <td class="Red" id="stock-price-Papa"></td>
+    </tr>
+    <tr>
+      <td class="Black">Charlie</td>
+      <td class="Black" id="stock-price-Charlie"></td>
+      <td class="Red">Quebec</td>
+      <td class="Red" id="stock-price-Quebec"></td>
+    </tr>
+    <tr>
+      <td class="Cyan">Delta</td>
+      <td class="Cyan" id="stock-price-Delta"></td>
+      <td class="Black">Romeo</td>
+      <td class="Black" id="stock-price-Romeo"></td>
+    </tr>
+    <tr>
+      <td class="Cyan">Echo</td>
+      <td class="Cyan" id="stock-price-Echo"></td>
+      <td class="Yellow">Sierra</td>
+      <td class="Yellow" id="stock-price-Sierra"></td>
+    </tr>
+    <tr>
+      <td class="Cyan">Foxtrot</td>
+      <td class="Cyan" id="stock-price-Foxtrot"></td>
+      <td class="Yellow">Tango</td>
+      <td class="Yellow" id="stock-price-Tango"></td>
+    </tr>
+    <tr>
+      <td class="Magenta">Golf</td>
+      <td class="Magenta" id="stock-price-Golf"></td>
+      <td class="White">Uniform</td>
+      <td class="White" id="stock-price-Uniform"></td>
+    </tr>
+    <tr>
+      <td class="White">Hotel</td>
+      <td class="White" id="stock-price-Hotel"></td>
+      <td class="Yellow">Victor</td>
+      <td class="Yellow" id="stock-price-Victor"></td>
+    </tr>
+    <tr>
+      <td class="Magenta">India</td>
+      <td class="Magenta" id="stock-price-India"></td>
+      <td class="Green">Whiskey</td>
+      <td class="Green" id="stock-price-Whiskey"></td>
+    </tr>
+    <tr>
+      <td class="Magenta">Juliett</td>
+      <td class="Magenta" id="stock-price-Juliett"></td>
+      <td class="Green">X-ray</td>
+      <td class="Green" id="stock-price-X-ray"></td>
+    </tr>
+    <tr>
+      <td class="Black">Kilo</td>
+      <td class="Black" id="stock-price-Kilo"></td>
+      <td class="Green">Yankee</td>
+      <td class="Green" id="stock-price-Yankee"></td>
+    </tr>
+    <tr>
+      <td class="Orange">Lima</td>
+      <td class="Orange" id="stock-price-Lima"></td>
+      <td class="Black">Zulu</td>
+      <td class="Black" id="stock-price-Zulu"></td>
+    </tr>
+    <tr>
+      <td class="Orange">Mike</td>
+      <td class="Orange" id="stock-price-Mike"></td>
+      <td class="Blue">Zero</td>
+      <td class="Blue" id="stock-price-Zero"></td>
+    </tr>
+    <tr>
+      <td class="Orange">November</td>
+      <td class="Orange" id="stock-price-November"></td>
+      <td class="Blue">One</td>
+      <td class="Blue" id="stock-price-One"></td>
+    </tr>
+  </tbody>
+</table>
+<script id="stock-price-script">
+/** @type boolean */
+var formSubmitInputFlag;
+/** @type string */
+var lastFormSubmissionKey;
+/** @type number */
+var formSubmitCompleteSetTimeoutHandle;
+/** @type number */
+var formUndoSetTimeoutHandle;
+/** @type number */
+var formFailureMessageSetTimeoutHandle;
+/** The URL used for making requests to EggMicroV4R0 */
+const detaMicroEndpoint = "https://v86nf8.deta.dev";
+/**
+ * Add some event listeners
+ */
+(function () {
+  document.getElementById("submission-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+  });
+  document.getElementById("form-submit-input").addEventListener("click", function(event) {
+    if (formSubmitInputFlag)
+      event.preventDefault();
+  });
+}) ();
+/**
+ * Deal with the form actually being submittted
+ * @param {HTMLFormElement} form The submission form object
+ */
+function formSubmitHandler(form) {
+  document.getElementById("form-failure-message").style = "display: none;"
+  if (formErrorCheck(form))
+    return;
+  const formObject = Object.fromEntries((new FormData(form)).entries());
+  formObject.industry = JSON.parse(formObject.territorySelect).industry;
+  formObject.territory = JSON.parse(formObject.territorySelect).territory;
+  delete formObject.territorySelect;
+  formObject.stockCountStart = Number.parseInt(formObject.stockCountStart);
+  formObject.stockCountEnd = Number.parseInt(formObject.stockCountEnd);
+  formObject.winLose = formObject.winLose === "on";
+  formObject.timestamp = Date.now();
+  formObject.extraData = {};
+  formSubmitInputFlag = true;
+  document.getElementById("form-submit-start-message").style = "display: block;";
+  document.getElementById("form-undo-message").style = "display: none;";
+  document.getElementById("form-submit-complete-message").style = "display: none;";
+  // Replacement for google.script.run() from EggScriptV8
+  fetch(`${detaMicroEndpoint}/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formObject)
+  })
+  .then(validateResponse)
+  .then(function (result) {
+    lastFormSubmissionKey = result;
+    form.reset();
+    document.getElementById("form-submit-start-message").style = "display: none;";
+    document.getElementById("form-submit-complete-message").style = "display: block;";
+    clearTimeout(formSubmitCompleteSetTimeoutHandle);
+    formSubmitCompleteSetTimeoutHandle = setTimeout(function () {
+      document.getElementById("form-submit-complete-message").style = "display: none;";
+    }, 15 * 1000);
+  })
+  .catch(formFailureMessageHandler)
+  .finally(function () {
+    formSubmitInputFlag = false;
+  });
+}
+/**
+ * Deal with the case where a mistake is made on form submission
+ */
+function formUndoHandler() {
+  document.getElementById("form-submit-complete-message").style = "display: none;";
+  fetch(`${detaMicroEndpoint}/undo`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(lastFormSubmissionKey)
+  })
+  .then(validateResponse)
+  .then(function (result) {
+    document.getElementById("form-gaffe-counter").innerText = result.gaffeCounter;
+  })
+  .catch(formFailureMessageHandler)
+  .finally(function () {
+    document.getElementById("form-undo-message").style = "display: block;";
+    clearTimeout(formUndoSetTimeoutHandle);
+    formUndoSetTimeoutHandle = setTimeout(function () {
+      document.getElementById("form-undo-message").style = "display: none;";
+    }, 15 * 1000);
+  });
+}
+/**
+ * Retrieve new values for the stock price table
+ */
+function getStockPriceHandler() {
+  fetch(`${detaMicroEndpoint}/stock-prices`, {
+    method: "GET"
+  })
+  .then(validateResponse)
+  .then(function (result) {
+    for (const property in result) {
+      document.getElementById(`stock-price-${property}`).innerText = result[property];
+    }
+  })
+  .catch(formFailureMessageHandler);
+}
+/**
+ * Make sure that the response is ok
+ * @param {Response} response Get this from any fetch()
+ * @returns {Promise<any>} Object on success, error message on failure
+ */
+async function validateResponse(response) {
+  return response.ok ? response.json() :
+    Promise.reject(`${response.status} ${response.statusText}\n<br />\n${await response.text()}`);
+}
+/**
+ * Deal with server-side screw up
+ * @param {Error} error Any error that may have been raised during the submission process
+ */
+function formFailureMessageHandler(error) {
+  document.getElementById("form-submit-start-message").style = "display: none;";
+  document.getElementById("form-submit-complete-message").style = "display: none;";
+  document.getElementById("form-undo-message").style = "display: none;";
+  document.getElementById("form-failure-message").innerHTML = error.toString();
+  document.getElementById("form-failure-message").style = "display: block;";
+  clearTimeout(formFailureMessageSetTimeoutHandle);
+  formFailureMessageSetTimeoutHandle = setTimeout(function () {
+    document.getElementById("form-failure-message").style = "display: none;";
+  }, 120 * 1000);
+}
+/**
+ * Client-side assurance of proper form submission
+ * There's also a server-side error check, just for safety
+ * @param {HTMLFormElement} form The submitted form
+ * @returns {boolean} Whether or not the form has errors in it
+ */
+  function formErrorCheck(form) {
+  
+  let formErrorRate = 0;
+  // No character selected
+  if (form.elements["territory-select"].selectedOptions[0].value === '{"territory": "none", "industry": "none"}') {
+    document.getElementById("form-invalid-territory-select-message").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("form-invalid-territory-select-message").style = "display: none;";
+  }
+  // Won with zero stocks left
+  if (form.elements["win-lose"].checked && parseInt(form.elements["stock-count-end"].value) === 0) {
+    document.getElementById("form-invalid-win-lose-message").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("form-invalid-win-lose-message").style = "display: none;";
+  }
+  // Started with zero stocks
+  if (parseInt(form.elements["stock-count-start"].value) === 0) {
+    document.getElementById("form-invalid-stock-count-start-message").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("form-invalid-stock-count-start-message").style = "display: none;";
+  }
+  // Ended with more stocks than started with
+  if (parseInt(form.elements["stock-count-end"].value) > parseInt(form.elements["stock-count-start"].value)) {
+    document.getElementById("form-invalid-stock-count-end-message").style = "display: block;";
+    ++formErrorRate;
+  } else {
+    document.getElementById("form-invalid-stock-count-end-message").style = "display: none;";
+  }
+  // Display errors when applicable
+  if (formErrorRate > 0) {
+    document.getElementById("form-error-check-message-area").style = "display: block;";
+  } else {
+    document.getElementById("form-error-check-message-area").style = "display: none;";
+  }
+  return (formErrorRate > 0);
+}
+</script>

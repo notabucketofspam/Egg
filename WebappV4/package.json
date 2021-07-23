@@ -6,8 +6,12 @@
   "author": {
     "name": "sbp"
   },
-  "os": [ "win32" ],
-  "cpu": [ "x64" ],
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "scripts": {
     "build": "tsc && postbuild.bat",
     "clean": "tsc --build --clean && RD /S /Q build final",
