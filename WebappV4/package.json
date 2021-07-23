@@ -6,14 +6,13 @@
   "author": {
     "name": "sbp"
   },
-  "os": ["win32"],
-  "cpu": ["x64"],
+  "os": [ "win32" ],
+  "cpu": [ "x64" ],
   "scripts": {
-    "build": "tsc --build",
-    "postbuild": "postbuild.bat",
-    "clean": "tsc --build --clean && DEL final\\*.js",
+    "build": "tsc && postbuild.bat",
+    "clean": "tsc --build --clean && RD /S /Q build final",
     "push": "npm run build > NUL && clasp push",
-    "fix-gas-types": "replace-in-file \"declare var console\" \"//declare var _console\" node_modules/@types/google-apps-script/google-apps-script.base.d.ts",
+    "fix-types": "node util/fix-types.js",
     "update-dependencies": "ncu -u && npm i"
   },
   "devDependencies": {

@@ -29,6 +29,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="util\fix-types.js" />
     <None Include="app.js" />
     <Content Include=".clasp.json" />
     <Content Include=".claspignore" />
@@ -43,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="html\" />
+    <Folder Include="util\" />
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
