@@ -10,13 +10,15 @@ import * as Express from "express";
 import express = require("express");
 const webapp: Express.Application = express();
 webapp.enable("case sensitive routing");
+import cors = require("cors");
+webapp.use(cors());
 // Deal with static HTML page requests
 import path = require("path");
 webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "index.html" }));
 // Handle a form submission from the client
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
   if (!await EggUtil.acquireLock()) {
-    response.sendStatus(500);
+    response.status(500).send("Unable to acquire lock.");
     return;
   }
   const submission = JSON.parse(request.body);
@@ -86,7 +88,7 @@ webapp.post("/test4", async function (request: Express.Request, response: Expres
 // Handle client-side submission mistake
 webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {
   if (!await EggUtil.acquireLock()) {
-    response.sendStatus(500);
+    response.status(500).send("Unable to acquire lock.");
     return;
   }
   await Promise.allSettled([
