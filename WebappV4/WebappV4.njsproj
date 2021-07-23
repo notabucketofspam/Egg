@@ -48,6 +48,7 @@
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\Definitions.d.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />

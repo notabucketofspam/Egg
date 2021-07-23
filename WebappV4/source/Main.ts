@@ -1,20 +1,15 @@
 /**
- * Serve an HTML file.
- * @returns {GoogleAppsScript.HTML.HtmlOutput} The webapp HTML page
+ * Serve the main HTML file.
+ * @param {Webapp.GogleAppsScript.EventType} event A very specific event
+ * @returns {GoogleAppsScript.HTML.HtmlOutput} The central webapp page
  */
-function doGet() {
+function doGet(event: Webapp.GogleAppsScript.EventType) {
   return HtmlService.createHtmlOutputFromFile("html/index");
 }
 /**
- * sauce
+ * Request some kind of server-side operation to be done.
+ * @param {Webapp.GogleAppsScript.EventType} event An event that (hopefully) includes PostData
  */
-function sauceFn() {
-  Logger.log("sauce");
-}
-/**
- * Test fetching stock prices from Deta
- */
-function testFetch() {
-  let response = UrlFetchApp.fetch("https://v86nf8.deta.dev/stock-prices");
-  Logger.log(JSON.parse(response.getContentText()));
+function doPost(event: Webapp.GogleAppsScript.EventType) {
+
 }
