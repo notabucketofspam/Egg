@@ -8,7 +8,7 @@ function doGet() {
 /**
  * sauce
  */
-function sauce() {
+function sauceFn() {
   Logger.log("sauce");
 }
 /**

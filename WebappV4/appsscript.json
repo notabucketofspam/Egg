@@ -4,16 +4,16 @@
     "enabledAdvancedServices": [
       {
         "userSymbol": "Sheets",
-        "version": "v4",
-        "serviceId": "sheets"
+        "serviceId": "sheets",
+        "version": "v4"
       }
     ],
     "libraries": [
       {
         "userSymbol": "Bus3",
-        "version": "0",
-        "libraryId": "16gQt35qs_trtcMLSJYQXPeMsf9x6IrYwUro9reLchk4vyb_geZROfaKT",
-        "developmentMode": true
+        "version": "1",
+        "libraryId": "195a748rtIXKDbR0kkoXhxdVLiBhPfeRVMKCYEg74jcPRJXCALNa0JXfh",
+        "developmentMode": false
       }
     ]
   },
