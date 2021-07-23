@@ -11,7 +11,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>25a5ef03-d1c7-4837-9b5e-78662805abac</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>app.ts</StartupFile>
+    <StartupFile>app.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -29,10 +29,24 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="app.ts" />
+    <None Include="app.js" />
+    <Content Include=".clasp.json" />
+    <Content Include=".claspignore" />
+    <Content Include=".gitignore" />
+    <Content Include="appsscript.json" />
+    <Content Include="html\index.html" />
     <Content Include="package.json" />
+    <Content Include="postbuild.bat" />
+    <Content Include="Readme.html" />
     <Content Include="README.md" />
     <Content Include="tsconfig.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="html\" />
+    <Folder Include="source\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="source\Main.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

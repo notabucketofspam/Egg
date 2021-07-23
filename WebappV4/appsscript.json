@@ -1,0 +1,22 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Sheets",
+        "version": "v4",
+        "serviceId": "sheets"
+      }
+    ],
+    "libraries": [
+      {
+        "userSymbol": "Bus3",
+        "version": "0",
+        "libraryId": "16gQt35qs_trtcMLSJYQXPeMsf9x6IrYwUro9reLchk4vyb_geZROfaKT",
+        "developmentMode": true
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}

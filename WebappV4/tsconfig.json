@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
-    "lib": ["es6"],
-    "sourceMap": true
+    "strict": false,
+    "module": "CommonJS",
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "outDir": "build"
   },
-  "exclude": [
-    "node_modules"
+  "include": [
+    "source",
+    "../Bus3/source"
   ]
 }
