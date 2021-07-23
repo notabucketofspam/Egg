@@ -335,7 +335,7 @@ namespace Bus3 {
   /**
    * Wrapper for pushing a new request to a Request[]; always use this instead of Array.prototype.push().
    * Can use Array.prototype.push.apply(requestArray, otherRequestArray) to consolidate Request objects.
-   * Note: this uses eval() and doesn't sanitize inputs, so please don't enter a non-property of Request.
+   * Note: this doesn't sanitize inputs, so please don't enter a non-property of Request.
    * @param {GoogleAppsScript.Sheets.Schema.Request[]} requestArray Must exclusively contain Request objects
    * @param {string} kind One of the properties of Request, i.e. updateCells, updateChartSpec, addSheet, etc.
    * @param {any} request Will always be a GoogleAppsScript.Sheets.Schema.WhateverRequest object
@@ -344,7 +344,7 @@ namespace Bus3 {
     request: any) {
     if (request) {
       requestArray.push(Sheets.newRequest());
-      eval(`requestArray[requestArray.length - 1].${kind} = request`);
+      requestArray[requestArray.length - 1][kind] = request;
     }
   }
   /**
