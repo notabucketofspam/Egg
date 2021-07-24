@@ -22,3 +22,10 @@ function doPost(event: Webapp.GogleAppsScript.EventType) {
 function installHtmlElement(file: string) {
   return HtmlService.createTemplateFromFile(file).evaluate().getContent();
 }
+/**
+ * Respond to a request for an OAuth 2.0 token.
+ * @returns {string} The client's token
+ */
+function getOauthToken() {
+  return ScriptApp.getOAuthToken();
+}

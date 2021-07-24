@@ -3,9 +3,15 @@
 <head>
 <base target="_top" />
 <?!= installHtmlElement("html/Style"); ?>
+<script>
+var spreadsheetId = "";
+</script>
+<?!= installHtmlElement("html/Picker"); ?>
 </head>
 <body>
+<script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
 <h1>WebappV4</h1>
+<input type="button" value="Choose spreadsheet" onclick="getOauthToken()" />
 <?!= installHtmlElement("html/StockPrice"); ?>
 </body>
 </html>

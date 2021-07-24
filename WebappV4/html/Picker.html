@@ -1,0 +1,54 @@
+<!-- https://developers.google.com/picker -->
+<!-- https://developers.google.com/apps-script/guides/dialogs -->
+<script type="text/javascript">
+const browserApiKey = "AIzaSyA79l3XKkABToSz-UAWVvY99Crb1EgwZWU";
+var pickerApiLoadedFlag = false;
+/**
+ * Do a thing once the API have loaded
+ */
+function onApiLoad() {
+  gapi.load("picker", {
+    "callback": function () {
+      pickerApiLoadedFlag = true;
+    }
+  });
+}
+/**
+ * Request the current user's OAuth 2.0 token from the server
+ */
+function getOauthToken() {
+  google.script.run.withSuccessHandler(createPicker).withFailureHandler(function () {
+    console.log("Failed to get OAuth token.");
+  }).getOauthToken();
+}
+/**
+ * Generate the spreadsheet picker
+ * @param {any} oauthToken The token provided by the server
+ */
+function createPicker(oauthToken) {
+  if (pickerApiLoadedFlag && oauthToken) {
+    const docsView = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS);
+    docsView.setMode(google.picker.DocsViewMode.LIST);
+    const picker = (new google.picker.PickerBuilder())
+      .addView(docsView)
+      .setOAuthToken(oauthToken)
+      .setDeveloperKey(browserApiKey)
+      .setCallback(pickerCallback)
+      .setOrigin(google.script.host.origin)
+      .build();
+    picker.setVisible(true);
+  } else {
+    console.log("mmmh that's bad");
+  }
+}
+/**
+ * Respond to user selecting a file
+ * @param {any} data Picker JSON
+ */
+function pickerCallback(data) {
+  if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+    const doc = data[google.picker.Response.DOCUMENTS][0];
+    spreadsheetId = doc.id;
+  }
+}
+</script>

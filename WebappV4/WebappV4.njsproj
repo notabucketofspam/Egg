@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="html\Index.html" />
+    <Content Include="html\Picker.html" />
     <Content Include="html\StockPrice.html" />
     <Content Include="html\Style.html" />
     <Content Include="util\fix-types.js" />
