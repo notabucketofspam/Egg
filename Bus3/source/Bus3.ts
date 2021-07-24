@@ -8,7 +8,7 @@ namespace Bus3 {
    */
   export const defaultSpreadsheetFieldMask = "spreadsheetId,properties,spreadsheetUrl," +
     "sheets.properties,sheets.charts,sheets.data.startRow,sheets.data.startColumn," +
-    "sheets.data.rowData.values.userEnteredValue," + "sheets.data.rowData.values.effectiveValue," +
+    "sheets.data.rowData.values.userEnteredValue,sheets.data.rowData.values.effectiveValue," +
     "sheets.data.rowData.values.formattedValue";
   /**
    * Wrapper for Sheets.Spreadsheets.get().
@@ -320,17 +320,11 @@ namespace Bus3 {
    * Does exactly what it says on the tin.
    * @param {GoogleAppsScript.Sheets.Schema.Spreadsheet} spreadsheet Retrieve from Bus3.getSpreadsheet()
    * @param {string} title Allowed to contain spaces (probably)
-   * @returns {GoogleAppsScript.Sheets.Schema.Sheet | null} Sheet to be used in other functions, or null
+   * @returns {GoogleAppsScript.Sheets.Schema.Sheet} Sheet object, or undefined if not found
    */
   export function getSheetFromTitle(spreadsheet: GoogleAppsScript.Sheets.Schema.Spreadsheet, title: string) {
-    const titleArray: string[] = [];
-    spreadsheet.sheets.forEach(function(sheet) {
-      titleArray.push(sheet.properties.title);
-    });
-    if (titleArray.includes(title))
-      return spreadsheet.sheets[titleArray.indexOf(title)];
-    else
-      return null;
+    const titleArray = spreadsheet.sheets.map(sheet => sheet.properties.title);
+    return spreadsheet.sheets[titleArray.indexOf(title)];
   }
   /**
    * Wrapper for pushing a new request to a Request[]; always use this instead of Array.prototype.push().
@@ -379,17 +373,11 @@ namespace Bus3 {
    * Note that it has a Sheet as the first parameter instead of a Spreadsheet.
    * @param {GoogleAppsScript.Sheets.Schema.Sheet} sheet Get from Bus3.getSheetFromTitle()
    * @param {string} chartTitle Title of the chart to get
-   * @returns {GoogleAppsScript.Sheets.Schema.EmbeddedChart | null} A chart, or null
+   * @returns {GoogleAppsScript.Sheets.Schema.EmbeddedChart} A chart, or undefined if not found
    */
   export function getChartFromTitle(sheet: GoogleAppsScript.Sheets.Schema.Sheet, chartTitle: string) {
-    const chartTitleArray: string[] = [];
-    sheet.charts.forEach(function(chart) {
-      chartTitleArray.push(chart.spec.title);
-    });
-    if (chartTitleArray.includes(chartTitle))
-      return sheet.charts[chartTitleArray.indexOf(chartTitle)];
-    else
-      return null;
+    const chartTitleArray = sheet.charts.map(chart => chart.spec.title);
+    return sheet.charts[chartTitleArray.indexOf(chartTitle)];
   }
   /**
    * Wrapper for Sheets.newUpdateChartSpecRequest().
