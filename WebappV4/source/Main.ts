@@ -29,3 +29,14 @@ function installHtmlElement(file: string) {
 function getOauthToken() {
   return ScriptApp.getOAuthToken();
 }
+/**
+ * Test functions
+ */
+function logActiveUserEmail() {
+  Logger.log(Session.getActiveUser().getEmail());
+}
+function modSpreadsheet(spreadsheetId) {
+  Logger.log(spreadsheetId);
+  const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
+  Logger.log(spreadsheet);
+}

@@ -11,8 +11,8 @@
     "libraries": [
       {
         "userSymbol": "Bus3",
-        "version": "1",
         "libraryId": "195a748rtIXKDbR0kkoXhxdVLiBhPfeRVMKCYEg74jcPRJXCALNa0JXfh",
+        "version": "2",
         "developmentMode": false
       }
     ]
@@ -24,6 +24,8 @@
     "access": "ANYONE"
   },
   "oauthScopes": [
-    "https://www.googleapis.com/auth/drive.file"
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/userinfo.email"
   ]
 }

@@ -18,7 +18,7 @@ function onApiLoad() {
  */
 function getOauthToken() {
   google.script.run.withSuccessHandler(createPicker).withFailureHandler(function () {
-    console.log("Failed to get OAuth token.");
+    document.getElementById("spreadsheetId-span").innerText = "Failed to get OAuth token.";
   }).getOauthToken();
 }
 /**
@@ -48,7 +48,8 @@ function createPicker(oauthToken) {
 function pickerCallback(data) {
   if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
     const doc = data[google.picker.Response.DOCUMENTS][0];
-    spreadsheetId = doc.id;
+    spreadsheetId = doc[google.picker.Document.ID];
+    document.getElementById("spreadsheetId-span").innerText = spreadsheetId;
   }
 }
 </script>
