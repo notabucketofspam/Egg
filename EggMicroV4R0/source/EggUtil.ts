@@ -185,6 +185,10 @@ namespace EggUtil {
       submission.stockCountEnd <= 10;
     const stockCountStartInRange = stockCountStartExists && submission.stockCountStart >= 1 &&
       submission.stockCountStart <= 10;
+    const timestampInRange = timestampExists && submission.timestamp <= Date.now();
+    // Timestamp out of range
+    if (timestampExists && !timestampInRange)
+      errorMessages.push("Timestamp out of range.");
     // Stock count end out of range
     if (stockCountEndExists && !stockCountEndInRange)
       errorMessages.push("Stock count end out of range.");
