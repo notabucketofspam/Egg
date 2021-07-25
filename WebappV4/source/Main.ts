@@ -5,7 +5,7 @@
  */
 function doGet(event: Webapp.GogleAppsScript.EventType) {
   return HtmlService.createTemplateFromFile("html/Index").evaluate().setTitle("WebappV4")
-    .setFaviconUrl("https://storage.googleapis.com/eggonomics/resources/Egg%20Logo%20v2.png");
+    .setFaviconUrl("https://storage.googleapis.com/eggonomics/EggLogoV3.png");
 }
 /**
  * Request some kind of server-side operation to be done.

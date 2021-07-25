@@ -57,7 +57,7 @@ function createSheetsAddOnView(event) {
  * @param {number} [pageDimensions.pageHeight] Height in pixels
  */
 function openWebappInterface({ pageWidth = 1024, pageHeight = 768 }) {
-  const webappHtmlOutput = HtmlService.createTemplateFromFile("IndexAddOn").evaluate()
+  const webappHtmlOutput = HtmlService.createTemplateFromFile("html/IndexAddOn").evaluate()
     .setWidth(pageWidth).setHeight(pageHeight);
   SpreadsheetApp.getUi().showModalDialog(webappHtmlOutput, "Eggonomics");
 }

@@ -32,7 +32,7 @@
     <Content Include="html\AddOnHeader.html" />
     <Content Include="html\IndexOld.html" />
     <Content Include="html\IndexAddOn.html" />
-    <Content Include="html\Index2.html" />
+    <Content Include="html\Index.html" />
     <Content Include="html\Picker.html" />
     <Content Include="html\StockPrice.html" />
     <Content Include="html\Style.html" />
