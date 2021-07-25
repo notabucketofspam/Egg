@@ -29,7 +29,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="html\Index.html" />
+    <Content Include="html\AddOnHeader.html" />
+    <Content Include="html\IndexOld.html" />
+    <Content Include="html\IndexAddOn.html" />
+    <Content Include="html\Index2.html" />
     <Content Include="html\Picker.html" />
     <Content Include="html\StockPrice.html" />
     <Content Include="html\Style.html" />
@@ -51,6 +54,7 @@
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\AddOn.ts" />
     <TypeScriptCompile Include="source\Definitions.d.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
   </ItemGroup>

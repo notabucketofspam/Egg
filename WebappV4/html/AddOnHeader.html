@@ -1,0 +1,30 @@
+<div style="display: flex;">
+  <div style="margin-right: 4ch;">
+    <h1>WebappV4</h1>
+  </div>
+  <div>
+    <form id="page-size-form" onsubmit="pageSizeFormHandler(this)" method="POST">
+      <label for="page-width-input">Page width</label>
+      <input id="page-width-input" name="pageWidth" type="number" min="400" max="3840" value="1024" />
+      <br />
+      <label for="page-height-input">Page height</label>
+      <input id="page-height-input" name="pageHeight" type="number" min="300" max="2160" value="768" />
+      <br />
+      <input id="page-size-form-input" type="submit" value="Update page size" />
+    </form>
+  </div>
+</div>
+<script>
+(function () {
+  document.getElementById("page-size-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+  });
+}) ();
+function pageSizeFormHandler(form) {
+  const formObject = Object.fromEntries((new FormData(form)).entries());
+  google.script.run.openWebappInterface({
+    pageWidth: Number.parseInt(formObject.pageWidth), 
+    pageHeight: Number.parseInt(formObject.pageHeight)
+  });
+}
+</script>
