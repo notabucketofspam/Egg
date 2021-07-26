@@ -35,7 +35,8 @@
     <Content Include="www\image\EggLogoV2.png" />
     <Content Include="www\image\favicon.ico" />
     <Content Include="www\image\favicon.png" />
-    <Content Include="www\index.html" />
+    <Content Include="www\Index.html" />
+    <Content Include="www\index2.html" />
     <None Include="source\Main.ts" />
     <Content Include=".detaignore" />
     <Content Include=".deta\prog_info" />

@@ -14,7 +14,7 @@ import cors = require("cors");
 webapp.use(cors());
 // Deal with static HTML page requests
 import path = require("path");
-webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "index.html" }));
+webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "Index.html" }));
 // Handle a form submission from the client
 webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
   if (!await EggUtil.acquireLock()) {
