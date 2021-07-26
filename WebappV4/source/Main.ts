@@ -4,7 +4,7 @@
  * @returns {GoogleAppsScript.HTML.HtmlOutput} The central webapp page
  */
 function doGet(event: Webapp.GogleAppsScript.EventType) {
-  return HtmlService.createTemplateFromFile("html/Index").evaluate().setTitle("Eggonomics WebappV4")
+  return HtmlService.createTemplateFromFile("html/Index").evaluate().setTitle("Eggonomics WebappV4 (probably)")
     .setFaviconUrl("https://storage.googleapis.com/eggonomics/EggLogoV3.png");
 }
 /**
