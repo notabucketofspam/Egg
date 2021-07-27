@@ -16,7 +16,7 @@ webapp.use(cors());
 import path = require("path");
 webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "Index.html" }));
 // Handle a form submission from the client
-webapp.post("/submit", async function (request: Express.Request, response: Express.Response) {
+webapp.post("/form-submit", async function (request: Express.Request, response: Express.Response) {
   if (!await EggUtil.acquireLock()) {
     response.status(500).send("Unable to acquire lock.");
     return;
@@ -86,7 +86,7 @@ webapp.post("/test4", async function (request: Express.Request, response: Expres
   response.sendStatus(200);
 });
 // Handle client-side submission mistake
-webapp.post("/undo", async function (request: Express.Request, response: Express.Response) {
+webapp.post("/form-undo", async function (request: Express.Request, response: Express.Response) {
   if (!await EggUtil.acquireLock()) {
     response.status(500).send("Unable to acquire lock.");
     return;
@@ -100,7 +100,7 @@ webapp.post("/undo", async function (request: Express.Request, response: Express
   response.type("application/json").send({ gaffeCounter });
 });
 // Give the client the latest stock prices
-webapp.get("/stock-prices", async function (request: Express.Request, response: Express.Response) {
+webapp.get("/stock-price", async function (request: Express.Request, response: Express.Response) {
   response.type("application/json").send((await eggbase.get("!stockPrices") as any).extraData);
 });
 // Make webapp available to index.js in root directory
