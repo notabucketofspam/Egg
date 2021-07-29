@@ -1,8 +1,6 @@
-<div style="display: flex;">
-  <div style="margin-right: 4ch;">
-    <h1>WebappV4</h1>
-  </div>
-  <div>
+<div id="add-on-header" class="TwoColumn">
+  <div id="active-user-display" style="width: 53ch; height: 24rem; overflow-wrap: break-word;"></div>
+  <div id="page-size-form-div" style="width: 32ch;">
     <form id="page-size-form" onsubmit="pageSizeFormHandler(this)" method="POST">
       <label for="page-width-input">Page width</label>
       <input id="page-width-input" name="pageWidth" type="number" min="400" max="3840" value="1024" />
@@ -12,14 +10,31 @@
       <br />
       <input id="page-size-form-input" type="submit" value="Update page size" />
     </form>
+    <hr />
+    <br />
+    <input type="button" id="update-user-display-input" value="Update user display" onclick="generateUserDisplay()"
+      style="font-size: 115%;" />
+    <br />
+    Don't run more than needed
+    <br />
+    May take up to 15 seconds
+    <br />
+    Update time: <span id="update-user-display-timer">0</span>ms
   </div>
 </div>
 <script>
+  /**
+   * Prevent page size form submission from redirecting
+   */
 (function () {
   document.getElementById("page-size-form").addEventListener("submit", function(event) {
     event.preventDefault();
   });
 }) ();
+/**
+ * Change the display size of the page.
+ * @param {HTMLFormElement} form The form object collected from the page
+ */
 function pageSizeFormHandler(form) {
   const formObject = Object.fromEntries((new FormData(form)).entries());
   google.script.run.openWebappInterface({

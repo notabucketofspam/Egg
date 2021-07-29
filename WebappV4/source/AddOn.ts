@@ -2,10 +2,10 @@
  * Hail traveler! Run this function please!
  */
 function newUsersPleaseRunThis() {
-  Logger.log(`New user: ${Session.getActiveUser()}`);
+  Logger.log(`New user: ${Session.getActiveUser().getEmail()}`);
 }
 /**
- * Get the homepage for Sheets
+ * Get the homepage for Sheets.
  * @param {any} event The "open homepage" event
  * @returns {GoogleAppsScript.Card_Service.Card} The homepage Card
  */
@@ -13,7 +13,7 @@ function onSheetsHomepage(event) {
   return createSheetsAddOnView(event);
 }
 /**
- * Get the Sheets homepage
+ * Get the Sheets homepage.
  * @param {any} event A "file scope granted" event, or something
  * @returns {GoogleAppsScript.Card_Service.Card} A Card with the homepage
  */
@@ -21,14 +21,14 @@ function onFileScopeGranted(event) {
   return createSheetsAddOnView(event);
 }
 /**
- * Fires when trying to get file access permission
+ * Fires when trying to get file access permission.
  * @returns {any} It's supposed to be an instance of EditorFileScopeActionResponse, but TypeScript messed it up
  */
 function onRequestFileScopeButtonClicked() {
   return (CardService as any).newEditorFileScopeActionResponseBuilder().requestFileScopeForActiveDocument().build();
 }
 /**
- * 
+ * Generate the side panel for Sheets.
  * Taken partially from here and here
  * https://developers.google.com/workspace/add-ons/editors/gsao/editor-actions
  * https://developers.google.com/workspace/add-ons/concepts/event-objects
@@ -51,7 +51,7 @@ function createSheetsAddOnView(event) {
   return CardService.newCardBuilder().addSection(cardSection).build();
 }
 /**
- * Get the central webapp page, or change its dimensions
+ * Get the central webapp page, or change its dimensions.
  * @param {any} pageDimensions The dimensions, if any, to set
  * @param {number} [pageDimensions.pageWidth] Width in pixels
  * @param {number} [pageDimensions.pageHeight] Height in pixels
