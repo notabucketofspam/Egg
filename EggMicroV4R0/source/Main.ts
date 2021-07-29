@@ -87,6 +87,7 @@ webapp.post("/test4", async function (request: Express.Request, response: Expres
 });
 // Handle client-side submission mistake
 webapp.post("/form-undo", async function (request: Express.Request, response: Express.Response) {
+  // FIX This does not recalculate the relevant stock prices!
   if (!await EggUtil.acquireLock()) {
     response.status(500).send("Unable to acquire lock.");
     return;
