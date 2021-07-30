@@ -1,6 +1,4 @@
-// Thanks to here for making ObjectType unnecessary: https://stackoverflow.com/a/44441178
 import * as fs from "fs";
-import Base from "deta/dist/types/base";
 /**
  * Bunch of semi-useful / oddly-specific tools
  */
@@ -63,11 +61,11 @@ namespace EggUtil {
    * @param {any[]} [args] The arguments for the promise
    * @returns {Promise<T>} Promise which may or may not have been rejected
    */
-  function promiseWithTimeout<T>(timeoutMs: number, failureMessage: string, promise: (...args: any[]) => Promise<T>,
-    ...args: any[]) {
+  export function promiseWithTimeout<T>(timeoutMs: number, failureMessage: string,
+    promise: (...args: any[]) => Promise<T>, ...args: any[]) {
     let timeoutHandle: NodeJS.Timeout;
     const timeoutPromise = new Promise<never>((resolve, reject) => {
-      timeoutHandle = setTimeout(() => reject(new Error(failureMessage)), timeoutMs);
+      timeoutHandle = setTimeout(() => reject(failureMessage), timeoutMs);
     });
     return Promise.race([
       promise(...args),
@@ -78,12 +76,25 @@ namespace EggUtil {
     });
   }
   /**
+   * Wait a little bit
+   * Taken from here
+   * https://stackoverflow.com/a/41957152
+   * @param {number} ms Milliseconds to sleep
+   * @returns {Promise<void>} Basically nothing
+   */
+  export function sleep(ms: number) {
+    return new Promise<void>(function (resolve) {
+      setTimeout(resolve, ms);
+    });
+  }
+  /**
    * Used with acquireLock() function
    * @returns {Promise<boolean>} Some sort of Promise
    */
-  function lockPromise() {
-    return new Promise<boolean>(function (resolve, reject) {
-      while (fs.existsSync("/tmp/lock.txt"));
+  export function lockPromise() {
+    return new Promise<boolean>(async function (resolve, reject) {
+      while (fs.existsSync("/tmp/lock.txt"))
+        await sleep(1);
       fs.appendFileSync("/tmp/lock.txt", "locked");
       resolve(true);
     });
@@ -115,21 +126,6 @@ namespace EggUtil {
     territory: string;
     timestamp: number;
     winLose: boolean;
-  }
-  /**
-   * Grab the last couple of submissions using Deta's suboptimal <1.0.0 Base API
-   * @param {Base} database The Deta Base to utilize
-   * @param {string} industry Whatever industry you're looking for
-   * @param {number} [inclusionRange=4] How many results to return
-   * @returns {Promise<ExtArray<Submission>[]>} ExtArray with a handful of submisions and some stuff to delete
-   */
-  export async function fetchLastIndustryResults(database: Base, industry: string, inclusionRange = 4) {
-    const results = new ExtArray<Submission>();
-    const deletables = new ExtArray<Submission>();
-    const fetchResponse = await (database.fetch as any)({ industry }, Infinity, 4266);
-    for await (const buffer of fetchResponse)
-      deletables.extend(results.extend(buffer).sort((a, b) => b.timestamp - a.timestamp).splice(inclusionRange));
-    return [results.reverse() as typeof results, deletables];
   }
   /**
    * List of what territories belong to which industries

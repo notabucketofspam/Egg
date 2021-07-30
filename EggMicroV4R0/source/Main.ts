@@ -21,42 +21,27 @@ webapp.post("/form-submit", async function (request: Express.Request, response: 
     response.status(500).send("Unable to acquire lock.");
     return;
   }
-  const submission = JSON.parse(request.body);
+  const submission = JSON.parse(request.body) as EggUtil.Submission;
   const errorMessages = EggUtil.errorCheck(submission);
   if (errorMessages.length) {
     response.status(400).send(errorMessages.join("\n<br />\n"));
     return;
   }
   // Slap that submission right in the machine
-  const key = (await eggbase.put(submission) as Record<string, string>).key;
-  // Temporary lockdown until enough submissions come in
-  //EggUtil.releaseLock();
-  //response.type("application/json").send({ key });
-  //return;
-  // Grab the last few results
-  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, submission.industry);
-  // Calculate price changes
-  const delta = StockPrice.delta(results);
-  // Update stock prices in the DB
-  const stockPrices = ((await eggbase.get("!stockPrices")) as any).extraData as Record<string, number>;
-  const stockPriceUpdates: Record<string, number> = {};
-  Object.entries(delta).forEach(function ([territory, value]) {
-    stockPriceUpdates[`extraData.${territory}`] = Math.max(stockPrices[territory] + value, 5);
-  });
-  const promiseArray: Promise<null>[] = [];
-  promiseArray.push(eggbase.update(stockPriceUpdates, "!stockPrices"));
-  // Delete old entries in the DB
-  deletables.forEach(function (submission) {
-    promiseArray.push(eggbase.delete(submission.key));
-  });
-  await Promise.allSettled(promiseArray);
+  const key = (await eggbase.put(submission as any) as Record<string, string>).key;
+  // Temporary lockdown until locking mechanism gets fixed
   EggUtil.releaseLock();
   response.type("application/json").send({ key });
+  return;
+  await Promise.allSettled(await StockPrice.calculate(eggbase, submission.industry));
+  EggUtil.releaseLock();
+  submission.key = key;
+  response.type("application/json").send({ submission });
 });
 // Test section
 webapp.get("/test1", async function (request: Express.Request, response: Express.Response) {
   const now = Date.now();
-  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Blue");
+  const [results, deletables] = await StockPrice.fetchLastIndustryResults(eggbase, "Blue");
   //console.log("results", results);
   //console.log("deletables", deletables);
   const delta = StockPrice.delta(results);
@@ -74,7 +59,7 @@ webapp.get("/test2", async function (request: Express.Request, response: Express
   response.sendStatus(200);
 });
 webapp.get("/test3", async function (request: Express.Request, response: Express.Response) {
-  const [results, deletables] = await EggUtil.fetchLastIndustryResults(eggbase, "Brown");
+  const [results, deletables] = await StockPrice.fetchLastIndustryResults(eggbase, "Brown");
   console.log("results.last()", results.last());
   console.log("deletables.last()", deletables.last());
   response.sendStatus(200);
@@ -85,15 +70,62 @@ webapp.post("/test4", async function (request: Express.Request, response: Expres
   console.log(errorMessages.join("\n"));
   response.sendStatus(200);
 });
+webapp.get("/test5", async function (request: Express.Request, response: Express.Response) {
+  // FIX acquireLock / releaseLock do not work in the slightest
+  try {
+    if (!await EggUtil.acquireLock()) {
+      response.status(500).send("Thing bad");
+      return;
+    }
+    console.log("lock", fs.existsSync("/tmp/lock.txt"));
+    //setTimeout(function () {
+    //  EggUtil.releaseLock();
+    //  console.log("lock released");
+    //}, 3500);
+    await EggUtil.sleep(5000);
+    EggUtil.releaseLock();
+    response.sendStatus(200);
+    //if (!await EggUtil.promiseWithTimeout(7500, "Unable to acquire lock", EggUtil.lockPromise)) {
+    //  response.status(500).send("Unable to acquire lock (again).");
+    //} else {
+    //  response.sendStatus(200);
+    //}
+    //response.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    response.sendStatus(500);
+  }
+});
+import https = require("https");
+webapp.get("/test6", async function (request: Express.Request, response: Express.Response) {
+  https.get("https://v86nf8.deta.dev/test5", function (res) {
+    //console.log("lock", fs.existsSync("/tmp/lock.txt"));
+    //response.sendStatus(200);
+  });
+  setTimeout(function () {
+    console.log("lock (again):", fs.existsSync("/tmp/lock.txt"));
+    response.sendStatus(200);
+  }, 2000);
+});
 // Handle client-side submission mistake
 webapp.post("/form-undo", async function (request: Express.Request, response: Express.Response) {
-  // FIX This does not recalculate the relevant stock prices!
   if (!await EggUtil.acquireLock()) {
     response.status(500).send("Unable to acquire lock.");
     return;
   }
+  const submission = JSON.parse(request.body) as EggUtil.Submission;
+  const errorMessages = EggUtil.errorCheck(submission);
+  if (errorMessages.length) {
+    response.status(400).send(errorMessages.join("\n<br />\n"));
+    return;
+  }
+  // Temporary lockdown until locking mechanism gets fixed
+  EggUtil.releaseLock();
+  response.type("application/json").send({ gaffeCounter: -1 });
+  return;
+  await eggbase.delete(submission.key);
   await Promise.allSettled([
-    eggbase.delete(JSON.parse(request.body).key),
+    await StockPrice.calculate(eggbase, submission.industry),
     eggbase.update({ "extraData.gaffeCounter": eggbase.util.increment() }, "!variables")
   ]);
   const gaffeCounter = (await eggbase.get("!variables") as any).extraData.gaffeCounter;
@@ -102,7 +134,7 @@ webapp.post("/form-undo", async function (request: Express.Request, response: Ex
 });
 // Give the client the latest stock prices
 webapp.get("/stock-price", async function (request: Express.Request, response: Express.Response) {
-  response.type("application/json").send((await eggbase.get("!stockPrices") as any).extraData);
+  response.type("application/json").send((await eggbase.get("!stockPrice") as any).extraData);
 });
 // Make webapp available to index.js in root directory
 module.exports = {

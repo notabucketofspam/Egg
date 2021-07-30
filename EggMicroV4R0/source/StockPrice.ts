@@ -1,4 +1,6 @@
+// Thanks to here for making ObjectType unnecessary: https://stackoverflow.com/a/44441178
 import EggUtil from "./EggUtil";
+import Base from "deta/dist/types/base";
 /**
  * Bunch of utilities for calculationg stock price and stuff
  */
@@ -61,6 +63,46 @@ namespace StockPrice {
       delta[territory] = weightedAverageStockLoss ? winLoseDividend / weightedAverageStockLoss : winLoseDividend;
     });
     return delta;
+  }
+  /**
+   * Grab the last couple of submissions using Deta's suboptimal <1.0.0 Base API
+   * @param {Base} database The Deta Base to utilize
+   * @param {string} industry Whatever industry you're looking for
+   * @param {number} [inclusionRange=4] How many results to return
+   * @returns {Promise<ExtArray<Submission>[]>} ExtArray with a handful of submisions and some stuff to delete
+   */
+  export async function fetchLastIndustryResults(database: Base, industry: string, inclusionRange = 4) {
+    const results = new EggUtil.ExtArray<EggUtil.Submission>();
+    const deletables = new EggUtil.ExtArray<EggUtil.Submission>();
+    const fetchResponse = await (database.fetch as any)({ industry }, Infinity, 4266);
+    for await (const buffer of fetchResponse)
+      deletables.extend(results.extend(buffer).sort((a, b) => b.timestamp - a.timestamp).splice(inclusionRange));
+    return [results.reverse() as typeof results, deletables];
+  }
+  /**
+   * Calculate the final price of eaach affected stock.
+   * @param {Base} database The Deta Base to use
+   * @param {string} industry The relevant industry
+   * @returns {Promise<Promise<null>[]>} List of Promises to update / delete
+   */
+  export async function calculate(database: Base, industry: string) {
+    // Grab the last few results
+    const [results, deletables] = await fetchLastIndustryResults(database, industry);
+    // Calculate price changes
+    const stockPriceDelta = delta(results);
+    // Update stock prices in the DB
+    const stockPrice = ((await database.get("!stockPrice")) as any).extraData as Record<string, number>;
+    const stockPriceUpdates: Record<string, number> = {};
+    Object.entries(stockPriceDelta).forEach(function ([territory, value]) {
+      stockPriceUpdates[`extraData.${territory}`] = Math.max(stockPrice[territory] + value, 5);
+    });
+    const promiseArray: Promise<null>[] = [];
+    promiseArray.push(database.update(stockPriceUpdates, "!stockPrice"));
+    // Delete old entries in the DB
+    deletables.forEach(function (submission) {
+      promiseArray.push(database.delete(submission.key));
+    });
+    return promiseArray;
   }
 }
 export default StockPrice;
