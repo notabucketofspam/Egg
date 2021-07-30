@@ -1,0 +1,4 @@
+# TypeScript build
+/build/**
+# Environment variables
+.env
