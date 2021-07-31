@@ -139,14 +139,20 @@ code {
 </div>
 <script>
 const copyFormulaTooltip = document.getElementById("copy-formula-tooltip");
+const formulaText = `=SUM(INDIRECT(CONCATENATE(ADDRESS(ROW()+1,COLUMN(),4),\
+":",REGEXEXTRACT(ADDRESS(ROW(),COLUMN(),4),"[A-Z]+"))))`;
 /** @type number */
 var copyFormulaTooltipSetTimeoutHandle;
 (function () {
   document.getElementById("copy-formula-text").addEventListener("click", copyFormula);
 }) ();
-function copyFormula(/** @type MouseEvent */ event) {
-  navigator.clipboard.writeText(`=SUM(INDIRECT(CONCATENATE(ADDRESS(ROW()+1,COLUMN(),4),\
-":",REGEXEXTRACT(ADDRESS(ROW(),COLUMN(),4),"[A-Z]+"))))`);
+/**
+ * Copy the Google Sheets formula
+ * @param {MouseEvent} event The mouse click event
+ */
+function copyFormula(event) {
+  if (!forceCopyToClipboard(formulaText))
+    return;
   copyFormulaTooltip.style.visibility = "visible";
   copyFormulaTooltip.style.left = `${event.pageX}px`;
   copyFormulaTooltip.style.top = `${event.pageY}px`;
@@ -154,6 +160,38 @@ function copyFormula(/** @type MouseEvent */ event) {
   copyFormulaTooltipSetTimeoutHandle = setTimeout(function () {
     copyFormulaTooltip.style.visibility = "hidden";
   }, 2000);
+}
+/**
+ * Copy a thing to the clipboard, forcefully
+ * Taken from here
+ * https://stackoverflow.com/a/30810322
+ * @param {string} text The thing to copy
+ * @returns {boolean} Whether or not the copy was successful
+ */
+function forceCopyToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.style.position = "fixed";
+  textArea.style.top = "0px";
+  textArea.style.left = "0px";
+  textArea.style.width = "2em";
+  textArea.style.height = "2em";
+  textArea.style.padding = "0px";
+  textArea.style.border = "none";
+  textArea.style.outline = "none";
+  textArea.style.boxShadow = "none";
+  textArea.style.background = "transparent";
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  let successState = false;
+  try {
+    successState = document.execCommand("copy");
+  } catch (error) {
+    successState = false;
+  }
+  document.body.removeChild(textArea);
+  return successState;
 }
 </script>
 </body>
