@@ -14,9 +14,18 @@ import cors = require("cors");
 webapp.use(cors());
 // Deal with static HTML page requests
 import path = require("path");
-webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "Index.html" }));
+//webapp.use(express.static(path.normalize(`${__dirname}/../www`), { index: "Index.html" }));
+// Serve index.html
+webapp.get("/", async function (request: Express.Request, response: Express.Response) {
+  response.sendFile(path.normalize(`${__dirname}/../html/index.html`));
+});
+/**
+ * Total lockdown on everything because this backend will no longer be used.
+ */
 // Handle a form submission from the client
 webapp.post("/form-submit", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   if (!await EggUtil.acquireLock()) {
     response.status(500).send("Unable to acquire lock.");
     return;
@@ -40,6 +49,8 @@ webapp.post("/form-submit", async function (request: Express.Request, response: 
 });
 // Test section
 webapp.get("/test1", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   const now = Date.now();
   const [results, deletables] = await StockPrice.fetchLastIndustryResults(eggbase, "Blue");
   //console.log("results", results);
@@ -55,23 +66,31 @@ webapp.get("/test1", async function (request: Express.Request, response: Express
 });
 import * as fs from "fs";
 webapp.get("/test2", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   console.log(fs.readFileSync(path.normalize(`${__dirname}/../www/index.html`), { encoding: "utf8" }));
   response.sendStatus(200);
 });
 webapp.get("/test3", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   const [results, deletables] = await StockPrice.fetchLastIndustryResults(eggbase, "Brown");
   console.log("results.last()", results.last());
   console.log("deletables.last()", deletables.last());
   response.sendStatus(200);
 });
 webapp.post("/test4", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   const submission = JSON.parse(request.body);
   const errorMessages = EggUtil.errorCheck(submission);
   console.log(errorMessages.join("\n"));
   response.sendStatus(200);
 });
 webapp.get("/test5", async function (request: Express.Request, response: Express.Response) {
-  // FIX acquireLock / releaseLock do not work in the slightest
+  response.sendStatus(500);
+  return;
+  // acquireLock / releaseLock do not work in the slightest
   try {
     if (!await EggUtil.acquireLock()) {
       response.status(500).send("Thing bad");
@@ -98,6 +117,8 @@ webapp.get("/test5", async function (request: Express.Request, response: Express
 });
 import https = require("https");
 webapp.get("/test6", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   https.get("https://v86nf8.deta.dev/test5", function (res) {
     //console.log("lock", fs.existsSync("/tmp/lock.txt"));
     //response.sendStatus(200);
@@ -109,6 +130,8 @@ webapp.get("/test6", async function (request: Express.Request, response: Express
 });
 // Handle client-side submission mistake
 webapp.post("/form-undo", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   if (!await EggUtil.acquireLock()) {
     response.status(500).send("Unable to acquire lock.");
     return;
@@ -134,6 +157,8 @@ webapp.post("/form-undo", async function (request: Express.Request, response: Ex
 });
 // Give the client the latest stock prices
 webapp.get("/stock-price", async function (request: Express.Request, response: Express.Response) {
+  response.sendStatus(500);
+  return;
   response.type("application/json").send((await eggbase.get("!stockPrice") as any).extraData);
 });
 // Make webapp available to index.js in root directory

@@ -30,13 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="misc\_sampleSubmission.json" />
-    <Content Include="www\Dummy.html" />
-    <Content Include="www\favicon.ico" />
-    <Content Include="www\image\EggLogoV2.png" />
-    <Content Include="www\image\favicon.ico" />
-    <Content Include="www\image\favicon.png" />
-    <Content Include="www\Index.html" />
-    <Content Include="www\index2.html" />
+    <Content Include="html\index.html" />
     <None Include="source\Main.ts" />
     <Content Include=".detaignore" />
     <Content Include=".deta\prog_info" />
@@ -55,8 +49,7 @@
     <Folder Include=".deta\" />
     <Folder Include="misc\" />
     <Folder Include="source\" />
-    <Folder Include="www\" />
-    <Folder Include="www\image\" />
+    <Folder Include="html\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="source\EggUtil.ts" />

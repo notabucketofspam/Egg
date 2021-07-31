@@ -3,19 +3,27 @@
 <head>
 <base target="_top" />
 <style>
+.TwoColumn {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+}
+.ThreeColumn {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+}
 a {
   color: midnightblue;
 }
 </style>
 </head>
 <body>
-<div style="display: flex;">
+<div class="ThreeColumn">
 <h1>Eggonomics WebappV4</h1>
-<img src="https://storage.googleapis.com/eggonomics/EggLogoV3.png" style="height: 80px; width: auto;" />
+<img src="http://eggonomics.net/EggLogoV3.png" style="height: 80px; width: auto;" />
 <h1>(<abbr title="not really">probably</abbr>)</h1>
 </div>
 <hr />
-<div style="display: flex;">
+<div class="TwoColumn">
   <div style="width: 80ch; font-size: 16pt;">
   <b>Hail traveler!</b> You've somehow stumbled upon a deprecated page. Perhaps
   you clicked on an old link without knowing where it may lead. Quite the risk
