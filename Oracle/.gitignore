@@ -2,3 +2,5 @@
 /build/**
 # Environment variables
 .env
+# SSH private key
+httpd-private-key

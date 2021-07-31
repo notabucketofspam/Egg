@@ -31,11 +31,16 @@
   <ItemGroup>
     <None Include="app.js" />
     <Content Include=".env" />
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
     <Content Include="html\EggLogoV3.png" />
     <Content Include="html\favicon.ico" />
     <Content Include="html\index.html" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="push.sh" />
+    <Content Include="rsync-exclude.txt" />
+    <Content Include="rsync-include.txt" />
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
