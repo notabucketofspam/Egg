@@ -5,7 +5,7 @@
  */
 function doGet(event: Webapp.GogleAppsScript.EventType) {
   return HtmlService.createTemplateFromFile("html/Index").evaluate().setTitle("Eggonomics WebappV4 (probably)")
-    .setFaviconUrl("http://eggonomics.net/favicon.ico");
+    .setFaviconUrl("https://eggonomics.net/favicon.ico");
 }
 /**
  * Add an HTML element to a page. Note: requires client-side actions to load.

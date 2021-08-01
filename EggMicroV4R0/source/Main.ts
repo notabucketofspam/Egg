@@ -1,10 +1,10 @@
 // Egg setup
-import EggUtil from "./EggUtil";
-import StockPrice from "./StockPrice";
+//import EggUtil from "./EggUtil";
+//import StockPrice from "./StockPrice";
 // Deta setup
-import Base from "deta/dist/types/base";
-const { Deta } = require("deta");
-const eggbase: Base = Deta().Base("EggBase");
+//import Base from "deta/dist/types/base";
+//const { Deta } = require("deta");
+//const eggbase: Base = Deta().Base("EggBase");
 // Express setup
 import * as Express from "express";
 import express = require("express");
@@ -21,7 +21,6 @@ webapp.get("/", async function (request: Express.Request, response: Express.Resp
 });
 /**
  * Total lockdown on everything because this backend will no longer be used.
- */
 // Handle a form submission from the client
 webapp.post("/form-submit", async function (request: Express.Request, response: Express.Response) {
   response.sendStatus(500);
@@ -161,6 +160,7 @@ webapp.get("/stock-price", async function (request: Express.Request, response: E
   return;
   response.type("application/json").send((await eggbase.get("!stockPrice") as any).extraData);
 });
+*/
 // Make webapp available to index.js in root directory
 module.exports = {
   app: webapp
