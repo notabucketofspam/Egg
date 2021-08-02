@@ -2,7 +2,7 @@
 <div id="other-user-displays" class="TwoColumn"></div>
 <script>
 /** @type number */
-var updateUserDisplayTimerSetIntervalHandle;
+var generateUserDisplayTimerSetIntervalHandle;
 /** @type boolean */
 var generateUserDisplayFlag;
 /**
@@ -13,13 +13,13 @@ function generateUserDisplay() {
     return;
   let timer = 0;
   generateUserDisplayFlag = true;
-  updateUserDisplayTimerSetIntervalHandle = setInterval(function(/** @type HTMLSpanElement*/ spanElement) {
+  generateUserDisplayTimerSetIntervalHandle = setInterval(function(/** @type HTMLSpanElement*/ spanElement) {
     timer += frametime;
     spanElement.innerText = Math.trunc(timer);
-  }, frametime, document.getElementById("update-user-display-timer"));
+  }, frametime, document.getElementById("generate-user-display-timer"));
   google.script.run.withSuccessHandler(function (/** @type Record<string, string>[] */ displays) {
     generateUserDisplayFlag = false;
-    clearInterval(updateUserDisplayTimerSetIntervalHandle);
+    clearInterval(generateUserDisplayTimerSetIntervalHandle);
     document.getElementById("active-user-display").innerHTML = "";
     document.getElementById("other-user-displays").innerHTML = "";
     displays.forEach(function (display) {
