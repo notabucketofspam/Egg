@@ -30,7 +30,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="app.js" />
-    <Content Include=".env" />
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <Content Include="html\EggLogoV3.png" />
@@ -48,7 +47,10 @@
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\Define.d.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
+    <TypeScriptCompile Include="source\OUtil.ts" />
+    <TypeScriptCompile Include="source\StockPrice.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

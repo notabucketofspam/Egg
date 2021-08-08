@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "CommonJS",
+    "module": "ESNext",
     "target": "ESNext",
-    "lib": [ "ESNext", "DOM" ],
+    "lib": [ "ESNext" ],
     "outDir": "build",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/deta/dist"
-    ],
-    "removeComments": true
+    "removeComments": true,
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true
   },
   "include": [ "source" ]
 }
