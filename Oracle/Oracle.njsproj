@@ -47,7 +47,7 @@
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="source\Define.d.ts" />
+    <TypeScriptCompile Include="source\Oracle.d.ts.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
     <TypeScriptCompile Include="source\OUtil.ts" />
     <TypeScriptCompile Include="source\StockPrice.ts" />

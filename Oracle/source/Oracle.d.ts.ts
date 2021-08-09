@@ -1,3 +1,5 @@
+import * as Express from "express";
+import bunyan from "bunyan";
 /**
  * Colection of common types, interfaces, etc.
  */
@@ -15,4 +17,17 @@ declare module Oracle {
     /** Any additional parameters that might be useful. */
     options: Record<string, any>;
   }
+  /**
+   * Loggable version of an Express Request
+   */
+  interface RequestLogger extends Express.Request {
+    logger: bunyan;
+  }
+  /**
+   * Loggable version of an Express Response
+   */
+  interface ResponseLogger extends Express.Response {
+    logger: bunyan;
+  }
 }
+export default Oracle;

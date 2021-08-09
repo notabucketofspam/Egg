@@ -4,3 +4,5 @@
 .env
 # SSH private key
 httpd-private-key
+# Log files
+/log/**

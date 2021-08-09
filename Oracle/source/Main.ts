@@ -1,5 +1,6 @@
 // Oracle setup
 import * as OUtil from "./OUtil.js";
+import Oracle from "./Oracle.d.ts";
 // Node setup
 console.log(`process.pid ${process.pid}`);
 import { Worker } from "node:worker_threads";
