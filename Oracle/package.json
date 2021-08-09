@@ -12,7 +12,7 @@
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "update-dependencies": "ncu -u && npm i",
-    "reset": "rm -rf node_modules && npm install --production",
+    "reload-dependencies": "rm -rf node_modules && npm install --production",
     "restart": "curl -s localhost:39000/admin/restart"
   },
   "dependencies": {
