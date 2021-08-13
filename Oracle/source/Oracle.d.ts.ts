@@ -1,5 +1,7 @@
 import * as Express from "express";
-import bunyan from "bunyan";
+import Logger from "bunyan";
+import { ReJSON } from "redis-modules-sdk";
+import { Queue, Worker } from "bullmq";
 /**
  * Colection of common types, interfaces, etc.
  */
@@ -18,16 +20,17 @@ declare module Oracle {
     options: Record<string, any>;
   }
   /**
-   * Loggable version of an Express Request
+   * This was originally ORegister, but Oregano is funnier.
    */
-  interface RequestLogger extends Express.Request {
-    logger: bunyan;
-  }
-  /**
-   * Loggable version of an Express Response
-   */
-  interface ResponseLogger extends Express.Response {
-    logger: bunyan;
+  interface Oregano {
+    /** Bunyan logger */
+    logger: Logger;
+    /** ReJSON client */
+    rejson: ReJSON;
+    /** BullMQ queue */
+    queue: Queue;
+    /** BullMQ worker array */
+    workers: Worker[]
   }
 }
 export default Oracle;

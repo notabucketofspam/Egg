@@ -45,8 +45,11 @@
   <ItemGroup>
     <Folder Include="html\" />
     <Folder Include="source\" />
+    <Folder Include="source\Methods\" />
+    <Folder Include="source\Methods\get\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\Methods\get\admin_restart.ts" />
     <TypeScriptCompile Include="source\Oracle.d.ts.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
     <TypeScriptCompile Include="source\OUtil.ts" />

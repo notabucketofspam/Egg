@@ -1,6 +1,10 @@
 // Node setup
 import { Worker, WorkerOptions } from "node:worker_threads";
 import EventEmitter from "node:events";
+// Other imports
+import Logger from "bunyan";
+import { ReJSON } from "redis-modules-sdk";
+import { Queue, Worker as BullMQWorker } from "bullmq";
 /**
  * Wrapper for a Worker thread with the initialization properites self-embedded.
  */

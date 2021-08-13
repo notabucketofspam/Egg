@@ -5,6 +5,7 @@ import Oracle from "./Oracle.d.ts";
 import { parentPort } from "node:worker_threads";
 import EventEmitter from "node:events";
 import path from "node:path";
+import fs from "fs";
 // Express setup
 import * as Express from "express";
 import express from "express";
@@ -13,37 +14,57 @@ app.set("case sensitive routing", true);
 import cors from "cors";
 app.use(cors());
 // Logger setup
-import bunyan from "bunyan";
-const logger = bunyan.createLogger({
+import Logger from "bunyan";
+const logger = Logger.createLogger({
   name: "StockPrice",
   serializers: {
-    error: bunyan.stdSerializers.err,
-    request: bunyan.stdSerializers.req,
-    response: bunyan.stdSerializers.res
+    error: Logger.stdSerializers.err,
+    request: Logger.stdSerializers.req,
+    response: Logger.stdSerializers.res
   },
   streams: [{
     type: "rotating-file",
     path: path.normalize(`${process.cwd()}/log/StockPrice/log`),
     period: "1d",
-    count: 12,
+    count: 12
   }]
 });
+// Redis setup
+import { ReJSON } from "redis-modules-sdk";
+const rejson = new ReJSON({});
+await rejson.connect();
+// BullMQ setup
+import { Queue, Worker } from "bullmq";
+const queue = new Queue("StockPrice");
+const workers: Worker[] = [];
+for (let index = 0; index < 8; ++index)
+  workers.push(new Worker(`worker_${index}`));
+// Middleware setup
 import { v4 as uuidv4 } from "uuid";
 app.use(function (request: Express.Request, response: Express.Response, next: Express.NextFunction) {
-  (request as Oracle.RequestLogger).logger = logger.child({ request_uuid: uuidv4() });
-  (response as Oracle.ResponseLogger).logger = logger.child({ response_uuid: uuidv4() });
-  //const requestLogger = (request as Oracle.RequestLogger).logger;
-  //const responseLogger = (response as Oracle.ResponseLogger).logger;
+  response.locals.oregano = {
+    logger: logger.child({ uuid: uuidv4() }),
+    rejson,
+    queue,
+    workers
+  };
   next();
 });
+// HTTP request handlers
+// Hat tip to Discord.js Guide for the dynamic import idea.
+const methodFolders = fs.readdirSync(path.normalize(`${process.cwd()}/build/Methods`));
+methodFolders.forEach(async function (method) {
+  const handlerFiles = fs.readdirSync(path.normalize(`${process.cwd()}/build/Methods/${method}`))
+    .filter(file => file.endsWith(".js"));
+  handlerFiles.forEach(async function (handlerFile) {
+    const handler = await import(path.normalize(`file://${process.cwd()}/build/Methods/${method}/${handlerFile}`));
+    (app as any)[method](handler.route, handler.exec);
+  });
+});
+// Error handling
 app.use(function (error: Error, request: Express.Request, response: Express.Response, next: Express.NextFunction) {
   logger.error(error);
-  response.sendStatus(500);
-});
-// HTTP request handlers
-app.get("/admin/restart", async function (request: Express.Request, response: Express.Response) {
-  response.send("Restarting...");
-  parentPort!.postMessage({ command: "restart", source: "StockPrice", target: "Main" });
+  response.status(500).send(error.stack);
 });
 // Listen for requests
 const server = app.listen(39000, "localhost");
@@ -62,6 +83,8 @@ const commandRegister: Record<string, (message: Oracle.ExtWorkerMessage) => any>
   async terminate() {
     server.close();
     await EventEmitter.once(server, "close");
+    await queue.close();
+    await rejson.disconnect();
     parentPort!.off("message", commandRegister.exec);
     parentPort!.postMessage({ command: "nothing", source: "StockPrice", target: "Main", options: { code: 0 } });
   }
