@@ -1,12 +1,14 @@
 // Node setup
 import { Worker, WorkerOptions } from "node:worker_threads";
 import EventEmitter from "node:events";
-// Other imports
+import path from "node:path";
+import fs from "node:fs";
+// Other setup
 import Logger from "bunyan";
 import { ReJSON } from "redis-modules-sdk";
 import { Queue, Worker as BullMQWorker } from "bullmq";
 /**
- * Wrapper for a Worker thread with the initialization properites self-embedded.
+ * Wrapper for a Worker thread with the initialization properties self-embedded.
  */
 export class ExtWorker {
   /**
@@ -52,5 +54,21 @@ export class ExtWorker {
     this.worker = new Worker(this.filename, this.options);
     if (this.initializer)
       this.initializer(this.worker, ...this.initArgs);
+  }
+}
+/**
+ * Find all files in a directory tree.
+ * @param {fs.Dir} dir The current directory
+ * @param {string[]} files A list of file paths
+ * @returns {Promise<void>} Basically nothing
+ */
+export async function readdirRecursive(dir: fs.Dir, files: string[]) {
+  for await (const dirent of dir) {
+    const direntPath = path.normalize(`${dir.path}/${dirent.name}`);
+    if (dirent.isDirectory()) {
+      await readdirRecursive(fs.opendirSync(direntPath, { encoding: "utf8" }), files);
+    } else if (dirent.isFile()) {
+      files.push(direntPath);
+    }
   }
 }

@@ -1,11 +1,11 @@
 // Oracle setup
 import * as OUtil from "./OUtil.js";
-import Oracle from "./Oracle.d.ts";
+import * as Oracle from "./Oracle.d.ts";
 // Node setup
 import { parentPort } from "node:worker_threads";
 import EventEmitter from "node:events";
 import path from "node:path";
-import fs from "fs";
+import fs from "node:fs";
 // Express setup
 import * as Express from "express";
 import express from "express";
@@ -25,8 +25,8 @@ const logger = Logger.createLogger({
   streams: [{
     type: "rotating-file",
     path: path.normalize(`${process.cwd()}/log/StockPrice/log`),
-    period: "1d",
-    count: 12
+    period: "6h",
+    count: 48
   }]
 });
 // Redis setup
@@ -37,34 +37,34 @@ await rejson.connect();
 import { Queue, Worker } from "bullmq";
 const queue = new Queue("StockPrice");
 const workers: Worker[] = [];
-for (let index = 0; index < 8; ++index)
+const workerCount = 8;
+for (let index = 0; index < workerCount; ++index)
   workers.push(new Worker(`worker_${index}`));
 // Middleware setup
+app.locals.oregano = {
+  logger,
+  rejson,
+  queue,
+  workers
+};
 import { v4 as uuidv4 } from "uuid";
 app.use(function (request: Express.Request, response: Express.Response, next: Express.NextFunction) {
-  response.locals.oregano = {
-    logger: logger.child({ uuid: uuidv4() }),
-    rejson,
-    queue,
-    workers
-  };
+  response.locals.logger = logger.child({ uuid: uuidv4() });
   next();
 });
 // HTTP request handlers
-// Hat tip to Discord.js Guide for the dynamic import idea.
-const methodFolders = fs.readdirSync(path.normalize(`${process.cwd()}/build/Methods`));
-methodFolders.forEach(async function (method) {
-  const handlerFiles = fs.readdirSync(path.normalize(`${process.cwd()}/build/Methods/${method}`))
-    .filter(file => file.endsWith(".js"));
-  handlerFiles.forEach(async function (handlerFile) {
-    const handler = await import(path.normalize(`file://${process.cwd()}/build/Methods/${method}/${handlerFile}`));
-    (app as any)[method](handler.route, handler.exec);
-  });
+const methodsDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/Methods`), { encoding: "utf8" });
+const handlerFiles: string[] = [];
+await OUtil.readdirRecursive(methodsDir, handlerFiles);
+handlerFiles.forEach(await async function (handlerFile) {
+  const handler: Oracle.HttpRequestHandler = await import(path.normalize(`file://${handlerFile}`));
+  (app as any)[handler.method](handler.route, handler.exec);
 });
-// Error handling
+// Error handling middleware
 app.use(function (error: Error, request: Express.Request, response: Express.Response, next: Express.NextFunction) {
   logger.error(error);
-  response.status(500).send(error.stack);
+  const errorStack = error.stack ? error.stack : `Some sort of error occurred:\n${String(error)}`;
+  response.status(500).send(errorStack);
 });
 // Listen for requests
 const server = app.listen(39000, "localhost");
@@ -81,10 +81,14 @@ const commandRegister: Record<string, (message: Oracle.ExtWorkerMessage) => any>
    * Delete thread.
    */
   async terminate() {
+    const promiseArray: Promise<any>[] = [];
     server.close();
-    await EventEmitter.once(server, "close");
-    await queue.close();
-    await rejson.disconnect();
+    promiseArray.push(EventEmitter.once(server, "close"));
+    promiseArray.push(queue.close());
+    for (let index = 0; index < workerCount; ++index)
+      promiseArray.push(workers[index].close());
+    promiseArray.push(rejson.disconnect());
+    await Promise.all(promiseArray);
     parentPort!.off("message", commandRegister.exec);
     parentPort!.postMessage({ command: "nothing", source: "StockPrice", target: "Main", options: { code: 0 } });
   }

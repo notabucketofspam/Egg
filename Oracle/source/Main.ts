@@ -1,11 +1,11 @@
 // Oracle setup
 import * as OUtil from "./OUtil.js";
-import Oracle from "./Oracle.d.ts";
+import * as Oracle from "./Oracle.d.ts";
 // Node setup
 console.log(`process.pid ${process.pid}`);
 import { Worker } from "node:worker_threads";
 import path from "node:path";
-import fs from "fs";
+import fs from "node:fs";
 fs.writeFileSync(path.normalize(`${process.cwd()}/log/process.pid`), String(process.pid));
 /** List of Worker threads known to Main */
 const workerRegister: Record<string, OUtil.ExtWorker> = {};

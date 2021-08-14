@@ -47,9 +47,16 @@
     <Folder Include="source\" />
     <Folder Include="source\Methods\" />
     <Folder Include="source\Methods\get\" />
+    <Folder Include="source\Methods\get\exec\" />
+    <Folder Include="source\Methods\get\admin\" />
+    <Folder Include="source\Methods\post\" />
+    <Folder Include="source\Methods\post\exec\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="source\Methods\get\admin_restart.ts" />
+    <TypeScriptCompile Include="source\Methods\get\admin\restart.ts" />
+    <TypeScriptCompile Include="source\Methods\get\exec\stock-price.ts" />
+    <TypeScriptCompile Include="source\Methods\post\exec\form-submit.ts" />
+    <TypeScriptCompile Include="source\Methods\post\exec\form-undo.ts" />
     <TypeScriptCompile Include="source\Oracle.d.ts.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
     <TypeScriptCompile Include="source\OUtil.ts" />
