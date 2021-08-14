@@ -1,3 +1,5 @@
+// Oracle setup
+import * as OUtil from "./OUtil.js"
 // Other setup
 import * as Express from "express";
 import Logger from "bunyan";
@@ -40,3 +42,13 @@ export interface HttpRequestHandler {
   /** The handler function itself */
   exec: (request: Express.Request, response: Express.Response) => Promise<void>;
 }
+/**
+ * Wrapper type for OUtil to allow lazy importing.
+ * See OUtil.ts for documentation.
+ */
+export type OUtilType = {
+  /** Wrapper for a Worker thread. */
+  ExtWorker: typeof OUtil.ExtWorker;
+  /** Find files in subdirectory. */
+  readdirRecursive: typeof OUtil.readdirRecursive;
+};
