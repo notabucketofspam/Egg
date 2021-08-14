@@ -58,7 +58,7 @@
     <TypeScriptCompile Include="source\Methods\get\exec\test-1.ts" />
     <TypeScriptCompile Include="source\Methods\post\exec\form-submit.ts" />
     <TypeScriptCompile Include="source\Methods\post\exec\form-undo.ts" />
-    <TypeScriptCompile Include="source\Oracle.d.ts.ts" />
+    <TypeScriptCompile Include="source\Oracle.d.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
     <TypeScriptCompile Include="source\OUtil.ts" />
     <TypeScriptCompile Include="source\StockPrice.ts" />
