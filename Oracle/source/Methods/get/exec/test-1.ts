@@ -4,7 +4,7 @@ import * as Express from "express";
 import fs from "node:fs";
 import path from "node:path";
 // Oracle setup
-import * as Oracle from "Oracle.d.ts";
+import * as Oracle from "Oracle";
 const OUtil: Oracle.OUtilType = await import(path.normalize(`file://${process.cwd()}/build/OUtil.js`));
 // Handler
 export const method = "get";

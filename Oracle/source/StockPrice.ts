@@ -1,6 +1,6 @@
 // Oracle setup
 import * as OUtil from "./OUtil.js";
-import * as Oracle from "./Oracle.d.ts";
+import * as Oracle from "Oracle";
 // Node setup
 import { parentPort } from "node:worker_threads";
 import EventEmitter from "node:events";
