@@ -30,7 +30,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="source\app.ts" />
-    <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <Content Include="EggScript\V0\Index.html" />
     <Content Include="EggScript\V0\PriceModel.js" />

@@ -61,3 +61,8 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+# Ignore HTML and JavaScript for GitHub Linguist
+# (since Archive exists only for historical reasons)
+Archive/**/*.html linguist-detectable=false
+Archive/**/*.js linguist-detectable=false
