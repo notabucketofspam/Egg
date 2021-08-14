@@ -2,7 +2,7 @@
 import * as Express from "express";
 // Handler
 export const method = "get";
-export const route = "/exec/test-0";
+export const route = "/test/0";
 export async function exec(request: Express.Request, response: Express.Response) {
   response.send(
     `npm test: execute test command on server

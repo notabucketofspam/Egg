@@ -8,11 +8,10 @@ import * as Oracle from "Oracle";
 const OUtil: Oracle.OUtilType = await import(path.normalize(`file://${process.cwd()}/build/OUtil.js`));
 // Handler
 export const method = "get";
-export const route = "/exec/test-1";
+export const route = "/test/1";
 export async function exec(request: Express.Request, response: Express.Response) {
   const files: string[] = [];
   const sourceDir = fs.opendirSync(path.normalize(`${process.cwd()}/source`), { encoding: "utf8" });
   await OUtil.readdirRecursive(sourceDir, files);
-  console.log(files);
-  response.send();
+  response.send(files.join("\n"));
 }
