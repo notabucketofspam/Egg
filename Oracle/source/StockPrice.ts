@@ -53,13 +53,14 @@ app.use(function (request: Express.Request, response: Express.Response, next: Ex
   next();
 });
 // HTTP request handlers
+// Parallel assignment from: https://stackoverflow.com/a/37576787
 const methodsDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/Methods`), { encoding: "utf8" });
 const handlerFiles: string[] = [];
 await OUtil.readdirRecursive(methodsDir, handlerFiles);
-handlerFiles.forEach(await async function (handlerFile) {
+await Promise.all(handlerFiles.map(async function (handlerFile) {
   const handler: Oracle.HttpRequestHandler = await import(path.normalize(`file://${handlerFile}`));
   (app as any)[handler.method](handler.route, handler.exec);
-});
+}));
 // Error handling middleware
 app.use(function (error: Error, request: Express.Request, response: Express.Response, next: Express.NextFunction) {
   logger.error(error);
