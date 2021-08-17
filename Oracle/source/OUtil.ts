@@ -3,6 +3,8 @@ import { Worker, WorkerOptions } from "node:worker_threads";
 import EventEmitter from "node:events";
 import path from "node:path";
 import fs from "node:fs";
+// Oracle setup
+import * as Oracle from "Oracle";
 // Other setup
 import Logger from "bunyan";
 import { ReJSON } from "redis-modules-sdk";
@@ -40,11 +42,15 @@ export class ExtWorker {
   initArgs: any[];
   /**
    * End the Worker thread.
-   * @returns {Promise<any[]>} An exit code
+   * @returns {Promise<number>} An exit code
    */
-  terminate() {
+  async terminate() {
     this.worker.postMessage({ command: "terminate" });
-    return EventEmitter.once(this.worker, "message");
+    for await (const [message] of EventEmitter.on(this.worker, "message")) {
+      if (message.options && message.options.terminated)
+        return message.options.code as number;
+    }
+    return 1;
   }
   /**
    * End thread and create a new one.

@@ -37,6 +37,6 @@ workerRegister["StockPrice"] = new OUtil.ExtWorker(path.normalize(`${process.cwd
   messagePass);
 // Clean shutdown
 process.once("SIGINT", async function (signal) {
-  console.log(`Exit StockPrice: ${(await workerRegister["StockPrice"].terminate())[0].options.code}`);
+  console.log(`Exit StockPrice: ${await workerRegister["StockPrice"].terminate()}`);
   console.log(`Exit Main: ${signal}`);
 });

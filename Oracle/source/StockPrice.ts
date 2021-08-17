@@ -82,6 +82,7 @@ const commandRegister: Record<string, (message: Oracle.ExtWorkerMessage) => any>
    * Delete thread.
    */
   async terminate() {
+    let code = 0;
     const promiseArray: Promise<any>[] = [];
     server.close();
     promiseArray.push(EventEmitter.once(server, "close"));
@@ -89,9 +90,17 @@ const commandRegister: Record<string, (message: Oracle.ExtWorkerMessage) => any>
     for (let index = 0; index < workerCount; ++index)
       promiseArray.push(workers[index].close());
     promiseArray.push(rejson.disconnect());
-    await Promise.all(promiseArray);
+    await Promise.all(promiseArray)
+      .catch(function () {
+        code = 1;
+      });
     parentPort!.off("message", commandRegister.exec);
-    parentPort!.postMessage({ command: "nothing", source: "StockPrice", target: "Main", options: { code: 0 } });
+    parentPort!.postMessage({
+      command: "nothing", source: "StockPrice", target: "Main", options: {
+        terminated: true,
+        code
+      }
+    });
   }
 };
 // Apparently TSC thinks it's imperative for parentPort to be non-null
