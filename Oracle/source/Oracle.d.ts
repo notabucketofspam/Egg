@@ -3,7 +3,7 @@ import * as OUtil from "./OUtil.js"
 // Other setup
 import * as Express from "express";
 import Logger from "bunyan";
-import { ReJSON } from "redis-modules-sdk";
+import { ReJSON, Redisearch } from "redis-modules-sdk";
 import { Queue, Worker } from "bullmq";
 /**
  * Template message being pased between Worker threads.
@@ -26,6 +26,8 @@ export interface Oregano {
   logger: Logger;
   /** ReJSON client */
   rejson: ReJSON;
+  /** RediSearch client */
+  redisearch: Redisearch;
   /** BullMQ queue */
   queue: Queue;
   /** BullMQ worker array */

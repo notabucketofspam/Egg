@@ -3,12 +3,6 @@ import { Worker, WorkerOptions } from "node:worker_threads";
 import EventEmitter from "node:events";
 import path from "node:path";
 import fs from "node:fs";
-// Oracle setup
-import * as Oracle from "Oracle";
-// Other setup
-import Logger from "bunyan";
-import { ReJSON } from "redis-modules-sdk";
-import { Queue, Worker as BullMQWorker } from "bullmq";
 /**
  * Wrapper for a Worker thread with the initialization properties self-embedded.
  */
@@ -54,6 +48,7 @@ export class ExtWorker {
   }
   /**
    * End thread and create a new one.
+   * @returns {Promise<void>} Basically nothing
    */
   async restart() {
     await this.terminate();

@@ -30,9 +30,11 @@ const logger = Logger.createLogger({
   }]
 });
 // Redis setup
-import { ReJSON } from "redis-modules-sdk";
+import { ReJSON, Redisearch } from "redis-modules-sdk";
 const rejson = new ReJSON({});
 await rejson.connect();
+const redisearch = new Redisearch({});
+await redisearch.connect();
 // BullMQ setup
 import { Queue, Worker } from "bullmq";
 const queue = new Queue("StockPrice");
@@ -44,6 +46,7 @@ for (let index = 0; index < workerCount; ++index)
 app.locals.oregano = {
   logger,
   rejson,
+  redisearch,
   queue,
   workers
 };
@@ -83,17 +86,13 @@ const commandRegister: Record<string, (message: Oracle.ExtWorkerMessage) => any>
    */
   async terminate() {
     let code = 0;
-    const promiseArray: Promise<any>[] = [];
-    server.close();
-    promiseArray.push(EventEmitter.once(server, "close"));
-    promiseArray.push(queue.close());
-    for (let index = 0; index < workerCount; ++index)
-      promiseArray.push(workers[index].close());
-    promiseArray.push(rejson.disconnect());
-    await Promise.all(promiseArray)
-      .catch(function () {
-        code = 1;
-      });
+    await Promise.all([
+      new Promise<void>(resolve => void server.once("close", resolve)),
+      queue.close(),
+      workers.map(worker => worker.close()),
+      rejson.disconnect(),
+      redisearch.disconnect()
+    ].flat()).catch(() => void (code = 1));
     parentPort!.off("message", commandRegister.exec);
     parentPort!.postMessage({
       command: "nothing", source: "StockPrice", target: "Main", options: {
