@@ -22,7 +22,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "ioredis": "^4.27.7",
-    "redis-modules-sdk": "^0.8.4",
+    "redis-modules-sdk": "^0.8.6",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
