@@ -1,9 +1,8 @@
 // Oracle setup
-import * as OUtil from "./OUtil.js";
 import * as Oracle from "Oracle";
+import * as OUtil from "./OUtil.js";
 // Node setup
 import { parentPort } from "node:worker_threads";
-import EventEmitter from "node:events";
 import path from "node:path";
 import fs from "node:fs";
 // Express setup
@@ -31,23 +30,24 @@ const logger = Logger.createLogger({
 });
 // Redis setup
 import { ReJSON, Redisearch } from "redis-modules-sdk";
-const rejson = new ReJSON({});
+const rejson = new ReJSON({ db: Oracle.RedisDB.StockPrice });
 await rejson.connect();
-const redisearch = new Redisearch({});
+const redisearch = new Redisearch({ db: Oracle.RedisDB.StockPrice });
 await redisearch.connect();
 // BullMQ setup
-import { Queue, Worker } from "bullmq";
-const queue = new Queue("StockPrice");
+import { Queue, QueueScheduler, Worker } from "bullmq";
+const queue = new Queue("StockPrice", { connection: { db: Oracle.RedisDB.BullMQ } });
+const queueScheduler = new QueueScheduler("QueueScheduler", { connection: { db: Oracle.RedisDB.BullMQ } });
 const workers: Worker[] = [];
-const workerCount = 8;
-for (let index = 0; index < workerCount; ++index)
-  workers.push(new Worker(`worker_${index}`));
+for (let index = 0; index < 8; ++index)
+  workers.push(new Worker(`Worker_${index}`, undefined, { connection: { db: Oracle.RedisDB.BullMQ } }));
 // Middleware setup
 app.locals.oregano = {
   logger,
   rejson,
   redisearch,
   queue,
+  queueScheduler,
   workers
 };
 import { v4 as uuidv4 } from "uuid";
@@ -73,7 +73,7 @@ app.use(function (error: Error, request: Express.Request, response: Express.Resp
 // Listen for requests
 const server = app.listen(39000, "localhost");
 /** List of commands known to this Worker thread. */
-const commandRegister: Record<string, (message: Oracle.ExtWorkerMessage) => any> = {
+const commandRegister: Oracle.CommandRegister = {
   /**
    * Execute one of the known commands.
    * @param {Oracle.ExtWorkerMessage} message Gathered from parentPort

@@ -1,6 +1,6 @@
 // Oracle setup
-import * as OUtil from "./OUtil.js";
 import * as Oracle from "Oracle";
+import * as OUtil from "./OUtil.js";
 // Node setup
 console.log(`process.pid ${process.pid}`);
 import { Worker } from "node:worker_threads";
@@ -10,7 +10,7 @@ fs.writeFileSync(path.normalize(`${process.cwd()}/log/process.pid`), String(proc
 /** List of Worker threads known to Main */
 const workerRegister: Record<string, OUtil.ExtWorker> = {};
 /** List of commands known to Main */
-const commandRegister: Record<string, (message: Oracle.ExtWorkerMessage) => any> = {
+const commandRegister: Oracle.CommandRegister = {
   /** Do nothing. */
   nothing() { },
   /**

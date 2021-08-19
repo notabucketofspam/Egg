@@ -4,11 +4,11 @@ import * as OUtil from "./OUtil.js"
 import * as Express from "express";
 import Logger from "bunyan";
 import { ReJSON, Redisearch } from "redis-modules-sdk";
-import { Queue, Worker } from "bullmq";
+import { Queue, QueueScheduler, Worker } from "bullmq";
 /**
  * Template message being pased between Worker threads.
  */
-export interface ExtWorkerMessage {
+declare interface ExtWorkerMessage {
   /** The command to execute on the target. */
   command: string;
   /** Name of the Worker thread sending this message. */
@@ -21,7 +21,7 @@ export interface ExtWorkerMessage {
 /**
  * This was originally ORegister, but Oregano is funnier.
  */
-export interface Oregano {
+declare interface Oregano {
   /** Bunyan logger */
   logger: Logger;
   /** ReJSON client */
@@ -30,13 +30,15 @@ export interface Oregano {
   redisearch: Redisearch;
   /** BullMQ queue */
   queue: Queue;
+  /** BullMQ queue scheduler */
+  queueScheduler: QueueScheduler;
   /** BullMQ worker array */
   workers: Worker[]
 }
 /**
- * Express middleware for a specific route
+ * Express middleware for a specific route.
  */
-export interface HttpRequestHandler {
+declare interface HttpRequestHandler {
   /** HTTP verb */
   method: string;
   /** Request path */
@@ -48,9 +50,22 @@ export interface HttpRequestHandler {
  * Wrapper type for OUtil to allow lazy importing.
  * See OUtil.ts for documentation.
  */
-export type OUtilType = {
+declare type OUtilType = {
   /** Wrapper for a Worker thread. */
   ExtWorker: typeof OUtil.ExtWorker;
   /** Find files in subdirectory. */
   readdirRecursive: typeof OUtil.readdirRecursive;
 };
+/**
+ * List of commands known to a thread.
+ */
+declare interface CommandRegister {
+  [command: string]: (message: ExtWorkerMessage) => any;
+}
+/**
+ * Number of the Redis database to use for a connection.
+ */
+declare const enum RedisDB {
+  BullMQ,
+  StockPrice
+}
