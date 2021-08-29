@@ -87,8 +87,9 @@ const commandRegister: Oracle.CommandRegister = {
   async terminate() {
     let code = 0;
     await Promise.all([
-      new Promise<void>(resolve => void server.once("close", resolve)),
+      new Promise<void>(resolve => void server.close(() => resolve())),
       queue.close(),
+      queueScheduler.close(),
       workers.map(worker => worker.close()),
       rejson.disconnect(),
       redisearch.disconnect()
