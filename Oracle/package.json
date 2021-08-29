@@ -14,7 +14,7 @@
     "update-dependencies": "ncu -u && npm i",
     "reload-dependencies": "rm -rf node_modules && npm install --production",
     "server-restart": "curl -s localhost:39000/admin/restart",
-    "test": "node -e \"let n=process.argv[1];require('http').get(`http://localhost:39000/test/${n?n:0}`,r=>r.setEncoding('utf8').on('readable',()=>{let d=r.read();process.stdout.write(d?d:'');}));\""
+    "test": "node -e \"let n=process.argv[1];require('http').get(`http://localhost:39000/test_${n?n:0}`,r=>r.setEncoding('utf8').on('readable',()=>{let d=r.read();process.stdout.write(d?d:'');}));\""
   },
   "dependencies": {
     "bullmq": "^1.40.4",
