@@ -3,6 +3,7 @@ import * as OUtil from "./OUtil.js"
 // Other setup
 import * as Express from "express";
 import Logger from "bunyan";
+import { Redis } from "ioredis";
 import { ReJSON, Redisearch } from "redis-modules-sdk";
 import { Queue, QueueScheduler, Worker } from "bullmq";
 /**
@@ -24,6 +25,8 @@ declare interface ExtWorkerMessage {
 declare interface Oregano {
   /** Bunyan logger */
   logger: Logger;
+  /** IORedis client */
+  ioredis: Redis
   /** ReJSON client */
   rejson: ReJSON;
   /** RediSearch client */

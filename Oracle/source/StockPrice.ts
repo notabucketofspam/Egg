@@ -29,6 +29,8 @@ const logger = Logger.createLogger({
   }]
 });
 // Redis setup
+import IORedis from "ioredis";
+const ioredis = new IORedis({ db: Oracle.RedisDB.StockPrice });
 import { ReJSON, Redisearch } from "redis-modules-sdk";
 const rejson = new ReJSON({ db: Oracle.RedisDB.StockPrice });
 await rejson.connect();
@@ -44,6 +46,7 @@ for (let index = 0; index < 8; ++index)
 // Middleware setup
 app.locals.oregano = {
   logger,
+  ioredis,
   rejson,
   redisearch,
   queue,
@@ -86,14 +89,15 @@ const commandRegister: Oracle.CommandRegister = {
    */
   async terminate() {
     let code = 0;
-    await Promise.all([
+    await Promise.all<void>([
       new Promise<void>(resolve => void server.close(() => resolve())),
       queue.close(),
       queueScheduler.close(),
-      workers.map(worker => worker.close()),
+      ...(workers.map(worker => worker.close())),
       rejson.disconnect(),
-      redisearch.disconnect()
-    ].flat()).catch(() => void (code = 1));
+      redisearch.disconnect(),
+      new Promise<void>(resolve => ioredis.script("FLUSH", () => ioredis.quit(() => resolve())))
+    ]).catch<void>(() => void (code = 1));
     parentPort!.off("message", commandRegister.exec);
     parentPort!.postMessage({
       command: "nothing", source: "StockPrice", target: "Main", options: {
