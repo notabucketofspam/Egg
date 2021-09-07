@@ -40,10 +40,14 @@
     <Content Include="push.sh" />
     <Content Include="rsync-exclude.txt" />
     <Content Include="rsync-include.txt" />
+    <Content Include="teal\Oracle.d.tl" />
+    <Content Include="teal\StockPrice.tl" />
+    <Content Include="tlconfig.lua" />
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="html\" />
+    <Folder Include="teal\" />
     <Folder Include="source\" />
     <Folder Include="source\Methods\" />
     <Folder Include="source\Methods\get\" />

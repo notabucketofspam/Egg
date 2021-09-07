@@ -31,6 +31,17 @@ const logger = Logger.createLogger({
 // Redis setup
 import IORedis from "ioredis";
 const ioredis = new IORedis({ db: Oracle.RedisDB.StockPrice });
+const scripts: Record<string, string> = {};
+do {
+  const luaDir = fs.opendirSync(path.normalize(`${process.cwd()}/lua`), { encoding: "utf8" });
+  const scriptFiles: string[] = [];
+  await OUtil.readdirRecursive(luaDir, scriptFiles);
+  await Promise.all(scriptFiles.map(async function (scriptFile) {
+    scripts[path.basename(scriptFile, ".lua")] = await ioredis.script("LOAD",
+      fs.readFileSync(scriptFile, { encoding: "utf8" }));
+  }));
+} while (0);
+// Redis module setup
 import { ReJSON, Redisearch } from "redis-modules-sdk";
 const rejson = new ReJSON({ db: Oracle.RedisDB.StockPrice });
 await rejson.connect();
@@ -47,6 +58,7 @@ for (let index = 0; index < 8; ++index)
 app.locals.oregano = {
   logger,
   ioredis,
+  scripts,
   rejson,
   redisearch,
   queue,
@@ -60,13 +72,15 @@ app.use(function (request: Express.Request, response: Express.Response, next: Ex
 });
 // HTTP request handlers
 // Parallel assignment from: https://stackoverflow.com/a/37576787
-const methodsDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/Methods`), { encoding: "utf8" });
-const handlerFiles: string[] = [];
-await OUtil.readdirRecursive(methodsDir, handlerFiles);
-await Promise.all(handlerFiles.map(async function (handlerFile) {
-  const handler: Oracle.HttpRequestHandler = await import(path.normalize(`file://${handlerFile}`));
-  (app as any)[handler.method](handler.route, handler.exec);
-}));
+do {
+  const methodsDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/Methods`), { encoding: "utf8" });
+  const handlerFiles: string[] = [];
+  await OUtil.readdirRecursive(methodsDir, handlerFiles);
+  await Promise.all(handlerFiles.map(async function (handlerFile) {
+    const handler: Oracle.HttpRequestHandler = await import(path.normalize(`file://${handlerFile}`));
+    (app as any)[handler.method](handler.route, handler.exec);
+  }));
+} while (0);
 // Error handling middleware
 app.use(function (error: Error, request: Express.Request, response: Express.Response, next: Express.NextFunction) {
   logger.error(error);

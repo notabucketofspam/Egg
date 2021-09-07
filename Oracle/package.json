@@ -9,8 +9,8 @@
     "name": "sbp"
   },
   "scripts": {
-    "build": "tsc --build",
-    "clean": "tsc --build --clean",
+    "build": "tsc --build && tl build",
+    "clean": "tsc --build --clean && RD /Q /S lua",
     "update-dependencies": "ncu -u && npm i",
     "reload-dependencies": "rm -rf node_modules && npm install --production",
     "server-restart": "curl -s localhost:39000/admin/restart",

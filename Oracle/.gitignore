@@ -6,3 +6,5 @@
 httpd-private-key
 # Log files
 /log/**
+# Teal build
+/lua/**

@@ -26,7 +26,9 @@ declare interface Oregano {
   /** Bunyan logger */
   logger: Logger;
   /** IORedis client */
-  ioredis: Redis
+  ioredis: Redis;
+  /** List of Lua script hashes */
+  scripts: Record<string, string>;
   /** ReJSON client */
   rejson: ReJSON;
   /** RediSearch client */
@@ -36,7 +38,7 @@ declare interface Oregano {
   /** BullMQ queue scheduler */
   queueScheduler: QueueScheduler;
   /** BullMQ worker array */
-  workers: Worker[]
+  workers: Worker[];
 }
 /**
  * Express middleware for a specific route.
