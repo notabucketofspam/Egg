@@ -1,3 +1,4 @@
+-- List of territories in each one's respective industry
 local industryRegistry: {string: {string}} = {
   Black = {"Charlie", "Kilo", "Romeo", "Zulu"},
   Blue = {"Zero", "One"},
@@ -11,4 +12,9 @@ local industryRegistry: {string: {string}} = {
   Yellow = {"Sierra", "Tango", "Victor"}
 }
 redis.setresp(3)
+-- Case of submission undo
+if #KEYS > 0 then
+
+end
+-- Case of normal submission
 redis.call("HSET", unpack(ARGV) as (string))
