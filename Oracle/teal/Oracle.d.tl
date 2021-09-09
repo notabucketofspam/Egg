@@ -17,3 +17,5 @@ global record redis
 end
 global ARGV: {string}
 global KEYS: {string}
+-- Needed for compatibility with Lua 5.1
+global unpack: function(list: {any}, i: number, j: number): any...
