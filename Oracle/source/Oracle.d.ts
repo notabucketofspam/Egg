@@ -60,12 +60,14 @@ declare type OUtilType = {
   ExtWorker: typeof OUtil.ExtWorker;
   /** Find files in subdirectory. */
   readdirRecursive: typeof OUtil.readdirRecursive;
+  /** Verify user submission. */
+  errorCheck: typeof OUtil.errorCheck;
 };
 /**
- * List of commands known to a thread.
+ * List of commands known to a thread or handler.
  */
 declare interface CommandRegister {
-  [command: string]: (message: ExtWorkerMessage) => any;
+  [command: string]: (...args: any) => any;
 }
 /**
  * Number of the Redis database to use for a connection.
@@ -73,4 +75,33 @@ declare interface CommandRegister {
 declare const enum RedisDB {
   BullMQ,
   StockPrice
+}
+/**
+ * Command to execute in the context of HTTP requests.
+ */
+declare interface HttpRequestCommand {
+  /** Name of the command */
+  name: string;
+  /** Function which returns a Promise for the HTTP status code and a sendable response body */
+  exec: (request: Express.Request, response: Express.Response) => Promise<[
+    status: number,
+    send: Record<string, any>
+  ]>;
+}
+/**
+ * The form submission from any user.
+ */
+declare interface Submission {
+  /** Stock count end */
+  end: number;
+  /** Industry */
+  ind: string;
+  /** Stock count start */
+  start: number
+  /** Territory */
+  terr: string;
+  /** Timestamp */
+  time: number;
+  /** Win */
+  win: boolean;
 }

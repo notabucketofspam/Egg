@@ -47,11 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="html\" />
+    <Folder Include="source\Commands\" />
+    <Folder Include="source\Commands\StockPrice\" />
     <Folder Include="teal\" />
     <Folder Include="source\" />
     <Folder Include="source\Methods\" />
     <Folder Include="source\Methods\get\" />
-    <Folder Include="source\Methods\get\exec\" />
     <Folder Include="source\Methods\get\admin\" />
     <Folder Include="source\Methods\get\test\" />
     <Folder Include="source\Methods\post\" />
@@ -59,12 +60,13 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="source\Methods\get\admin\restart.ts" />
-    <TypeScriptCompile Include="source\Methods\get\exec\stock-price.ts" />
     <TypeScriptCompile Include="source\Methods\get\test\test_0.ts" />
     <TypeScriptCompile Include="source\Methods\get\test\test_1.ts" />
     <TypeScriptCompile Include="source\Methods\get\test\test_2.ts" />
-    <TypeScriptCompile Include="source\Methods\post\exec\form-submit.ts" />
-    <TypeScriptCompile Include="source\Methods\post\exec\form-undo.ts" />
+    <TypeScriptCompile Include="source\Commands\StockPrice\fetch.ts" />
+    <TypeScriptCompile Include="source\Commands\StockPrice\submit.ts" />
+    <TypeScriptCompile Include="source\Commands\StockPrice\undo.ts" />
+    <TypeScriptCompile Include="source\Methods\post\exec\stock-price.ts" />
     <TypeScriptCompile Include="source\Oracle.d.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
     <TypeScriptCompile Include="source\OUtil.ts" />
