@@ -73,8 +73,8 @@ declare interface CommandRegister {
  * Number of the Redis database to use for a connection.
  */
 declare const enum RedisDB {
-  BullMQ,
-  StockPrice
+  StockPrice,
+  BullMQ
 }
 /**
  * Command to execute in the context of HTTP requests.
