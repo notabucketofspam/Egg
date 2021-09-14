@@ -26,7 +26,7 @@ export async function exec(request: Express.Request, response: Express.Response)
   if (errorMessages.length)
     return [400, { error: errorMessages.join("\n<br>\n") }];
   const subkey = generateSubkey();
-  await oregano.ioredis.evalsha(oregano.scripts["StockPrice"], 0, subkey,
+  await oregano.ioredis.evalsha(oregano.scripts["StockPrice"], 1, subkey, "submit",
     ...(Object.entries(submission).filter(([key, value]) => submissionKeys.includes(key))
       .map(([key, value]) => `${key} ${value}`)));
   return [200, { subkey }];
