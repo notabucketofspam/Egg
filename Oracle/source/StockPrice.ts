@@ -12,6 +12,7 @@ const app: Express.Application = express();
 app.set("case sensitive routing", true);
 import cors from "cors";
 app.use(cors());
+app.use(express.json());
 // Logger setup
 import Logger from "bunyan";
 const logger = Logger.createLogger({

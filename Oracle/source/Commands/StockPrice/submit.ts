@@ -1,7 +1,6 @@
 // Express setup
 import * as Express from "express";
 // Node sertup
-import path from "node:path";
 import crypto from "node:crypto";
 // Oracle setup
 import * as Oracle from "Oracle";
@@ -20,14 +19,13 @@ const submissionKeys = [ "end", "ind", "start", "terr", "time", "win" ];
 export const name = "submit";
 export async function exec(request: Express.Request, response: Express.Response) {
   const oregano: Oracle.Oregano = request.app.locals.oregano;
-  const submission = JSON.parse(request.body) as Oracle.Submission;
+  const submission = request.body as Oracle.Submission;
   const errorMessages = errorCheck(submission);
   if (errorMessages.length)
     return [400, { error: errorMessages.join("\n<br>\n") }];
   const subkey = generateSubkey();
   await oregano.ioredis.evalsha(oregano.scripts["StockPrice"], 1, subkey, "submit",
-    ...(Object.entries(submission).filter(([key, value]) => submissionKeys.includes(key))
-      .map(([key, value]) => `${key} ${value}`)));
+    ...(Object.entries(submission).filter(([key, value]) => submissionKeys.includes(key)).flat()));
   return [200, { subkey }];
 }
 /**
