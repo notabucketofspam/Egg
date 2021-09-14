@@ -60,8 +60,6 @@ declare type OUtilType = {
   ExtWorker: typeof OUtil.ExtWorker;
   /** Find files in subdirectory. */
   readdirRecursive: typeof OUtil.readdirRecursive;
-  /** Verify user submission. */
-  errorCheck: typeof OUtil.errorCheck;
 };
 /**
  * List of commands known to a thread or handler.
