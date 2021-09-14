@@ -43,28 +43,28 @@ do {
   }));
 } while (0);
 // Redis module setup
-import { ReJSON, Redisearch } from "redis-modules-sdk";
-const rejson = new ReJSON({ db: Oracle.RedisDB.StockPrice });
-await rejson.connect();
-const redisearch = new Redisearch({ db: Oracle.RedisDB.StockPrice });
-await redisearch.connect();
+//import { ReJSON, Redisearch } from "redis-modules-sdk";
+//const rejson = new ReJSON({ db: Oracle.RedisDB.StockPrice });
+//await rejson.connect();
+//const redisearch = new Redisearch({ db: Oracle.RedisDB.StockPrice });
+//await redisearch.connect();
 // BullMQ setup
-import { Queue, QueueScheduler, Worker } from "bullmq";
-const queue = new Queue("StockPrice", { connection: { db: Oracle.RedisDB.BullMQ } });
-const queueScheduler = new QueueScheduler("QueueScheduler", { connection: { db: Oracle.RedisDB.BullMQ } });
-const workers: Worker[] = [];
-for (let index = 0; index < 8; ++index)
-  workers.push(new Worker(`Worker_${index}`, undefined, { connection: { db: Oracle.RedisDB.BullMQ } }));
+//import { Queue, QueueScheduler, Worker } from "bullmq";
+//const queue = new Queue("StockPrice", { connection: { db: Oracle.RedisDB.BullMQ } });
+//const queueScheduler = new QueueScheduler("QueueScheduler", { connection: { db: Oracle.RedisDB.BullMQ } });
+//const workers: Worker[] = [];
+//for (let index = 0; index < 8; ++index)
+//  workers.push(new Worker(`Worker_${index}`, undefined, { connection: { db: Oracle.RedisDB.BullMQ } }));
 // Middleware setup
 app.locals.oregano = {
   logger,
   ioredis,
   scripts,
-  rejson,
-  redisearch,
-  queue,
-  queueScheduler,
-  workers
+  //rejson,
+  //redisearch,
+  //queue,
+  //queueScheduler,
+  //workers
 };
 import { v4 as uuidv4 } from "uuid";
 app.use(function (request: Express.Request, response: Express.Response, next: Express.NextFunction) {
@@ -106,11 +106,11 @@ const commandRegister: Oracle.CommandRegister = {
     let code = 0;
     await Promise.all<void>([
       new Promise<void>(resolve => void server.close(() => resolve())),
-      queue.close(),
-      queueScheduler.close(),
-      ...(workers.map(worker => worker.close())),
-      rejson.disconnect(),
-      redisearch.disconnect(),
+      //queue.close(),
+      //queueScheduler.close(),
+      //...(workers.map(worker => worker.close())),
+      //rejson.disconnect(),
+      //redisearch.disconnect(),
       new Promise<void>(resolve => ioredis.script("FLUSH", () => ioredis.quit(() => resolve())))
     ]).catch<void>(() => void (code = 1));
     parentPort!.off("message", commandRegister.exec);
