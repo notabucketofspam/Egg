@@ -18,6 +18,7 @@ do {
     commandRegister[command.name] = command.exec;
   }));
 } while (0);
+const commandRegisterObjectKeys = Object.keys(commandRegister);
 // Handler
 export const method = "post";
 export const route = "/exec/stock-price";
@@ -26,7 +27,7 @@ export async function exec(request: Express.Request, response: Express.Response)
   // Assume something went wrong until otherwise noted
   let status = 400;
   let send: Record<string, any> = { error: `Invalid command: ${commandName ? commandName : "undefined"}.` };
-  if (commandName && Object.keys(commandRegister).includes(commandName))
+  if (commandName && commandRegisterObjectKeys.includes(commandName))
     [status, send] = await commandRegister[commandName](request, response);
   response.status(status).send(send);
 }
