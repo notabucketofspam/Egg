@@ -5,5 +5,6 @@ return {
   gen_target = "5.1",
   disable_warnings = {
     "unused"
-  }
+  },
+  gen_compat = "off"
 }
