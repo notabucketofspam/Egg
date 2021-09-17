@@ -189,8 +189,6 @@ local submissionsDel = map(delsubs, function(sub: {string: string}): string
   return sub["subkey"]
 end)
 send.map["del-reply"] = tostring(redis.call("DEL", unpack(submissionsDel)))
-if ARGV[1] == "submit" then
-  send.map["ok"] = "submit ok"
-end
 -- Final reply
+send.map["ok"] = "done"
 return send
