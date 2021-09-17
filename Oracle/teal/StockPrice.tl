@@ -53,7 +53,7 @@ local submissions: {{string: string}} = {}
 for index = 2, #searchResults, 2 do
   local place = (index / 2) as integer
   submissions[place] = {}
-  -- submissions[place]["subkey"] = searchResults[index] as string
+  submissions[place]["subkey"] = searchResults[index] as string
   local sub = searchResults[index + 1] as {string}
   for subindex = 1, #sub, 2 do
     submissions[place][sub[subindex]] = sub[subindex + 1]
@@ -75,9 +75,9 @@ for index = 1, calcRange, 1 do
   table.insert(calcsubs, table.remove(submissions))
 end
 -- Equivalent to old `deletables` array
-local deletesubs: {{string: string}} = {}
+local delsubs: {{string: string}} = {}
 for index = 1, #submissions + calcRange - tonumber(constants["keep-range"]), 1 do
-  table.insert(deletesubs, table.remove(submissions, 1))
+  table.insert(delsubs, table.remove(submissions, 1))
 end
 -- Some functions that will be useful for calculating the stock price delta
 local function map<T, V>(obj: {T}, fn: function(T, integer): V): {V}
@@ -183,7 +183,12 @@ if ARGV[1] == "debug" then
   return send
 end
 ]]
-send.map["success"] = redis.call("HSET", "stock-price", unpack(stockPriceHset)) as string
+send.map["hset-reply"] = tostring(redis.call("HSET", "stock-price", unpack(stockPriceHset)))
+-- Delete old submissions
+local submissionsDel = map(delsubs, function(sub: {string: string}): string
+  return sub["subkey"]
+end)
+send.map["del-reply"] = tostring(redis.call("DEL", unpack(submissionsDel)))
 if ARGV[1] == "submit" then
   send.map["ok"] = "submit ok"
 end
