@@ -75,11 +75,6 @@ local calcsubs: {{string: string}} = {}
 for index = 1, calcRange, 1 do
   table.insert(calcsubs, table.remove(submissions))
 end
--- Equivalent to old `deletables` array
-local delsubs: {{string: string}} = {}
-for index = 1, #submissions + calcRange - tonumber(constants["keep-range"]), 1 do
-  table.insert(delsubs, table.remove(submissions, 1))
-end
 -- Some functions that will be useful for calculating the stock price delta
 local function map<T, V>(obj: {T}, fn: function(T, integer): V): {V}
   local newobj: {V} = {}
@@ -178,12 +173,11 @@ for territory, value in pairs(delta) do
 end
 send.map["hset-reply"] = tostring(redis.call("HSET", "stock-price", unpack(stockPriceHset)))
 -- Delete old submissions
-if #delsubs > 0 then
-  local submissionsDel = map(delsubs, function(sub: {string: string}): string
-    return sub["subkey"]
-  end)
-  send.map["del-reply"] = tostring(redis.call("DEL", unpack(submissionsDel)))
+local delsubkeys: {string} = {}
+for index = 1, #submissions + calcRange - tonumber(constants["keep-range"]), 1 do
+  table.insert(delsubkeys, table.remove(submissions, 1)["subkey"])
 end
+send.map["del-reply"] = #delsubkeys > 0 and tostring(redis.call("DEL", unpack(delsubkeys))) or "0"
 -- Final reply
 send.map["ok"] = "done"
 return send
