@@ -31,8 +31,6 @@ if ARGV[1] == "submit" then
   searchResults = redis.call("FT.SEARCH", "index:submissions", "@ind:{" .. submission["ind"] .. "}") as {any}
 elseif ARGV[1] == "undo" then
   -- Case of submission undo
-  -- TODO How does undo affect the total number of submissions? Does there need to
-  -- be more than four at any given time?
   local subkeyDeleted = redis.call("DEL", KEYS[1]) as number > 0
   send.map["gaffe-counter"] = subkeyDeleted and tostring(redis.call("HINCRBY", "variables", "gaffe-counter", "1"))
     or "-1"
@@ -175,14 +173,6 @@ for territory, value in pairs(delta) do
   table.insert(stockPriceHset, tostring(math.max(tonumber(stockPrice[territory]) + value,
     tonumber(constants["stock-price-floor"]))))
 end
---[[
-if ARGV[1] == "debug" then
-  redis.debug("delta", delta)
-  redis.debug("stockPriceHset", stockPriceHset)
-  send.map["ok"] = "debug ended"
-  return send
-end
-]]
 send.map["hset-reply"] = tostring(redis.call("HSET", "stock-price", unpack(stockPriceHset)))
 -- Delete old submissions
 local submissionsDel = map(delsubs, function(sub: {string: string}): string
