@@ -178,10 +178,12 @@ for territory, value in pairs(delta) do
 end
 send.map["hset-reply"] = tostring(redis.call("HSET", "stock-price", unpack(stockPriceHset)))
 -- Delete old submissions
-local submissionsDel = map(delsubs, function(sub: {string: string}): string
-  return sub["subkey"]
-end)
-send.map["del-reply"] = tostring(redis.call("DEL", unpack(submissionsDel)))
+if #delsubs > 0 then
+  local submissionsDel = map(delsubs, function(sub: {string: string}): string
+    return sub["subkey"]
+  end)
+  send.map["del-reply"] = tostring(redis.call("DEL", unpack(submissionsDel)))
+end
 -- Final reply
 send.map["ok"] = "done"
 return send
