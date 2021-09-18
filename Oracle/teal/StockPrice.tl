@@ -23,7 +23,7 @@ local searchResults: {any} = {}
 -- Equivalent to `Command-Name` header
 if ARGV[1] == "submit" then
   -- Case of normal submission
-  redis.call("HSET", KEYS[1], unpack(ARGV, 2) as (string))
+  redis.call("HSET", KEYS[1], unpack(ARGV, 2))
   local submission: {string: string} = {}
   for index = 2, #ARGV, 2 do
     submission[ARGV[index]] = ARGV[index + 1]
@@ -43,6 +43,9 @@ elseif ARGV[1] == "undo" then
 elseif ARGV[1] == "debug" then
   -- Case of debug
   searchResults = redis.call("FT.SEARCH", "index:submissions", "@ind:{" .. ARGV[2] .. "}") as {any}
+else
+  send.map["err"] = "Invalid command name."
+  return send
 end
 -- Start of calculations
 local constants = (redis.call("HGETALL", "constants") as {string: {string: string}})["map"]
