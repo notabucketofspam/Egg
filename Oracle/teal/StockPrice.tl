@@ -76,18 +76,19 @@ for index = 1, calcRange, 1 do
   table.insert(calcsubs, table.remove(submissions))
 end
 -- Some functions that will be useful for calculating the stock price delta
-local function map<T, V>(obj: {T}, fn: function(T, integer): V): {V}
+local function map<T, V>(obj: {T}, fn: function(T, integer): (V)): {V}
   local newobj: {V} = {}
   for index = 1, #obj, 1 do
     newobj[index] = fn(obj[index], index)
   end
   return newobj
 end
-local function filter<T>(obj: {T}, fn: function(T): boolean): {T}
-  local newobj: {T} = {}
+local function mapFilter<T, V>(obj: {T}, mapfn: function(T): (V), filterfn: function(V): (boolean)): {V}
+  local newobj: {V} = {}
   for index = 1, #obj, 1 do
-    if fn(obj[index]) then
-      table.insert(newobj, obj[index])
+    local mapValue = mapfn(obj[index])
+    if filterfn(mapValue) then
+      table.insert(newobj, mapValue)
     end
   end
   return newobj
@@ -101,24 +102,24 @@ local function reduceSum(obj: {number}): number
 end
 -- Constants that can be safely calculated outside of the central loop below
 local lastTerritory = calcsubs[#calcsubs]["terr"]
-local winCount = #filter(map(calcsubs, function(sub: {string: string}): boolean
+local winCount = #mapFilter(calcsubs, function(sub: {string: string}): boolean
   return sub["terr"] == lastTerritory and sub["win"] == "true" or false
-end), function(element: boolean): boolean
+end, function(element: boolean): boolean
   return element
 end)
-local loseCount = #filter(map(calcsubs, function(sub: {string: string}): boolean
+local loseCount = #mapFilter(calcsubs, function(sub: {string: string}): boolean
   return sub["terr"] == lastTerritory and sub["win"] == "false" or false
-end), function(element: boolean): boolean
+end, function(element: boolean): boolean
   return element
 end)
-local indWinCount = #filter(map(calcsubs, function(sub: {string: string}): boolean
+local indWinCount = #mapFilter(calcsubs, function(sub: {string: string}): boolean
   return sub["win"] == "true"
-end), function(element: boolean): boolean
+end, function(element: boolean): boolean
   return element
 end)
-local indLoseCount = #filter(map(calcsubs, function(sub: {string: string}): boolean
+local indLoseCount = #mapFilter(calcsubs, function(sub: {string: string}): boolean
   return sub["win"] == "false"
-end), function(element: boolean): boolean
+end, function(element: boolean): boolean
   return element
 end)
 local territories = industryRegistry[calcsubs[1]["ind"]]
@@ -133,20 +134,20 @@ for index = 1, #territories, 1 do
   local weightedAverageStockLoss = 0.0
   local winLoseDividend = 0.0
   if territories[index] == lastTerritory then
-    local stockLossArray = filter(map(calcsubs, function(sub: {string: string}): number
+    local stockLossArray = mapFilter(calcsubs, function(sub: {string: string}): number
       return sub["terr"] == lastTerritory and tonumber(sub["start"]) - tonumber(sub["end"]) or -1.0
-    end), function(element: number): boolean
+    end, function(element: number): boolean
       return element ~= -1.0
     end)
-    local averageStockLossArray = filter(map(calcsubs, function(sub: {string: string}): number
+    local averageStockLossArray = mapFilter(calcsubs, function(sub: {string: string}): number
       return sub["terr"] == lastTerritory and (tonumber(sub["start"]) - tonumber(sub["end"])) /
         tonumber(sub["start"]) or -1.0
-    end), function(element: number): boolean
+    end, function(element: number): boolean
       return element ~= -1.0
     end)
-    local stockLossWeightArray = filter(map(calcsubs, function(sub: {string: string}): number
+    local stockLossWeightArray = mapFilter(calcsubs, function(sub: {string: string}): number
       return sub["terr"] == lastTerritory and reduceSum(stockLossArray) / #stockLossArray or -1.0
-    end), function(element: number): boolean
+    end, function(element: number): boolean
       return element ~= -1.0
     end)
     weightedAverageStockLoss = reduceSum(stockLossArray) ~= 0.0 and reduceSum(map(averageStockLossArray,
