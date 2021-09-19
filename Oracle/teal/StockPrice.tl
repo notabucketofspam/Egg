@@ -172,13 +172,15 @@ for territory, value in pairs(delta) do
   table.insert(stockPriceHset, tostring(math.max(tonumber(stockPrice[territory]) + value,
     tonumber(constants["stock-price-floor"]))))
 end
-send.map["hset-reply"] = tostring(redis.call("HSET", "stock-price", unpack(stockPriceHset)))
+redis.call("HSET", "stock-price", unpack(stockPriceHset))
 -- Delete old submissions
 local delsubkeys: {string} = {}
 for index = 1, #submissions + calcRange - tonumber(constants["keep-range"]), 1 do
   table.insert(delsubkeys, table.remove(submissions, 1)["subkey"])
 end
-send.map["del-reply"] = #delsubkeys > 0 and tostring(redis.call("DEL", unpack(delsubkeys))) or "0"
+if #delsubkeys > 0 then
+  redis.call("DEL", unpack(delsubkeys))
+end
 -- Final reply
 send.map["ok"] = "done"
 return send
