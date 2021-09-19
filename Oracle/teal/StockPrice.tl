@@ -31,6 +31,7 @@ if ARGV[1] == "submit" then
   searchResults = redis.call("FT.SEARCH", "index:submissions", "@ind:{" .. submission["ind"] .. "}") as {any}
 elseif ARGV[1] == "undo" then
   -- Case of submission undo
+  local submission = (redis.call("HGETALL", KEYS[1]) as {string: {string: string}})["map"]
   local subkeyDeleted = redis.call("DEL", KEYS[1]) as number > 0
   send.map["gaffe-counter"] = subkeyDeleted and tostring(redis.call("HINCRBY", "variables", "gaffe-counter", "1"))
     or "-1"
@@ -38,7 +39,6 @@ elseif ARGV[1] == "undo" then
     send.map["err"] = "The subkey does not exist."
     return send
   end
-  local submission = (redis.call("HGETALL", KEYS[1]) as {string: {string: string}})["map"]
   searchResults = redis.call("FT.SEARCH", "index:submissions", "@ind:{" .. submission["ind"] .. "}") as {any}
 elseif ARGV[1] == "debug" then
   -- Case of debug
