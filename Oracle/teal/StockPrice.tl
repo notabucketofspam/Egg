@@ -182,5 +182,4 @@ if #delsubkeys > 0 then
   redis.call("DEL", unpack(delsubkeys))
 end
 -- Final reply
-send.map["ok"] = "done"
 return send
