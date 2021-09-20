@@ -1,12 +1,15 @@
 // Express setup
 import * as Express from "express";
-// Node sertup
+// Node setup
 import crypto from "node:crypto";
+import path from "node:path";
 // Oracle setup
 import * as Oracle from "Oracle";
+const OUtil: Oracle.OUtilType = await import(path.normalize(`file://${process.cwd()}/build/OUtil.js`));
 // Other setup
 /**
  * Create a submission key with 56-bit timestamp and 96-bit random suffix.
+ * @returns {string} The submission key
  */
 function generateSubkey() {
   const timestamp = Date.now().toString(16).padStart(14, "0");
@@ -24,8 +27,10 @@ export async function exec(request: Express.Request, response: Express.Response)
   if (errorMessages.length)
     return [400, { error: errorMessages.join("\n<br>\n") }];
   const subkey = generateSubkey();
-  await oregano.ioredis.evalsha(oregano.scripts["StockPrice"], 1, subkey, "submit",
-    ...(Object.entries(submission).filter(([key, value]) => submissionKeys.includes(key)).flat()));
+  const send = OUtil.fromMapReply(await oregano.ioredis.evalsha(oregano.scripts["StockPrice"], 1, subkey, "submit",
+    ...(Object.entries(submission).filter(([key, value]) => submissionKeys.includes(key)).flat())));
+  if (send["err"])
+    return [500, { error: send["err"] }];
   return [200, { subkey }];
 }
 /**
