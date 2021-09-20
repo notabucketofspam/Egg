@@ -3,16 +3,16 @@ import * as Oracle from "Oracle";
 import * as OUtil from "./OUtil.js";
 // Node setup
 import { parentPort } from "node:worker_threads";
-import path from "node:path";
 import fs from "node:fs";
+import path from "node:path";
 // Express setup
 import * as Express from "express";
 import express from "express";
 const app: Express.Application = express();
 app.set("case sensitive routing", true);
+app.use(express.json());
 import cors from "cors";
 app.use(cors());
-app.use(express.json());
 // Logger setup
 import Logger from "bunyan";
 const logger = Logger.createLogger({
@@ -42,29 +42,11 @@ do {
       fs.readFileSync(scriptFile, { encoding: "utf8" }));
   }));
 } while (0);
-// Redis module setup
-//import { ReJSON, Redisearch } from "redis-modules-sdk";
-//const rejson = new ReJSON({ db: Oracle.RedisDB.StockPrice });
-//await rejson.connect();
-//const redisearch = new Redisearch({ db: Oracle.RedisDB.StockPrice });
-//await redisearch.connect();
-// BullMQ setup
-//import { Queue, QueueScheduler, Worker } from "bullmq";
-//const queue = new Queue("StockPrice", { connection: { db: Oracle.RedisDB.BullMQ } });
-//const queueScheduler = new QueueScheduler("QueueScheduler", { connection: { db: Oracle.RedisDB.BullMQ } });
-//const workers: Worker[] = [];
-//for (let index = 0; index < 8; ++index)
-//  workers.push(new Worker(`Worker_${index}`, undefined, { connection: { db: Oracle.RedisDB.BullMQ } }));
 // Middleware setup
 app.locals.oregano = {
   logger,
   ioredis,
-  scripts,
-  //rejson,
-  //redisearch,
-  //queue,
-  //queueScheduler,
-  //workers
+  scripts
 };
 import { v4 as uuidv4 } from "uuid";
 app.use(function (request: Express.Request, response: Express.Response, next: Express.NextFunction) {
@@ -72,7 +54,6 @@ app.use(function (request: Express.Request, response: Express.Response, next: Ex
   next();
 });
 // HTTP request handlers
-// Parallel assignment from: https://stackoverflow.com/a/37576787
 do {
   const methodsDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/Methods`), { encoding: "utf8" });
   const handlerFiles: string[] = [];
@@ -86,7 +67,7 @@ do {
 app.use(function (error: Error, request: Express.Request, response: Express.Response, next: Express.NextFunction) {
   logger.error(error);
   const errorStack = error.stack ? error.stack : `Some sort of error occurred:\n${String(error)}`;
-  response.status(500).send(errorStack);
+  response.status(500).send({ error: errorStack });
 });
 // Listen for requests
 const server = app.listen(39000, "localhost");
@@ -96,21 +77,17 @@ const commandRegister: Oracle.CommandRegister = {
    * Execute one of the known commands.
    * @param {Oracle.ExtWorkerMessage} message Gathered from parentPort
    */
-  exec(message) {
+  exec(message: Oracle.ExtWorkerMessage) {
     commandRegister[message.command](message);
   },
   /**
    * Delete thread.
+   * @returns {Promise<void>} Basically nothing
    */
   async terminate() {
     let code = 0;
     await Promise.all<void>([
       new Promise<void>(resolve => void server.close(() => resolve())),
-      //queue.close(),
-      //queueScheduler.close(),
-      //...(workers.map(worker => worker.close())),
-      //rejson.disconnect(),
-      //redisearch.disconnect(),
       new Promise<void>(resolve => ioredis.script("FLUSH", () => ioredis.quit(() => resolve())))
     ]).catch<void>(() => void (code = 1));
     parentPort!.off("message", commandRegister.exec);

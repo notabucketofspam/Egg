@@ -4,8 +4,6 @@ import * as OUtil from "./OUtil.js"
 import * as Express from "express";
 import Logger from "bunyan";
 import { Redis } from "ioredis";
-import { ReJSON, Redisearch } from "redis-modules-sdk";
-import { Queue, QueueScheduler, Worker } from "bullmq";
 /**
  * Template message being pased between Worker threads.
  */
@@ -29,16 +27,6 @@ declare interface Oregano {
   ioredis: Redis;
   /** List of Lua script hashes */
   scripts: Record<string, string>;
-  /** ReJSON client */
-  rejson: ReJSON;
-  /** RediSearch client */
-  redisearch: Redisearch;
-  /** BullMQ queue */
-  queue: Queue;
-  /** BullMQ queue scheduler */
-  queueScheduler: QueueScheduler;
-  /** BullMQ worker array */
-  workers: Worker[];
 }
 /**
  * Express middleware for a specific route.
@@ -67,14 +55,13 @@ declare type OUtilType = {
  * List of commands known to a thread or handler.
  */
 declare interface CommandRegister {
-  [command: string]: (...args: any) => any;
+  [command: string]: (...args: any[]) => any;
 }
 /**
  * Number of the Redis database to use for a connection.
  */
 declare const enum RedisDB {
-  StockPrice,
-  BullMQ
+  StockPrice
 }
 /**
  * Command to execute in the context of HTTP requests.
