@@ -1,6 +1,6 @@
 /**
  * Give an overview of each user's stock ownership and financial status.
- * @returns {Record<string, any>[]} An array containing the displays
+ * @returns {Record<string, string>[]} An array containing the displays
  */
 function generateUserDisplay() {
   const displays: Record<string, string>[] = [];
