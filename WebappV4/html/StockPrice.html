@@ -1,25 +1,26 @@
-<hr />
+<hr>
 <div class="TwoColumn" id="stock-data-div">
   <div style=" margin-right: 4ch; width: 21ch">
     <span style="font-size: 180%;">Stock Data</span>
   </div>
   <div class="TwoRow">
     <div>
-      Backend courtesy of <a href="https://www.deta.sh/" target="_blank">Deta</a>
+      Backend courtesy of Oracle
     </div>
     <div>
-      Fetch time: <span id="get-stock-price-timer">0</span>ms
+      Fetch time: <span id="fetch-stock-price-timer">0</span>ms
     </div>
   </div>
 </div>
 <div class="TwoColumn" id="stock-price-div">
   <div id="stock-price-table-div" style="margin-right: 4ch;">
-    <table id="stock-price-table" style="border-collapse: collapse;">
+    <table id="stock-price-table">
       <thead>
         <tr>
           <th colspan="2">Stock price</th>
           <th colspan="2">
-            <input type="button" id="get-stock-price-input" onclick="getStockPriceHandler()" value="Get the latest" />
+            <input type="button" id="fetch-stock-price-input" onclick="fetchStockPriceHandler()" 
+              value="Get the latest">
           </th>
         </tr>
       </thead>
@@ -150,21 +151,21 @@
         </div>
         <div>
           <label for="win-lose">Won the match</label>
-          <input id="win-lose" name="winLose" type="checkbox" />
+          <input id="win-lose" name="winLose" type="checkbox">
         </div>
         <div>
           <label for="stock-count-start">Stock count start</label>
-          <input id="stock-count-start" name="stockCountStart" type="number" min="0" max="10" value="0" />
+          <input id="stock-count-start" name="stockCountStart" type="number" min="0" max="10" value="0">
         </div>
         <div>
           <label for="stock-count-end">Stock count end</label>
-          <input id="stock-count-end" name="stockCountEnd" type="number" min="0" max="10" value="0" />
+          <input id="stock-count-end" name="stockCountEnd" type="number" min="0" max="10" value="0">
         </div>
         <div>
-          <input id="form-submit-input" type="submit" value="Plug it in, coach" />
+          <input id="form-submit-input" type="submit" value="Plug it in, coach">
         </div>
       </form>
-      <br />
+      <br>
     </div>
     <div id="form-submission-message-area">
       <div id="form-submit-start-message" style="display: none;">
@@ -172,12 +173,12 @@
       </div>
       <div id="form-submit-complete-message" style="display: none;">
         Your taxes have been filed
-        <br />
-        <input type="button" id="form-undo-input" onclick="formUndoHandler()" value="Undo" />
+        <br>
+        <input type="button" id="form-undo-input" onclick="formUndoHandler()" value="Undo">
       </div>
       <div id="form-undo-message" style="display: none;">
         Don't mess it up this time, pal
-        <br />
+        <br>
         Gaffe counter: <span id="form-gaffe-counter"></span>
       </div>
       <div id="form-error-check-message-area" style="display: none;">
@@ -200,34 +201,39 @@
 </div>
 <script id="stock-price-script">
 /**
- * @typedef {Object} Submission
- * @prop {Record<string, any>} extraData
- * @prop {string} industry
- * @prop {string} key
- * @prop {number} stockCountEnd
- * @prop {number} stockCountStart
- * @prop {string} territory
- * @prop {number} timestamp
- * @prop {boolean} winLose
+ * @typedef Submission
+ * @property {string} ind
+ * @property {number} end
+ * @property {number} start
+ * @property {string} terr
+ * @property {number} time
+ * @property {boolean} win
+ *
+ * @typedef ResultBase
+ * @property {string} [error]
+ * @property {string} [subkey]
+ * @property {number} [gaffeCounter]
+ * 
+ * @typedef {ResultBase & Record<string, any>} Result
  */
 /** @type boolean */
 var formSubmitInputFlag;
 /** @type boolean */
-var getStockPriceFlag;
-/** @type Submission */
-var lastFormSubmission;
+var fetchStockPriceFlag;
 /** @type number */
 var formSubmitCompleteSetTimeoutHandle;
 /** @type number */
 var formUndoSetTimeoutHandle;
 /** @type number */
 var formFailureMessageSetTimeoutHandle;
-/** The URL used for making requests to EggMicroV4R0 */
-const detaMicroEndpoint = "https://v86nf8.deta.dev";
+/** The URL used for making requests to the Oracle compute instance. */
+const endpoint = "https://eggonomics.net/exec/stock-price";
 /** @type number */
-var getStockPriceTimerSetIntervalHandle;
+var fetchStockPriceTimerSetIntervalHandle;
 /** @type number */
 var formSubmitTimerSetIntervalHandle;
+/** @type string */
+var lastFormSubkey;
 /**
  * Add some event listeners
  */
@@ -239,7 +245,6 @@ var formSubmitTimerSetIntervalHandle;
     if (formSubmitInputFlag)
       event.preventDefault();
   });
-  // getStockPriceHandler();
 }) ();
 /**
  * Deal with the form actually being submittted.
@@ -251,33 +256,37 @@ function formSubmitHandler(form) {
   document.getElementById("form-failure-message").style = "display: none;"
   if (formErrorCheck(form))
     return;
-  const formObject = Object.fromEntries((new FormData(form)).entries());
-  formObject.industry = JSON.parse(formObject.territorySelect).industry;
-  formObject.territory = JSON.parse(formObject.territorySelect).territory;
-  delete formObject.territorySelect;
-  formObject.stockCountStart = Number.parseInt(formObject.stockCountStart);
-  formObject.stockCountEnd = Number.parseInt(formObject.stockCountEnd);
-  formObject.winLose = formObject.winLose === "on";
-  formObject.timestamp = Date.now();
-  formObject.extraData = {};
+  /** @type Submission */
+  const submission = {};
+  do {
+    const formObject = Object.fromEntries((new FormData(form)).entries());
+    submission.ind = JSON.parse(formObject.territorySelect).industry;
+    submission.terr = JSON.parse(formObject.territorySelect).territory;
+    submission.start = Number.parseInt(formObject.stockCountStart);
+    submission.end = Number.parseInt(formObject.stockCountEnd);
+    submission.win = formObject.winLose === "on";
+    submission.time = Date.now();
+  } while (0);
   document.getElementById("form-submit-start-message").style = "display: block;";
   document.getElementById("form-undo-message").style = "display: none;";
   document.getElementById("form-submit-complete-message").style = "display: none;";
   let timer = 0;
   formSubmitInputFlag = true;
-  formSubmitTimerSetIntervalHandle = setInterval(function(/** @type HTMLSpanElement*/ spanElement) {
+  formSubmitTimerSetIntervalHandle = setInterval(function(spanElement) {
     timer += frametime;
     spanElement.innerText = Math.trunc(timer);
   }, frametime, document.getElementById("form-submit-timer"));
-  // Replacement for google.script.run from EggScriptV8
-  fetch(`${detaMicroEndpoint}/form-submit`, {
+  fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formObject)
+    headers: {
+      "Command-Name": "submit",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(submission)
   })
   .then(validateResponse)
   .then(function (result) {
-    lastFormSubmission = result;
+    lastFormSubkey = result.subkey;
     form.reset();
     document.getElementById("form-submit-start-message").style = "display: none;";
     document.getElementById("form-submit-complete-message").style = "display: block;";
@@ -297,10 +306,13 @@ function formSubmitHandler(form) {
  */
 function formUndoHandler() {
   document.getElementById("form-submit-complete-message").style = "display: none;";
-  fetch(`${detaMicroEndpoint}/form-undo`, {
+  fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(lastFormSubmission)
+    headers: {
+      "Command-Name": "undo",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ subkey: lastFormSubkey })
   })
   .then(validateResponse)
   .then(function (result) {
@@ -318,17 +330,20 @@ function formUndoHandler() {
 /**
  * Retrieve new values for the stock price table.
  */
-function getStockPriceHandler() {
-  if (getStockPriceFlag)
+function fetchStockPriceHandler() {
+  if (fetchStockPriceFlag)
     return;
   let timer = 0;
-  getStockPriceFlag = true;
-  getStockPriceTimerSetIntervalHandle = setInterval(function(/** @type HTMLSpanElement*/ spanElement) {
+  fetchStockPriceFlag = true;
+  fetchStockPriceTimerSetIntervalHandle = setInterval(function(spanElement) {
     timer += frametime;
     spanElement.innerText = Math.trunc(timer);
-  }, frametime, document.getElementById("get-stock-price-timer"));
-  fetch(`${detaMicroEndpoint}/stock-price`, {
-    method: "GET"
+  }, frametime, document.getElementById("fetch-stock-price-timer"));
+  fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Command-Name": "fetch"
+    },
   })
   .then(validateResponse)
   .then(function (result) {
@@ -338,28 +353,38 @@ function getStockPriceHandler() {
   })
   .catch(formFailureMessageHandler)
   .finally(function () {
-    getStockPriceFlag = false;
-    clearInterval(getStockPriceTimerSetIntervalHandle);
+    fetchStockPriceFlag = false;
+    clearInterval(fetchStockPriceTimerSetIntervalHandle);
   });
 }
 /**
  * Make sure that the response is ok.
  * @param {Response} response Get this from any fetch()
- * @returns {Promise<any>} Object on success, error message on failure
+ * @returns {Promise<Result>} Object on success, error message on failure
  */
 async function validateResponse(response) {
-  return response.ok ? response.json() :
-    Promise.reject(`${response.status} ${response.statusText}\n<br />\n${await response.text()}`);
+  const responseText = await response.text();
+  let parseError = false;
+  /** @type Result */
+  let result;
+  try {
+    result = JSON.parse(responseText);
+  } catch (error) {
+    parseError = true;
+  }
+  return !parseError && response.ok ? result :
+    Promise.reject(`${response.status} ${response.statusText}\n<br>\n` + 
+    result && result.error ? result.error : responseText);
 }
 /**
  * Deal with server-side screw up.
- * @param {Error} error Any error that may have been raised during the submission process
+ * @param {string} error Any error message that may have been raised during the submission process
  */
 function formFailureMessageHandler(error) {
   document.getElementById("form-submit-start-message").style = "display: none;";
   document.getElementById("form-submit-complete-message").style = "display: none;";
   document.getElementById("form-undo-message").style = "display: none;";
-  document.getElementById("form-failure-message").innerHTML = error.toString();
+  document.getElementById("form-failure-message").innerHTML = error;
   document.getElementById("form-failure-message").style = "display: block;";
   clearTimeout(formFailureMessageSetTimeoutHandle);
   formFailureMessageSetTimeoutHandle = setTimeout(function () {
@@ -368,11 +393,11 @@ function formFailureMessageHandler(error) {
 }
 /**
  * Client-side assurance of proper form submission.
- * There's also a server-side error check, just for safety
+ * There's also a server-side error check, just for safety.
  * @param {HTMLFormElement} form The submitted form
  * @returns {boolean} Whether or not the form has errors in it
  */
-  function formErrorCheck(form) {
+function formErrorCheck(form) {
   let formErrorRate = 0;
   // No character selected
   if (form.elements["territory-select"].selectedOptions[0].value === '{"territory": "none", "industry": "none"}') {

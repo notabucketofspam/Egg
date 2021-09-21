@@ -1,14 +1,17 @@
 <style>
+table {
+  table-layout: fixed;
+  width: calc(4 * 12ch + 4 * 3px + 1px);
+  border-collapse: collapse;
+}
 td, thead {
   border: 1px solid black;
 }
 td {
   width: 12ch;
   height: 1em;
+  overflow: hidden;
 }
-/* tr:nth-child(even) {
-  background-color: #eee;
-} */
 a {
   color: midnightblue;
 }
