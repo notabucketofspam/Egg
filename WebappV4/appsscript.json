@@ -8,14 +8,7 @@
         "version": "v4"
       }
     ],
-    "libraries": [
-      {
-        "userSymbol": "Bus3",
-        "libraryId": "195a748rtIXKDbR0kkoXhxdVLiBhPfeRVMKCYEg74jcPRJXCALNa0JXfh",
-        "version": "2",
-        "developmentMode": false
-      }
-    ]
+    "libraries": []
   },
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
