@@ -25,7 +25,7 @@
   "addOns": {
     "common": {
       "name": "Eggonomics",
-      "logoUrl": "https://storage.googleapis.com/eggonomics/EggLogoV3.png"
+      "logoUrl": "https://eggonomics.net/EggLogoV3.png"
     },
     "sheets": {
       "homepageTrigger": {
