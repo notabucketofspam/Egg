@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<base target="_top" />
+<base target="_top">
 <?!= installHtmlElement("html/Style"); ?>
 <script>
 var spreadsheetId = "";
@@ -11,10 +11,10 @@ var spreadsheetId = "";
 <body>
 <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
 <h1>WebappV4</h1>
-<input type="button" value="Choose spreadsheet" onclick="getOauthToken()" />
+<input type="button" value="Choose spreadsheet" onclick="getOauthToken()">
 <span id="spreadsheetId-span"></span>
 <?!= installHtmlElement("html/StockPrice"); ?>
-<input type="button" value="logActiveUserEmail()" onclick="google.script.run.logActiveUserEmail()" />
-<input type="button" value="modSpreadsheet()" onclick="google.script.run.modSpreadsheet(spreadsheetId)" />
+<input type="button" value="logActiveUserEmail()" onclick="google.script.run.logActiveUserEmail()">
+<input type="button" value="modSpreadsheet()" onclick="google.script.run.modSpreadsheet(spreadsheetId)">
 </body>
 </html>
