@@ -8,3 +8,5 @@ httpd-private-key
 /log/**
 # Teal build
 /lua/**
+# HTML temporary files
+/html/temp/**
