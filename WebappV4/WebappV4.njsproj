@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="html\AddOnHeader.html" />
+    <Content Include="html\Calculator.html" />
     <Content Include="html\IndexOld.html" />
     <Content Include="html\IndexAddOn.html" />
     <Content Include="html\Index.html" />
@@ -57,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="source\AddOn.ts" />
+    <TypeScriptCompile Include="source\Calculator.ts" />
     <TypeScriptCompile Include="source\Definitions.d.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
     <TypeScriptCompile Include="source\UserDisplay.ts" />

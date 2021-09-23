@@ -25,6 +25,8 @@ function generateUserDisplay() {
     displays.forEach(function (display) {
       document.getElementById(display["div"]).insertAdjacentHTML("beforeend", display["content"]);
     });
+    if (!calculator.optionsInitialized)
+      generateCalculatorOptions();
   }).withFailureHandler(function (/** @type Error */ error) {
     generateUserDisplayFlag = false;
     clearInterval(updateUserDisplayTimerSetIntervalHandle);

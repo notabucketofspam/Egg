@@ -1,0 +1,307 @@
+<hr>
+<div class="TwoRow" id="calculator-div">
+  <div class="TwoColumn" id="calculator-forms">
+    <div id="stock-trade-div" style="margin-right: 4ch;">
+      <b>!!! TRADE OFFER !!!</b>
+      <br>
+      <form id="stock-trade-form" onsubmit="stockTradeFormHandler(this)" method="POST">
+        <label for="stock-trade-territory-select">Territory</label>
+        <select id="stock-trade-territory-select" name="terr"></select>
+        <br>
+        <label for="stock-trade-tx">Take from</label>
+        <select id="stock-trade-tx" class="CalculatorSelectElement" name="tx"></select>
+        <br>
+        <label for="stock-trade-rx">Send to</label>
+        <select id="stock-trade-rx" class="CalculatorSelectElement" name="rx"></select>
+        <br>
+        <label for="stock-trade-count">Count</label>
+        <input id="stock-trade-count" name="count" type="number" value="0" min="0" max="10">
+        <br>
+        <label for="stock-trade-markdown">Markdown</label>
+        <input id="stock-trade-markdown" name="markdown" type="number" value="0" max="0" step="any">
+        <br>
+        <input id="stock-trade-submit-input" type="submit" value="Commence">
+      </form>
+    </div>
+    <div id="transaction-div">
+      <b>International wire transfer</b>
+      <br>
+      <form id="transaction-form" onsubmit="transactionFormHandler(this)" method="POST">
+        <label for="transaction-tx">Transmitter</label>
+        <select id="transaction-tx" class="CalculatorSelectElement" name="tx"></select>
+        <br>
+        <label for="transaction-rx">Receiver</label>
+        <select id="transaction-rx" class="CalculatorSelectElement" name="rx"></select>
+        <br>
+        <label for="transaction-amount">Dineros</label>
+        <input id="transaction-amount" name="amount" type="number" value="0" step="any">
+        <br>
+        <input id="transaction-submit-input" type="submit" value="Inject math">
+      </form>
+    </div>
+  </div>
+  <div id="calculator-message-area" style="height: 6rem; overflow: visible;">
+    <div id="calculator-wait-message" style="display: none;">
+      <span id="calculator-form-type">[]</span> submitted, please wait... <span id="calculator-timer">0</span>ms
+    </div>
+    <div id="calculator-complete-message" style="display: none;"></div>
+    <div id="calculator-error-messages" style="display: none;"></div>
+    <div id="calculator-failure-messages" style="display: none;"></div>
+  </div>
+</div>
+<script id="calculator-script">
+/**
+ * @typedef StockTrade
+ * @property {string} terr
+ * @property {string} tx
+ * @property {string} rx
+ * @property {number} count
+ * @property {number} markdown
+ * @property {number} sum
+ * 
+ * @typedef Transaction
+ * @property {string} tx
+ * @property {string} rx
+ * @property {number} amount
+ */
+/** Do some nice math. */
+const calculator = {
+  timerSetIntervalHandle: 0,
+  submitCompleteSetTimeoutHandle: 0,
+  failureSetTimeoutHandle: 0,
+  submitInputFlag: false,
+  optionsInitialized: false,
+  completeMessage: document.getElementById("calculator-complete-message"),
+  errorMessages: document.getElementById("calculator-error-messages"),
+  failureMessages: document.getElementById("calculator-failure-messages"),
+  /**
+   * Make sure there are no simple errors in the handler.
+   * @returns {boolean} true if there was an error
+   */
+  handlerPreparation() {
+    calculator.completeMessage.style.display = "none";
+    calculator.failureMessages.style.display = "none";
+    if (!calculator.optionsInitialized) {
+      calculator.errorMessages.innerHTML = "Must generate user display before calculator can be used.";
+      calculator.errorMessages.style.display = "block";
+      return true;
+    }
+    if (calculator.submitInputFlag)
+      return true;
+    return false;
+  },
+  /**
+   * Item is as described.
+   * @param {any} obj The object to error check
+   * @param {(obj: any) => string[]} fn The error check function
+   * @returns {boolean} true if error
+   */
+  doErrorCheck(obj, fn) {
+    calculator.errorMessages.innerHTML = "";
+    calculator.errorMessages.style.display = "none;";
+    const errorMessages = fn(obj);
+    if (errorMessages.length) {
+      calculator.errorMessages.innerHTML = errorMessages.join("\n<br>\n");
+      calculator.errorMessages.style.display = "block";
+      return true;
+    }
+    return false;
+  },
+  /**
+   * Enable the timer and input flag.
+   * @param {string} formType Which calculator form
+   */
+   doReadyState(formType) {
+    calculator.submitInputFlag = true;
+    document.getElementById("calculator-form-type").innerText = formType;
+    document.getElementById("calculator-wait-message").style.display = "block";
+    let timer = 0;
+    calculator.timerSetIntervalHandle = setInterval(function (spanElement) {
+      timer += frametime;
+      spanElement.innerText = Math.trunc(timer);
+    }, frametime, document.getElementById("calculator-timer"));
+  },
+  /**
+   * Server success state.
+   * @param {string} message What to display when done
+   */
+  successHandler(message) {
+    calculator.submitInputFlag = false;
+    clearInterval(calculator.timerSetIntervalHandle);
+    document.getElementById("calculator-wait-message").style.display = "none";
+    calculator.completeMessage.innerText = message;
+    calculator.completeMessage.style.display = "block";
+    clearTimeout(calculator.submitCompleteSetTimeoutHandle);
+    calculator.submitCompleteSetTimeoutHandle = setTimeout(function () {
+      calculator.completeMessage.style.display = "none";
+    }, 15000);
+  },
+  /**
+   * Failure on the server's end.
+   * @param {any} error Some kind of problem
+   */
+  failureHandler(error) {
+    calculator.submitInputFlag = false;
+    clearInterval(calculator.timerSetIntervalHandle);
+    calculator.failureMessages.innerHTML = String(error);
+    calculator.failureMessages.style.display = "block";
+    clearTimeout(calculator.failureSetTimeoutHandle);
+    calculator.failureSetTimeoutHandle = setTimeout(function () {
+      calculator.failureMessages.style.display = "none";
+    }, 120000);
+  }
+};
+/** @type string */
+var activeUserEmail;
+/**
+ * Event listeners and stuff.
+ */
+(function () {
+  document.getElementById("stock-trade-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+  });
+  document.getElementById("stock-trade-submit-input").addEventListener("click", function(event) {
+    if (calculator.submitInputFlag)
+      event.preventDefault();
+  });
+  document.getElementById("transaction-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+  });
+  document.getElementById("transaction-submit-input").addEventListener("click", function(event) {
+    if (calculator.submitInputFlag)
+      event.preventDefault();
+  });
+  // Very lazily copy-paste the same options from StockPrice.html
+  document.getElementById("stock-trade-territory-select").innerHTML = 
+    document.getElementById("territory-select").innerHTML;
+}) ();
+/**
+ * Add options to the calculator form select elements.
+ */
+function generateCalculatorOptions() {
+  activeUserEmail =
+    Array.from(document.getElementById("active-user-display").getElementsByClassName("UserEmailSpan"))[0].innerText;
+  const options = [ `<option value="none" selected>---</option>` ];
+  Array.from(document.getElementsByClassName("UserEmailSpan")).forEach(function (element) {
+    options.push(`<option value="${element.innerText}">${element.innerText}</option>`);
+  });
+  Array.from(document.getElementsByClassName("CalculatorSelectElement")).forEach(function (selectElement) {
+    selectElement.innerHTML = options.join("\n");
+  });
+  calculator.optionsInitialized = true;
+}
+/**
+ * r/wallstreetbets
+ * @param {HTMLFormElement} form
+ */
+function stockTradeFormHandler(form) {
+  if (calculator.handlerPreparation())
+    return;
+  /** @type StockTrade */
+  const stockTrade = {};
+  stockTrade.terr = JSON.parse(form.elements["terr"].selectedOptions[0].value).territory;
+  // Preemptive error check so that stockPrice.sum can be safely computed below
+  if (stockTrade.terr === "none") {
+    calculator.errorMessages.innerText = "- What territory?";
+    calculator.errorMessages.style.display = "block";
+    return;
+  }
+  stockTrade.tx = form.elements["tx"].selectedOptions[0].value;
+  stockTrade.rx = form.elements["rx"].selectedOptions[0].value;
+  stockTrade.count = Number(form.elements["count"].value);
+  stockTrade.markdown = Number(form.elements["markdown"].value);
+  // Placeholder in case terr is invalid
+  stockTrade.sum = 0;
+  // Do error check
+  if (calculator.doErrorCheck(stockTrade, stockTradeErrorCheck))
+    return;
+  calculator.doReadyState("Stock trade");
+  google.script.run
+  .withSuccessHandler(function () {
+    form.reset();
+    calculator.successHandler("Trade complete! Thank you for using the GTS!");
+  })
+  .withFailureHandler(calculator.failureHandler)
+  .processStockTrade(stockTrade);
+}
+/**
+ * Putting those multivariable calculus skills to good use.
+ * @param {HTMLFormElement} form
+ */
+function transactionFormHandler(form) {
+  if (calculator.handlerPreparation())
+    return;
+  /** @type Transaction */
+  const transaction = {};
+  transaction.tx = form.elements["tx"].selectedOptions[0].value;
+  transaction.rx = form.elements["rx"].selectedOptions[0].value;
+  transaction.amount = Number(form.elements["amount"].value);
+  // Do error check
+  if (calculator.doErrorCheck(transaction, transactionErrorCheck))
+    return;
+  calculator.doReadyState("Transaction");
+  google.script.run
+  .withSuccessHandler(function () {
+    form.reset();
+    calculator.successHandler("A fantastic day for capitalism!");
+  })
+  .withFailureHandler(calculator.failureHandler)
+  .processTransaction(transaction);
+}
+/**
+ * Error check #1
+ * @param {StockTrade} stockTrade
+ * @returns {string[]} Error messages
+ */
+function stockTradeErrorCheck(stockTrade) {
+  /** @type string[] */
+  const errorMessages = [];
+  // Properties are not "none"
+  const terrValid = stockTrade.terr !== "none";
+  const txValid = stockTrade.tx !== "none";
+  const rxValid = stockTrade.rx !== "none";
+  // Set stockTrade.sum here because it's guaranteed to be valid in this case
+  if (!terrValid)
+    errorMessages.push("- What territory?");
+  else
+    stockTrade.sum = stockTrade.count *
+      (Number(document.getElementById(`stock-price-${stockTrade.terr}`).innerText) - stockTrade.markdown);
+  if (!txValid || !rxValid)
+    errorMessages.push("- Select one of your comrades with whom to engage in stock trading.");
+  if (stockTrade.tx !== activeUserEmail && stockTrade.rx !== activeUserEmail)
+    errorMessages.push("- Ya gotta be on one end of the deal or the other, bud.");
+  if (stockTrade.tx === stockTrade.rx)
+    errorMessages.push("- Trades have to happen between two different people. This isn't solitaire.");
+  if (terrValid && txValid && stockTrade.count >
+    Number(document.getElementById(`stock-own-${stockTrade.terr}-${stockTrade.tx}`).innerText))
+    errorMessages.push("- Sender doesn't have enough stocks.");
+  // This only works with EggBank if the sum is set to "Infinity"
+  if (terrValid && rxValid && stockTrade.sum >
+    Number(document.getElementById(`user-sum-${stockTrade.rx}`).innerText))
+    errorMessages.push("- Sender must acquire additional funding to make a purchase.");
+  return errorMessages;
+}
+/**
+ * Error check number the second
+ * @param {Transaction} transaction
+ * @returns {string[]} Error messages
+ */
+function transactionErrorCheck(transaction) {
+  /** @type string[] */
+  const errorMessages = [];
+  const txValid = transaction.tx !== "none";
+  const rxValid = transaction.rx !== "none";
+  if (!txValid || !rxValid)
+    errorMessages.push("- Choose a broski to Venmo");
+  if (transaction.tx !== activeUserEmail && transaction.rx !== activeUserEmail)
+    errorMessages.push("- Who is you? Where you at?");
+  if (transaction.tx === transaction.rx)
+    errorMessages.push(`- "Yeah lemme just fax myself some cash real quick"`);
+  if (transaction.amount < 0)
+    errorMessages.push("- You can't give someone a negative amount of money. " +
+      "That's called theft and it's very illegal.");
+  if (txValid && transaction.amount > Number(document.getElementById(`user-sum-${transaction.tx}`).innerText))
+    errorMessages.push("- That do be an overdraft tho");
+  return errorMessages;
+}
+</script>
