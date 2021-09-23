@@ -254,10 +254,13 @@ function stockTradeErrorCheck(stockTrade) {
   const terrValid = stockTrade.terr !== "none";
   const txValid = stockTrade.tx !== "none";
   const rxValid = stockTrade.rx !== "none";
-  // Set stockTrade.sum here because it's guaranteed to be valid in this case
   if (!terrValid)
     errorMessages.push("- What territory?");
-  else
+  if (!fetchStockPriceCalled)
+    errorMessages.push("- Stock prices must be fetched at least once, " +
+      "otherwise they're all zero, and you don't want that.");
+  // Set stockTrade.sum here because it's guaranteed to be valid in this case
+  if (terrValid && fetchStockPriceCalled)
     stockTrade.sum = stockTrade.count *
       (Number(document.getElementById(`stock-price-${stockTrade.terr}`).innerText) - stockTrade.markdown);
   if (!txValid || !rxValid)

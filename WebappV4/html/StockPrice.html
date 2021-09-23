@@ -234,6 +234,7 @@ var fetchStockPriceTimerSetIntervalHandle;
 var formSubmitTimerSetIntervalHandle;
 /** @type string */
 var lastFormSubkey;
+var fetchStockPriceCalled = false;
 /**
  * Add some event listeners
  */
@@ -355,6 +356,7 @@ function fetchStockPriceHandler() {
   .finally(function () {
     fetchStockPriceFlag = false;
     clearInterval(fetchStockPriceTimerSetIntervalHandle);
+    fetchStockPriceCalled = true;
   });
 }
 /**
