@@ -41,9 +41,9 @@ function generateUserDisplay() {
     const xmlDocument = XmlService.parse(htmlTemplate.replaceAll("USER_EMAIL", userEmail));
     const xmlDocumentElementArray = xmlDocument.getDescendants().map(content => content.asElement());
     // Add the user's transaction sum to the relevant place on the document
-    const userSum = sheetTransactions.data[0].rowData[1].values[columnIndex].effectiveValue.stringValue &&
-      sheetTransactions.data[0].rowData[1].values[columnIndex].effectiveValue.stringValue === "Infinity" ?
-      "Infinity" : String(sheetTransactions.data[0].rowData[1].values[columnIndex].effectiveValue.numberValue);
+    const userSumEffectiveValue = sheetTransactions.data[0].rowData[1].values[columnIndex].effectiveValue;
+    const userSum = userSumEffectiveValue.stringValue === "Infinity" ?
+      "Infinity" : String(userSumEffectiveValue.numberValue);
     getElementById(xmlDocumentElementArray, `user-sum-${userEmail}`).setText(userSum);
     // Iterate over each territory
     territoryArray.forEach(function (territory, rowIndex) {
