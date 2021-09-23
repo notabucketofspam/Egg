@@ -40,7 +40,7 @@
       </form>
     </div>
   </div>
-  <div id="calculator-message-area" style="height: 6rem; overflow: visible;">
+  <div id="calculator-message-area" style="height: 8rem; overflow: visible;">
     <div id="calculator-wait-message" style="display: none;">
       <span id="calculator-form-type">[]</span> submitted, please wait... <span id="calculator-timer">0</span>ms
     </div>
@@ -273,9 +273,9 @@ function stockTradeErrorCheck(stockTrade) {
     Number(document.getElementById(`stock-own-${stockTrade.terr}-${stockTrade.tx}`).innerText))
     errorMessages.push("- Sender doesn't have enough stocks.");
   // This only works with EggBank if the sum is set to "Infinity"
-  if (terrValid && rxValid && stockTrade.sum >
+  if (terrValid && fetchStockPriceCalled && rxValid && stockTrade.sum >
     Number(document.getElementById(`user-sum-${stockTrade.rx}`).innerText))
-    errorMessages.push("- Sender must acquire additional funding to make a purchase.");
+    errorMessages.push("- Requester must acquire additional funding to make a purchase.");
   return errorMessages;
 }
 /**
