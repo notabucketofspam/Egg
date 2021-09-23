@@ -200,12 +200,6 @@ function stockTradeFormHandler(form) {
   /** @type StockTrade */
   const stockTrade = {};
   stockTrade.terr = JSON.parse(form.elements["terr"].selectedOptions[0].value).territory;
-  // Preemptive error check so that stockPrice.sum can be safely computed below
-  if (stockTrade.terr === "none") {
-    calculator.errorMessages.innerText = "- What territory?";
-    calculator.errorMessages.style.display = "block";
-    return;
-  }
   stockTrade.tx = form.elements["tx"].selectedOptions[0].value;
   stockTrade.rx = form.elements["rx"].selectedOptions[0].value;
   stockTrade.count = Number(form.elements["count"].value);
