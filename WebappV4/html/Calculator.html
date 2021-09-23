@@ -262,7 +262,7 @@ function stockTradeErrorCheck(stockTrade) {
   // Set stockTrade.sum here because it's guaranteed to be valid in this case
   if (terrValid && fetchStockPriceCalled)
     stockTrade.sum = stockTrade.count *
-      (Number(document.getElementById(`stock-price-${stockTrade.terr}`).innerText) - stockTrade.markdown);
+      (Number(document.getElementById(`stock-price-${stockTrade.terr}`).innerText) + stockTrade.markdown);
   if (!txValid || !rxValid)
     errorMessages.push("- Select one of your comrades with whom to engage in stock trading.");
   if (stockTrade.tx !== activeUserEmail && stockTrade.rx !== activeUserEmail)
