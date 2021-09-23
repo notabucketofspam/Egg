@@ -259,10 +259,13 @@ function stockTradeErrorCheck(stockTrade) {
   if (!fetchStockPriceCalled)
     errorMessages.push("- Stock prices must be fetched at least once, " +
       "otherwise they're all zero, and you don't want that.");
+  const stockPrice = terrValid && fetchStockPriceCalled ?
+    Number(document.getElementById(`stock-price-${stockTrade.terr}`).innerText) : 0;
+  if (terrValid && fetchStockPriceCalled && stockPrice + stockTrade.markdown < 0)
+    errorMessages.push("- You'd be giving those stocks away at a loss!!");
   // Set stockTrade.sum here because it's guaranteed to be valid in this case
   if (terrValid && fetchStockPriceCalled)
-    stockTrade.sum = stockTrade.count *
-      (Number(document.getElementById(`stock-price-${stockTrade.terr}`).innerText) + stockTrade.markdown);
+    stockTrade.sum = stockTrade.count * (stockPrice + stockTrade.markdown);
   if (!txValid || !rxValid)
     errorMessages.push("- Select one of your comrades with whom to engage in stock trading.");
   if (stockTrade.tx !== activeUserEmail && stockTrade.rx !== activeUserEmail)
