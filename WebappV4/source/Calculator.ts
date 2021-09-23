@@ -68,7 +68,7 @@ function processTransaction(transaction: Transaction) {
   lock.waitLock(30000);
   const spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
   const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
-  const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = newTransactionRequestArray(spreadsheet, transaction);
+  const requestArray= newTransactionRequestArray(spreadsheet, transaction);
   Bus3.batchUpdate(requestArray, spreadsheetId);
   lock.releaseLock();
 }
