@@ -20,6 +20,9 @@
         <label for="stock-trade-markdown">Markdown</label>
         <input id="stock-trade-markdown" name="markdown" type="number" value="0" max="0" step="any">
         <br>
+        <label for="stock-trade-sacrifice">Sacrifice</label>
+        <input id="stock-trade-sacrifice" name="sacrifice" type="checkbox">
+        <br>
         <input id="stock-trade-submit-input" type="submit" value="Commence">
       </form>
     </div>
@@ -57,6 +60,7 @@
  * @property {string} rx
  * @property {number} count
  * @property {number} markdown
+ * @property {boolean} sacrifice
  * @property {number} sum
  * 
  * @typedef Transaction
@@ -204,6 +208,7 @@ function stockTradeFormHandler(form) {
   stockTrade.rx = form.elements["rx"].selectedOptions[0].value;
   stockTrade.count = Number(form.elements["count"].value);
   stockTrade.markdown = Number(form.elements["markdown"].value);
+  stockTrade.sacrifice = Boolean(form.elements["sacrifice"].checked);
   // Placeholder in case terr is invalid
   stockTrade.sum = 0;
   // Do error check

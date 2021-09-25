@@ -5,6 +5,7 @@ interface StockTrade {
   rx: string;
   count: number;
   markdown: number;
+  sacrifice: boolean;
   sum: number;
 }
 /** A monetary transaction */
@@ -47,14 +48,16 @@ function processStockTrade(stockTrade: StockTrade) {
       Bus3.fromDimensionIndex(columnIndex, "COLUMNS") + Bus3.fromDimensionIndex(terrRowIndex, "ROWS"));
     Bus3.requestArrayPush(requestArray, "updateCells", request);
   });
-  // Sum
-  const transaction: Transaction = {
-    tx: stockTrade.rx,
-    rx: stockTrade.tx,
-    amount: stockTrade.sum
-  };
-  const transactionRequestArray = newTransactionRequestArray(spreadsheet, transaction);
-  Array.prototype.push.apply(requestArray, transactionRequestArray);
+  // Skip the transaction if sacrifice is on
+  if (!stockTrade.sacrifice) {
+    const transaction: Transaction = {
+      tx: stockTrade.rx,
+      rx: stockTrade.tx,
+      amount: stockTrade.sum
+    };
+    const transactionRequestArray = newTransactionRequestArray(spreadsheet, transaction);
+    Array.prototype.push.apply(requestArray, transactionRequestArray);
+  }
   // Send update and release lock
   Bus3.batchUpdate(requestArray, spreadsheetId);
   lock.releaseLock();
