@@ -29,7 +29,7 @@ function generateUserDisplay() {
       generateCalculatorOptions();
   }).withFailureHandler(function (/** @type Error */ error) {
     generateUserDisplayFlag = false;
-    clearInterval(updateUserDisplayTimerSetIntervalHandle);
+    clearInterval(generateUserDisplayTimerSetIntervalHandle);
     google.script.run.clientAlert(error.toString());
   }).generateUserDisplay();
 }
