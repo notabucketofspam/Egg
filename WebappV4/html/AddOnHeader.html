@@ -20,12 +20,13 @@
     May take up to 15 seconds
     <br>
     Update time: <span id="generate-user-display-timer">0</span>ms
+    <div id="generate-user-display-failure-messages" style="display: none;"></div>
   </div>
 </div>
 <script>
-  /**
-   * Prevent page size form submission from redirecting
-   */
+/**
+ * Prevent page size form submission from redirecting
+ */
 (function () {
   document.getElementById("page-size-form").addEventListener("submit", function(event) {
     event.preventDefault();

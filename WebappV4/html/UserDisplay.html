@@ -5,12 +5,15 @@
 var generateUserDisplayTimerSetIntervalHandle;
 /** @type boolean */
 var generateUserDisplayFlag;
+/** @type number */
+var generateUserDisplayfailureMessagesSetTimeoutHandle;
 /**
  * Does what you'd assume.
  */
 function generateUserDisplay() {
   if (generateUserDisplayFlag)
     return;
+  document.getElementById("generate-user-display-failure-messages").style.display = "none";
   let timer = 0;
   generateUserDisplayFlag = true;
   generateUserDisplayTimerSetIntervalHandle = setInterval(function(/** @type HTMLSpanElement*/ spanElement) {
@@ -30,10 +33,13 @@ function generateUserDisplay() {
   }).withFailureHandler(function (/** @type Error */ error) {
     generateUserDisplayFlag = false;
     clearInterval(generateUserDisplayTimerSetIntervalHandle);
-    google.script.run.clientAlert(error.toString());
+    document.getElementById("generate-user-display-failure-messages").innerHtml = error.name ?
+      `${error.name}<br>${error.message}<br>Press <code>ctrl + F5</code> to continue.` : String(error);
+    document.getElementById("generate-user-display-failure-messages").style.display = "block";
+    clearTimeout(generateUserDisplayfailureMessagesSetTimeoutHandle);
+    generateUserDisplayfailureMessagesSetTimeoutHandle = setTimeout(function () {
+      document.getElementById("generate-user-display-failure-messages").style.display = "none";
+    }, 120000);
   }).generateUserDisplay();
 }
-(function () {
-  // generateUserDisplay();
-}) ();
 </script>

@@ -84,10 +84,3 @@ function getElementById(elementArray: GoogleAppsScript.XML_Service.Element[], id
   });
   return element;
 }
-/**
- * Display a client-side alert.
- * @param {string} message The message to show to the client
- */
-function clientAlert(message: string) {
-  SpreadsheetApp.getUi().alert(message);
-}
