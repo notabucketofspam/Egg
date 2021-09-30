@@ -194,6 +194,15 @@
         <div id="form-invalid-stock-count-end-message" style="display: none;">
           - You can't end up with more stocks than you started with. That's called theft and it's very illegal.
         </div>
+        <div id="form-invalid-because-calculator-options-not-initialized" style="display: none;">
+          - Autosacrifice is disabled because you haven't smashed that
+          <span style="text-decoration: line-through solid 3px;">like and subscribe</span>
+          "generate user display" button yet.
+        </div>
+      </div>
+      <div id="autosacrifice-failed-message" style="display: none;">
+        - Autosacrifice failed, check the widget down under for some slick
+        info on what you've buggered up this time.
       </div>
       <div id="form-failure-message" style="display: none;"></div>
     </div>
@@ -235,6 +244,10 @@ var formSubmitTimerSetIntervalHandle;
 /** @type string */
 var lastFormSubkey;
 var fetchStockPriceCalled = false;
+/** @type string */
+var lastAutosacrificeTerritory;
+/** @type string */
+var lastAutosacrificeCount;
 /**
  * Add some event listeners
  */
@@ -268,6 +281,22 @@ function formSubmitHandler(form) {
     submission.win = formObject.winLose === "on";
     submission.time = Date.now();
   } while (0);
+  // Handle autosacrifice
+  const autosacrifice = {};
+  autosacrifice.terr = submission.terr;
+  autosacrifice.tx = activeUserEmail;
+  autosacrifice.rx = infiniteUserSumEmail;
+  autosacrifice.count = submission.start - submission.end;
+  autosacrifice.markdown = 0;
+  autosacrifice.sacrifice = true;
+  autosacrifice.sum = 0;
+  if (calculator.doErrorCheck(autosacrifice, stockTradeErrorCheck)) {
+    document.getElementById("autosacrifice-failed-message").style.display = "block";
+    return;
+  } else {
+    document.getElementById("autosacrifice-failed-message").style.display = "none";
+  }
+  // Continue to handle submission
   document.getElementById("form-submit-start-message").style = "display: block;";
   document.getElementById("form-undo-message").style = "display: none;";
   document.getElementById("form-submit-complete-message").style = "display: none;";
@@ -295,6 +324,10 @@ function formSubmitHandler(form) {
     formSubmitCompleteSetTimeoutHandle = setTimeout(function () {
       document.getElementById("form-submit-complete-message").style = "display: none;";
     }, 15 * 1000);
+    // Commence autosacrifice
+    stockTradeParsedHandler(autosacrifice);
+    lastAutosacrificeTerritory = submission.terr;
+    lastAutosacrificeCount = String(submission.start - submission.end);
   })
   .catch(formFailureMessageHandler)
   .finally(function () {
@@ -306,6 +339,22 @@ function formSubmitHandler(form) {
  * Deal with the case where a mistake is made on form submission.
  */
 function formUndoHandler() {
+  // Handle autosacrifice
+  const autosacrifice = {};
+  autosacrifice.terr = lastAutosacrificeTerritory;
+  autosacrifice.tx = infiniteUserSumEmail;
+  autosacrifice.rx = activeUserEmail;
+  autosacrifice.count = lastAutosacrificeCount;
+  autosacrifice.markdown = 0;
+  autosacrifice.sacrifice = true;
+  autosacrifice.sum = 0;
+  if (calculator.doErrorCheck(autosacrifice, stockTradeErrorCheck)) {
+    document.getElementById("form-invalid-autosacrifice-failed").style.display = "block";
+    return;
+  } else {
+    document.getElementById("form-invalid-autosacrifice-failed").style.display = "none";
+  }
+  // Continue to handle undo
   document.getElementById("form-submit-complete-message").style = "display: none;";
   fetch(endpoint, {
     method: "POST",
@@ -318,6 +367,8 @@ function formUndoHandler() {
   .then(validateResponse)
   .then(function (result) {
     document.getElementById("form-gaffe-counter").innerText = result.gaffeCounter;
+    // Commence autosacrifice
+    stockTradeParsedHandler(autosacrifice);
   })
   .catch(formFailureMessageHandler)
   .finally(function () {
@@ -344,19 +395,19 @@ function fetchStockPriceHandler() {
     method: "POST",
     headers: {
       "Command-Name": "fetch"
-    },
+    }
   })
   .then(validateResponse)
   .then(function (result) {
     for (const property in result) {
       document.getElementById(`stock-price-${property}`).innerText = result[property];
     }
+    fetchStockPriceCalled = true;
   })
   .catch(formFailureMessageHandler)
   .finally(function () {
     fetchStockPriceFlag = false;
     clearInterval(fetchStockPriceTimerSetIntervalHandle);
-    fetchStockPriceCalled = true;
   });
 }
 /**
@@ -401,6 +452,13 @@ function formFailureMessageHandler(error) {
  */
 function formErrorCheck(form) {
   let formErrorRate = 0;
+  // Calculator options not initialized
+  if (!calculator.optionsInitialized) {
+    document.getElementById("form-invalid-because-calculator-options-not-initialized").style = "display: block";
+    ++formErrorRate;
+  } else {
+    document.getElementById("form-invalid-because-calculator-options-not-initialized").style = "display: none";
+  }
   // No character selected
   if (form.elements["territory-select"].selectedOptions[0].value === '{"territory": "none", "industry": "none"}') {
     document.getElementById("form-invalid-territory-select-message").style = "display: block;";
