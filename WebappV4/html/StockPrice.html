@@ -349,10 +349,10 @@ function formUndoHandler() {
   autosacrifice.sacrifice = true;
   autosacrifice.sum = 0;
   if (calculator.doErrorCheck(autosacrifice, stockTradeErrorCheck)) {
-    document.getElementById("form-invalid-autosacrifice-failed").style.display = "block";
+    document.getElementById("autosacrifice-failed-message").style.display = "block";
     return;
   } else {
-    document.getElementById("form-invalid-autosacrifice-failed").style.display = "none";
+    document.getElementById("autosacrifice-failed-message").style.display = "none";
   }
   // Continue to handle undo
   document.getElementById("form-submit-complete-message").style = "display: none;";
