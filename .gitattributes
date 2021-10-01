@@ -62,7 +62,9 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-# Ignore HTML and JavaScript for GitHub Linguist
-# (since Archive exists only for historical reasons)
-Archive/**/*.html linguist-detectable=false
-Archive/**/*.js linguist-detectable=false
+# Linguist ignore old / unused projects
+Archive/** linguist-detectable=false
+EggMicroV4R0/** linguist-detectable=false
+EggScriptV7/** linguist-detectable=false
+EggScriptV8/** linguist-detectable=false
+TestProject/** linguist-detectable=false
