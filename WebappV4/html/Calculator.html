@@ -218,7 +218,7 @@ function stockTradeFormHandler(form) {
   // Do error check
   if (calculator.doErrorCheck(stockTrade, stockTradeErrorCheck))
     return;
-  stockTradeParsedHandler(stockTrade, form.reset);
+  stockTradeParsedHandler(stockTrade, () => form.reset());
 }
 /**
  * Process the stock trade object obtained from the form.
@@ -230,6 +230,21 @@ function stockTradeParsedHandler(stockTrade, callback, ...args) {
   calculator.doReadyState("Stock trade");
   google.script.run
   .withSuccessHandler(function () {
+    // Update client-side values
+    const stockOwnTx = document.getElementById(`stock-own-${stockTrade.terr}-${stockTrade.tx}`);
+    stockOwnTx.innerText = Number(stockOwnTx.innerText) - stockTrade.count;
+    const stockOwnRx = document.getElementById(`stock-own-${stockTrade.terr}-${stockTrade.rx}`);
+    stockOwnRx.innerText = Number(stockOwnRx.innerText) + stockTrade.count;
+    if (!stockTrade.sacrifice) {
+      /** @type Transaction */
+      const transaction = {
+        tx: stockTrade.rx,
+        rx: stockTrade.tx,
+        amount: stockTrade.sum
+      };
+      transactionUpdateHandler(transaction);
+    }
+    // Final success handler call
     typeof callback === "function" && callback(...args);
     calculator.successHandler("Trade complete! Thank you for using the GTS!");
   })
@@ -254,11 +269,24 @@ function transactionFormHandler(form) {
   calculator.doReadyState("Transaction");
   google.script.run
   .withSuccessHandler(function () {
+    // Update the client
+    transactionUpdateHandler(transaction);
+    // Call success handler
     form.reset();
     calculator.successHandler("A fantastic day for capitalism!");
   })
   .withFailureHandler(calculator.failureHandler)
   .processTransaction(transaction);
+}
+/**
+ * Update fiscal values on the user displays
+ * @param {Transaction} transaction
+ */
+function transactionUpdateHandler(transaction) {
+  const userSumTx = document.getElementById(`user-sum-${transaction.tx}`);
+  userSumTx.innerText = Number(userSumTx.innerText) - transaction.amount;
+  const userSumRx = document.getElementById(`user-sum-${transaction.rx}`);
+  userSumRx.innerText = Number(userSumRx.innerText) + transaction.amount;
 }
 /**
  * Error check #1
