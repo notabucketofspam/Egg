@@ -1,26 +1,40 @@
 <div id="add-on-header" class="TwoColumn">
   <div id="active-user-display" style="width: 53ch; height: 24rem; overflow-wrap: break-word;"></div>
-  <div id="page-size-form-div" style="width: 32ch;">
-    <form id="page-size-form" onsubmit="pageSizeFormHandler(this)" method="POST">
-      <label for="page-width-input">Page width</label>
-      <input id="page-width-input" name="pageWidth" type="number" min="400" max="3840" value="1024">
+  <div id="page-controls-div" style="display: grid; grid-template-rows: repeat(3, max-content); width: 32ch;">
+    <div id="page-size-form-div">
+      <form id="page-size-form" onsubmit="pageSizeFormHandler(this)" method="POST">
+        <label for="page-width-input">Page width</label>
+        <input id="page-width-input" name="pageWidth" type="number" min="400" max="3840" value="1024">
+        <br>
+        <label for="page-height-input">Page height</label>
+        <input id="page-height-input" name="pageHeight" type="number" min="300" max="2160" value="768">
+        <br>
+        <input id="page-size-form-input" type="submit" value="Update page size">
+      </form>
+    </div>
+    <div id="page-scale-form-div">
+      <hr>
       <br>
-      <label for="page-height-input">Page height</label>
-      <input id="page-height-input" name="pageHeight" type="number" min="300" max="2160" value="768">
+      <form id="page-scale-form" onsubmit="pageScaleFormHandler(this)" method="POST">
+        <label for="page-scale-input">Page scale</label>
+        <input id="page-scale-input" name="page-scale" type="number" value="1" min="0" max="64" step="0.01">
+        <br>
+        <input id="page-scale-form-input" type="submit" value="Update page scale">
+      </form>
+    </div>
+    <div id="generate-user-display-widget">
+      <hr>
       <br>
-      <input id="page-size-form-input" type="submit" value="Update page size">
-    </form>
-    <hr>
-    <br>
-    <input type="button" id="generate-user-display-input" value="Generate user display" onclick="generateUserDisplay()"
-      style="font-size: 115%;">
-    <br>
-    Don't run more than needed
-    <br>
-    May take up to 15 seconds
-    <br>
-    Update time: <span id="generate-user-display-timer">0</span>ms
-    <div id="generate-user-display-failure-messages" style="display: none;"></div>
+      <input type="button" id="generate-user-display-input" value="Generate user display" 
+        onclick="generateUserDisplay()" style="font-size: 115%;">
+      <br>
+      Don't run more than needed
+      <br>
+      May take up to 15 seconds
+      <br>
+      Update time: <span id="generate-user-display-timer">0</span>ms
+      <div id="generate-user-display-failure-messages" style="display: none;"></div>
+    </div>
   </div>
 </div>
 <script>
@@ -29,6 +43,9 @@
  */
 (function () {
   document.getElementById("page-size-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+  });
+  document.getElementById("page-scale-form").addEventListener("submit", function(event) {
     event.preventDefault();
   });
 }) ();
@@ -42,5 +59,16 @@ function pageSizeFormHandler(form) {
     pageWidth: Number.parseInt(formObject.pageWidth), 
     pageHeight: Number.parseInt(formObject.pageHeight)
   });
+}
+/**
+ * Change the zoom level of the webapp
+ * @param {HTMLFormElement} form
+ */
+function pageScaleFormHandler(form) {
+  document.querySelectorAll("input").forEach(function (element) {
+    element.style.fontSize = element.style.fontSize ? element.style.fontSize : "83.5%";
+  });
+  const pageScale = Number(form.elements["page-scale"].value);
+  document.body.style.fontSize = `${pageScale * 100}%`;
 }
 </script>
