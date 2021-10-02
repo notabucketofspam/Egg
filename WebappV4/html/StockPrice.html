@@ -1,5 +1,5 @@
 <hr>
-<div class="TwoColumn" id="stock-data-div">
+<div class="TwoColumn" id="stock-data-div" style="width: 80ch;">
   <div style=" margin-right: 4ch; width: 21ch">
     <span style="font-size: 180%;">Stock Data</span>
   </div>
@@ -12,13 +12,15 @@
     </div>
   </div>
 </div>
-<div class="TwoColumn" id="stock-price-div">
-  <div id="stock-price-table-div" style="margin-right: 4ch;">
-    <table id="stock-price-table">
+<div class="TwoRow" id="stock-price-div" style="width: 80ch;">
+  <div id="stock-price-table-div" style="margin-bottom: 1.5rem;">
+    <table id="stock-price-table" class="StockPriceTable">
       <thead>
         <tr>
-          <th colspan="2">Stock price</th>
-          <th colspan="2">
+          <th>Territory</th>
+          <th>Price</th>
+          <th>Delta</th>
+          <th colspan="3">
             <input type="button" id="fetch-stock-price-input" onclick="fetchStockPriceHandler()" 
               value="Get the latest">
           </th>
@@ -28,91 +30,119 @@
         <tr>
           <td class="Brown">Alpha</td>
           <td class="Brown" id="stock-price-Alpha"></td>
+          <td class="Brown" id="delta-Alpha"></td>
           <td class="Red">Oscar</td>
           <td class="Red" id="stock-price-Oscar"></td>
+          <td class="Red" id="delta-Oscar"></td>
         </tr>
         <tr>
           <td class="Brown">Bravo</td>
           <td class="Brown" id="stock-price-Bravo"></td>
+          <td class="Brown" id="delta-Bravo"></td>
           <td class="Red">Papa</td>
           <td class="Red" id="stock-price-Papa"></td>
+          <td class="Red" id="delta-Papa"></td>
         </tr>
         <tr>
           <td class="Black">Charlie</td>
           <td class="Black" id="stock-price-Charlie"></td>
+          <td class="Black" id="delta-Charlie"></td>
           <td class="Red">Quebec</td>
           <td class="Red" id="stock-price-Quebec"></td>
+          <td class="Red" id="delta-Quebec"></td>
         </tr>
         <tr>
           <td class="Cyan">Delta</td>
           <td class="Cyan" id="stock-price-Delta"></td>
+          <td class="Cyan" id="delta-Delta"></td>
           <td class="Black">Romeo</td>
           <td class="Black" id="stock-price-Romeo"></td>
+          <td class="Black" id="delta-Romeo"></td>
         </tr>
         <tr>
           <td class="Cyan">Echo</td>
           <td class="Cyan" id="stock-price-Echo"></td>
+          <td class="Cyan" id="delta-Echo"></td>
           <td class="Yellow">Sierra</td>
           <td class="Yellow" id="stock-price-Sierra"></td>
+          <td class="Yellow" id="delta-Sierra"></td>
         </tr>
         <tr>
           <td class="Cyan">Foxtrot</td>
           <td class="Cyan" id="stock-price-Foxtrot"></td>
+          <td class="Cyan" id="delta-Foxtrot"></td>
           <td class="Yellow">Tango</td>
           <td class="Yellow" id="stock-price-Tango"></td>
+          <td class="Yellow" id="delta-Tango"></td>
         </tr>
         <tr>
           <td class="Magenta">Golf</td>
           <td class="Magenta" id="stock-price-Golf"></td>
+          <td class="Magenta" id="delta-Golf"></td>
           <td class="White">Uniform</td>
           <td class="White" id="stock-price-Uniform"></td>
+          <td class="White" id="delta-Uniform"></td>
         </tr>
         <tr>
           <td class="White">Hotel</td>
           <td class="White" id="stock-price-Hotel"></td>
+          <td class="White" id="delta-Hotel"></td>
           <td class="Yellow">Victor</td>
           <td class="Yellow" id="stock-price-Victor"></td>
+          <td class="Yellow" id="delta-Victor"></td>
         </tr>
         <tr>
           <td class="Magenta">India</td>
           <td class="Magenta" id="stock-price-India"></td>
+          <td class="Magenta" id="delta-India"></td>
           <td class="Green">Whiskey</td>
           <td class="Green" id="stock-price-Whiskey"></td>
+          <td class="Green" id="delta-Whiskey"></td>
         </tr>
         <tr>
           <td class="Magenta">Juliett</td>
           <td class="Magenta" id="stock-price-Juliett"></td>
+          <td class="Magenta" id="delta-Juliett"></td>
           <td class="Green">X-ray</td>
           <td class="Green" id="stock-price-X-ray"></td>
+          <td class="Green" id="delta-X-ray"></td>
         </tr>
         <tr>
           <td class="Black">Kilo</td>
           <td class="Black" id="stock-price-Kilo"></td>
+          <td class="Black" id="delta-Kilo"></td>
           <td class="Green">Yankee</td>
           <td class="Green" id="stock-price-Yankee"></td>
+          <td class="Green" id="delta-Yankee"></td>
         </tr>
         <tr>
           <td class="Orange">Lima</td>
           <td class="Orange" id="stock-price-Lima"></td>
+          <td class="Orange" id="delta-Lima"></td>
           <td class="Black">Zulu</td>
           <td class="Black" id="stock-price-Zulu"></td>
+          <td class="Black" id="delta-Zulu"></td>
         </tr>
         <tr>
           <td class="Orange">Mike</td>
           <td class="Orange" id="stock-price-Mike"></td>
+          <td class="Orange" id="delta-Mike"></td>
           <td class="Blue">Zero</td>
           <td class="Blue" id="stock-price-Zero"></td>
+          <td class="Blue" id="delta-Zero"></td>
         </tr>
         <tr>
           <td class="Orange">November</td>
           <td class="Orange" id="stock-price-November"></td>
+          <td class="Orange" id="delta-November"></td>
           <td class="Blue">One</td>
           <td class="Blue" id="stock-price-One"></td>
+          <td class="Blue" id="delta-One"></td>
         </tr>
       </tbody>
     </table>
   </div>
-  <div id="form-submit-div" class="TwoRow" style="width: 62ch;">
+  <div id="form-submit-div" class="TwoColumn">
     <div id="form-submission-main-area" style="width: 25ch;">
       <form id="submission-form" onsubmit="formSubmitHandler(this)" method="POST">
         <div>
@@ -167,7 +197,7 @@
       </form>
       <br>
     </div>
-    <div id="form-submission-message-area">
+    <div id="form-submission-message-area" style="width: 55ch; height: 12rem;">
       <div id="form-submit-start-message" style="display: none;">
         Form submitted, please wait... <span id="form-submit-timer">0</span>ms
       </div>
@@ -222,6 +252,8 @@
  * @property {string} [error]
  * @property {string} [subkey]
  * @property {number} [gaffeCounter]
+ * @property {Record<string, number>} [stockPrice]
+ * @property {Record<string, number>} [delta]
  * 
  * @typedef {ResultBase & Record<string, any>} Result
  */
@@ -399,9 +431,11 @@ function fetchStockPriceHandler() {
   })
   .then(validateResponse)
   .then(function (result) {
-    for (const property in result) {
-      document.getElementById(`stock-price-${property}`).innerText = result[property];
-    }
+    for (const territory in result.stockPrice)
+      document.getElementById(`stock-price-${territory}`).innerText = result.stockPrice[territory];
+    for (const territory in result.delta)
+      document.getElementById(`delta-${territory}`).innerText = Number(result.delta[territory]) < 0 ?
+        `\u{1F4C9}${result.delta[territory]}` : `\u{1F4C8}${result.delta[territory]}`;
     fetchStockPriceCalled = true;
   })
   .catch(formFailureMessageHandler)

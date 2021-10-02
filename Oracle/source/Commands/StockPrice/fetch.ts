@@ -6,5 +6,7 @@ import * as Oracle from "Oracle";
 export const name = "fetch";
 export async function exec(request: Express.Request, response: Express.Response) {
   const oregano: Oracle.Oregano = request.app.locals.oregano;
-  return [200, await oregano.ioredis.hgetall("stock-price")];
+  const stockPrice = await oregano.ioredis.hgetall("stock-price");
+  const delta = await oregano.ioredis.hgetall("delta");
+  return [200, {stockPrice, delta}];
 }

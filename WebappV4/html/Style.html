@@ -1,15 +1,23 @@
 <style>
 table {
   table-layout: fixed;
-  width: calc(4 * 12ch + 4 * 3px + 1px);
   border-collapse: collapse;
+}
+table.StockOwnTable {
+  width: calc(4 * 12ch + 4 * 3px + 1px);
+}
+table.StockPriceTable {
+  width: calc(6 * 12ch + 6 * 3px + 1px);
 }
 td, thead {
   border: 1px solid black;
 }
+tr, th {
+  height: 1.5rem;
+}
 td {
   width: 12ch;
-  height: 1em;
+  white-space: nowrap;
   overflow: hidden;
 }
 a {

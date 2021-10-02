@@ -173,6 +173,13 @@ for territory, value in pairs(delta) do
     tonumber(constants["stock-price-floor"]))))
 end
 redis.call("HSET", "stock-price", unpack(stockPriceHset))
+-- Update delta
+local deltaHset: {string} = {}
+for territory, value in pairs(delta) do
+  table.insert(deltaHset, territory)
+  table.insert(deltaHset, tostring(value))
+end
+redis.call("HSET", "delta", unpack(deltaHset))
 -- Delete old submissions
 local delsubkeys: {string} = {}
 for index = 1, #submissions + calcRange - tonumber(constants["keep-range"]), 1 do

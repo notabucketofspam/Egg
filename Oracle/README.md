@@ -15,3 +15,8 @@ Implementation notes
     win-mult 4 lose-mult 3.8 stock-price-floor 5.0`
 - Variables
   - `HSET variables gaffe-counter 0`
+- Stock price delta
+  - `HSET delta Alpha 0 Bravo 0 Charlie 0 Delta 0 Echo 0 Foxtrot 0 Golf 0
+    Hotel 0 India 0 Juliett 0 Kilo 0 Lima 0 Mike 0 November 0 One 0 Oscar 0
+    Papa 0 Quebec 0 Romeo 0 Sierra 0 Tango 0 Uniform 0 Victor 0 Whiskey 0
+    X-ray 0 Yankee 0 Zero 0 Zulu 0`
