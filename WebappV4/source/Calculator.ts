@@ -27,10 +27,6 @@ function processStockTrade(stockTrade: StockTrade) {
   const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
   const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
   const sheetStocks = Bus3.getSheetFromTitle(spreadsheet, "Stocks");
-  // Check if the sheet is out of rows
-  if (sheetStocks.data[0].rowData.length >= sheetStocks.properties.gridProperties.rowCount)
-    Bus3.requestArrayPush(requestArray, "appendDimension",
-      Bus3.newAppendDimensionRequest(sheetStocks, "ROWS", 1));
   // Get column headings
   const userEmailArray = sheetStocks.data[0].rowData[0].values.map(cellData => cellData.userEnteredValue.stringValue);
   // Get row headings
