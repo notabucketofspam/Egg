@@ -27,21 +27,18 @@ function processStockTrade(stockTrade: StockTrade) {
   const spreadsheet = Bus3.getSpreadsheet(spreadsheetId);
   const requestArray: GoogleAppsScript.Sheets.Schema.Request[] = [];
   const sheetStocks = Bus3.getSheetFromTitle(spreadsheet, "Stocks");
-  // Get column headings
+  // Get column / row headings
   const userEmailArray = sheetStocks.data[0].rowData[0].values.map(cellData => cellData.userEnteredValue.stringValue);
-  // Get row headings
   const territoryArray = sheetStocks.data[0].rowData.map(row => row.values[0].effectiveValue.stringValue);
-  const terrRowIndex = territoryArray.indexOf(stockTrade.terr);
+  const rowIndex = territoryArray.indexOf(stockTrade.terr);
   // Count
   [stockTrade.tx, stockTrade.rx].forEach(function (value, index) {
     const columnIndex = userEmailArray.indexOf(value);
-    const countCellData = sheetStocks.data[0].rowData[terrRowIndex].values[columnIndex];
-    const countEffectiveValue = countCellData ? countCellData.effectiveValue : null;
-    const countNumberValue = countEffectiveValue ? countEffectiveValue.numberValue : 0;
+    const countNumberValue = sheetStocks.data[0].rowData[rowIndex].values[columnIndex].effectiveValue.numberValue;
     const countNewNumberValue = index === 0 ? countNumberValue - stockTrade.count :
       countNumberValue + stockTrade.count;
     const request = Bus3.newUpdateSingleCellRequest(sheetStocks, countNewNumberValue as any,
-      Bus3.fromDimensionIndex(columnIndex, "COLUMNS") + Bus3.fromDimensionIndex(terrRowIndex, "ROWS"));
+      Bus3.fromDimensionIndex(columnIndex, "COLUMNS") + Bus3.fromDimensionIndex(rowIndex, "ROWS"));
     Bus3.requestArrayPush(requestArray, "updateCells", request);
   });
   // Skip the transaction if sacrifice is on
