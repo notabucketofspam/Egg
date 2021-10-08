@@ -155,10 +155,6 @@ const calculator = {
     }, 120000);
   }
 };
-/** @type string */
-var activeUserEmail;
-/** @type string */
-var infiniteUserSumEmail;
 /**
  * Event listeners and stuff.
  */
@@ -185,10 +181,6 @@ var infiniteUserSumEmail;
  * Add options to the calculator form select elements.
  */
 function generateCalculatorOptions() {
-  activeUserEmail = Array.from(document.getElementById("active-user-display")
-    .getElementsByClassName("UserEmailSpan"))[0].innerText;
-  infiniteUserSumEmail = Array.from(document.getElementsByClassName("UserSumSpan"))
-    .filter(element => element.innerText === "Infinity")[0].id.substring("user-sum-".length);
   const options = [ `<option value="none" selected>---</option>` ];
   Array.from(document.getElementsByClassName("UserEmailSpan")).forEach(function (element) {
     options.push(`<option value="${element.innerText}">${element.innerText}</option>`);
@@ -314,7 +306,7 @@ function stockTradeErrorCheck(stockTrade) {
     stockTrade.sum = stockTrade.count * (stockPrice + stockTrade.markdown);
   if (!txValid || !rxValid)
     errorMessages.push("- Select one of your comrades with whom to engage in stock trading.");
-  if (stockTrade.tx !== activeUserEmail && stockTrade.rx !== activeUserEmail)
+  if (stockTrade.tx !== userDisplay.activeUserEmail && stockTrade.rx !== userDisplay.activeUserEmail)
     errorMessages.push("- Ya gotta be on one end of the deal or the other, bud.");
   if (stockTrade.tx === stockTrade.rx)
     errorMessages.push("- Trades have to happen between two different people. This isn't solitaire.");
@@ -339,7 +331,7 @@ function transactionErrorCheck(transaction) {
   const rxValid = transaction.rx !== "none";
   if (!txValid || !rxValid)
     errorMessages.push("- Choose a broski to Venmo");
-  if (transaction.tx !== activeUserEmail && transaction.rx !== activeUserEmail)
+  if (transaction.tx !== userDisplay.activeUserEmail && transaction.rx !== userDisplay.activeUserEmail)
     errorMessages.push("- Who is you? Where you at?");
   if (transaction.tx === transaction.rx)
     errorMessages.push(`- "Yeah lemme just fax myself some cash real quick"`);

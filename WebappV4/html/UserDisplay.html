@@ -1,45 +1,125 @@
 <hr>
 <div id="other-user-displays" class="TwoColumn"></div>
 <script>
-/** @type number */
-var generateUserDisplayTimerSetIntervalHandle;
-/** @type boolean */
-var generateUserDisplayFlag;
-/** @type number */
-var generateUserDisplayfailureMessagesSetTimeoutHandle;
+const userDisplay = {
+  timerSetIntervalHandler: {
+    generate: 0,
+    update: 0
+  },
+  timer: {
+    generate: document.getElementById("generate-user-display-timer"),
+    update: document.getElementById("update-user-display-timer")
+  },
+  flag: false,
+  failureSetTimeoutHandle: 0,
+  failureMessages: document.getElementById("user-display-failure-messages"),
+  initialized: false,
+  activeUserEmail: "",
+  infiniteUserSumEmail: "",
+  /**
+   * Setup stuff.
+   */
+  preparation() {
+    userDisplay.failureMessages.style.display = "none";
+    if (userDisplay.flag)
+      return true;
+    return false;
+  },
+  /**
+   * More preparation.
+   * @param {string} operation
+   */
+  doReadyState(operation) {
+    let timer = 0;
+    userDisplay.flag = true;
+    userDisplay.timerSetIntervalHandler[operation] = setInterval(function(spanElement) {
+      timer += frametime;
+      spanElement.innerText = Math.trunc(timer);
+    }, frametime, userDisplay.timer[operation]);
+  },
+  /**
+   * Things went well.
+   * @param {string} operation
+   */
+  successHandler(operation) {
+    userDisplay.flag = false;
+    clearInterval(userDisplay.timerSetIntervalHandler[operation]);
+  },
+  /**
+   * Deal with something unfortunate.
+   * @param {Error} error
+   * @param {string} operation
+   */
+  failureHandler(error, operation) {
+    userDisplay.flag = false;
+    clearInterval(userDisplay.timerSetIntervalHandler[operation]);
+    userDisplay.failureMessages.innerHTML = error.name ?
+      `${error.name}<br>${error.message}<br>Press <code>ctrl + F5</code> to continue.` : String(error);
+    userDisplay.failureMessages.style.display = "block";
+    clearTimeout(userDisplay.failureSetTimeoutHandle);
+    userDisplay.failureSetTimeoutHandle = setTimeout(function () {
+      userDisplay.failureMessages.style.display = "none";
+    }, 120000);
+  }
+};
 /**
- * Does what you'd assume.
+ * Perform first-time display generation.
  */
 function generateUserDisplay() {
-  if (generateUserDisplayFlag)
+  if (userDisplay.preparation())
     return;
-  document.getElementById("generate-user-display-failure-messages").style.display = "none";
-  let timer = 0;
-  generateUserDisplayFlag = true;
-  generateUserDisplayTimerSetIntervalHandle = setInterval(function(/** @type HTMLSpanElement*/ spanElement) {
-    timer += frametime;
-    spanElement.innerText = Math.trunc(timer);
-  }, frametime, document.getElementById("generate-user-display-timer"));
-  google.script.run.withSuccessHandler(function (/** @type Record<string, string>[] */ displays) {
-    generateUserDisplayFlag = false;
-    clearInterval(generateUserDisplayTimerSetIntervalHandle);
+  userDisplay.doReadyState("generate");
+  google.script.run
+  .withSuccessHandler(function (/** @type Record<string, string>[] */ displays) {
+    userDisplay.successHandler("generate");
     document.getElementById("active-user-display").innerHTML = "";
     document.getElementById("other-user-displays").innerHTML = "";
     displays.forEach(function (display) {
       document.getElementById(display["div"]).insertAdjacentHTML("beforeend", display["content"]);
     });
+    if (!userDisplay.initialized)
+      initializeUserDisplayConstants();
     if (!calculator.optionsInitialized)
       generateCalculatorOptions();
-  }).withFailureHandler(function (/** @type Error */ error) {
-    generateUserDisplayFlag = false;
-    clearInterval(generateUserDisplayTimerSetIntervalHandle);
-    document.getElementById("generate-user-display-failure-messages").innerHtml = error.name ?
-      `${error.name}<br>${error.message}<br>Press <code>ctrl + F5</code> to continue.` : String(error);
-    document.getElementById("generate-user-display-failure-messages").style.display = "block";
-    clearTimeout(generateUserDisplayfailureMessagesSetTimeoutHandle);
-    generateUserDisplayfailureMessagesSetTimeoutHandle = setTimeout(function () {
-      document.getElementById("generate-user-display-failure-messages").style.display = "none";
-    }, 120000);
-  }).generateUserDisplay();
+  })
+  .withFailureHandler(function (error) {
+    userDisplay.failureHandler(error, "generate");
+  })
+  .generateUserDisplay();
+}
+/**
+ * Regular user didplay update.
+ */
+function updateUserDisplay() {
+  if (userDisplay.preparation())
+    return;
+  if (!userDisplay.initialized) {
+    userDisplay.failureMessages.innerHTML = "Must generate user display before update can be used.";
+    userDisplay.failureMessages.style.display = "block";
+    return;
+  }
+  userDisplay.doReadyState("update");
+  google.script.run
+  .withSuccessHandler(function (/** @type Record<string, Record<string, number>> */ updates) {
+    userDisplay.successHandler("update");
+    for (const userEmail in updates)
+      for (const key in updates[userEmail])
+        document.getElementById(key === "sum" ? `user-sum-${userEmail}` :
+          `stock-own-${key}-${userEmail}`).innerText = updates[userEmail][key];
+  })
+  .withFailureHandler(function (error) {
+    userDisplay.failureHandler(error, "update");
+  })
+  .updateUserDisplay();
+}
+/**
+ * One-time setup of some constants.
+ */
+function initializeUserDisplayConstants() {
+  userDisplay.activeUserEmail = Array.from(document.getElementById("active-user-display")
+    .getElementsByClassName("UserEmailSpan"))[0].innerText;
+  userDisplay.infiniteUserSumEmail = Array.from(document.getElementsByClassName("UserSumSpan"))
+    .filter(element => element.innerText === "Infinity")[0].id.substring("user-sum-".length);
+  userDisplay.initialized = true;
 }
 </script>

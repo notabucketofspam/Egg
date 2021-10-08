@@ -224,7 +224,7 @@
         <div id="form-invalid-stock-count-end-message" style="display: none;">
           - You can't end up with more stocks than you started with. That's called theft and it's very illegal.
         </div>
-        <div id="form-invalid-because-calculator-options-not-initialized" style="display: none;">
+        <div id="form-invalid-because-user-display-not-initialized" style="display: none;">
           - Autosacrifice is disabled because you haven't smashed that
           <span style="text-decoration: line-through solid 3px;">like and subscribe</span>
           "generate user display" button yet.
@@ -316,8 +316,8 @@ function formSubmitHandler(form) {
   // Handle autosacrifice
   const autosacrifice = {};
   autosacrifice.terr = submission.terr;
-  autosacrifice.tx = activeUserEmail;
-  autosacrifice.rx = infiniteUserSumEmail;
+  autosacrifice.tx = userDisplay.activeUserEmail;
+  autosacrifice.rx = userDisplay.infiniteUserSumEmail;
   autosacrifice.count = submission.start - submission.end;
   autosacrifice.markdown = 0;
   autosacrifice.sacrifice = true;
@@ -374,8 +374,8 @@ function formUndoHandler() {
   // Handle autosacrifice
   const autosacrifice = {};
   autosacrifice.terr = lastAutosacrificeTerritory;
-  autosacrifice.tx = infiniteUserSumEmail;
-  autosacrifice.rx = activeUserEmail;
+  autosacrifice.tx = userDisplay.infiniteUserSumEmail;
+  autosacrifice.rx = userDisplay.activeUserEmail;
   autosacrifice.count = lastAutosacrificeCount;
   autosacrifice.markdown = 0;
   autosacrifice.sacrifice = true;
@@ -487,11 +487,11 @@ function formFailureMessageHandler(error) {
 function formErrorCheck(form) {
   let formErrorRate = 0;
   // Calculator options not initialized
-  if (!calculator.optionsInitialized) {
-    document.getElementById("form-invalid-because-calculator-options-not-initialized").style = "display: block";
+  if (!userDisplay.initialized) {
+    document.getElementById("form-invalid-because-user-display-not-initialized").style = "display: block";
     ++formErrorRate;
   } else {
-    document.getElementById("form-invalid-because-calculator-options-not-initialized").style = "display: none";
+    document.getElementById("form-invalid-because-user-display-not-initialized").style = "display: none";
   }
   // No character selected
   if (form.elements["territory-select"].selectedOptions[0].value === '{"territory": "none", "industry": "none"}') {

@@ -51,9 +51,9 @@ function generateUserDisplay() {
       if (!rowIndex)
         return;
       // Add the user's stock ownership of the territory to the relevant place on the table
-      const stockCountCellData = sheetStocks.data[0].rowData[rowIndex].values[columnIndex];
-      const stockCountEffectiveValue = stockCountCellData ? stockCountCellData.effectiveValue : null;
-      const stockCountNumberValue = stockCountEffectiveValue ? stockCountEffectiveValue.numberValue : 0;
+      // Can assume that this is always not undefined if initializeSpreadsheet() has been run
+      const stockCountNumberValue =
+        sheetStocks.data[0].rowData[rowIndex].values[columnIndex].effectiveValue.numberValue;
       getElementById(xmlDocumentElementArray, `stock-own-${territory}-${userEmail}`)
         .setText(String(stockCountNumberValue));
     });
@@ -83,4 +83,33 @@ function getElementById(elementArray: GoogleAppsScript.XML_Service.Element[], id
       return void (element = currentElement) || true;
   });
   return element;
+}
+/**
+ * Grab only the relevant numeric values instead of rendering the entire display again.
+ * @returns {Record<string, Record<string, number>>} Updates for each user display
+ */
+function updateUserDisplay() {
+  const updates: Record<string, Record<string, number>> = {};
+  // Acquire constants
+  const spreadsheet = Bus3.getSpreadsheet(SpreadsheetApp.getActiveSpreadsheet().getId());
+  const sheetTransactions = Bus3.getSheetFromTitle(spreadsheet, "Transactions");
+  const sheetStocks = Bus3.getSheetFromTitle(spreadsheet, "Stocks");
+  // Get column / row headings
+  const userEmailArray = sheetStocks.data[0].rowData[0].values.map(cellData => cellData.userEnteredValue.stringValue);
+  const territoryArray = sheetStocks.data[0].rowData.map(row => row.values[0].effectiveValue.stringValue);
+  for (let columnIndex = 1; columnIndex < userEmailArray.length; ++columnIndex) {
+    // Create update
+    const update: Record<string, number> = {};
+    // Add sum to update
+    const userSumEffectiveValue = sheetTransactions.data[0].rowData[1].values[columnIndex].effectiveValue;
+    update["sum"] = userSumEffectiveValue.stringValue ?
+      Number(userSumEffectiveValue.stringValue) : userSumEffectiveValue.numberValue;
+    // Add territories to update
+    for (let rowIndex = 1; rowIndex < territoryArray.length; ++rowIndex)
+      update[territoryArray[rowIndex]] =
+        sheetStocks.data[0].rowData[rowIndex].values[columnIndex].effectiveValue.numberValue;
+    // Push update
+    updates[userEmailArray[columnIndex]] = update;
+  }
+  return updates;
 }
