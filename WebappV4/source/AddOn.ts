@@ -36,24 +36,29 @@ function onRequestFileScopeButtonClicked() {
  * @returns {GoogleAppsScript.Card_Service.Card} The brand-new Card to display
  */
 function createSheetsAddOnView(event: any) {
-  const cardSection = CardService.newCardSection();
+  const cardBuilder = CardService.newCardBuilder();
   if (event["sheets"]["addonHasFileScopePermission"]) {
-    cardSection.addWidget(CardService.newTextParagraph().setText("Ok mate, we're ready to roll."));
+    const mainSection = CardService.newCardSection();
+    mainSection.addWidget(CardService.newTextParagraph().setText("Ok mate, we're ready to roll."));
     const openAction = CardService.newAction().setFunctionName("openWebappInterface").setParameters({});
     const openButton = CardService.newTextButton().setText("Open webapp").setOnClickAction(openAction);
-    cardSection.addWidget(openButton);
-    // newDivider method is missing in the original type definitions
-    cardSection.addWidget((CardService as any).newDivider());
+    mainSection.addWidget(openButton);
+    cardBuilder.addSection(mainSection);
+    const servicesSection = CardService.newCardSection();
+    servicesSection.setCollapsible(true).setHeader("Services");
     const initAction = CardService.newAction().setFunctionName("initializeSpreadsheet");
     const initButton = CardService.newTextButton().setText("Initialize spreadsheet").setOnClickAction(initAction);
-    cardSection.addWidget(initButton);
+    servicesSection.addWidget(initButton);
+    cardBuilder.addSection(servicesSection);
   } else {
-    cardSection.addWidget(CardService.newTextParagraph().setText("Need some permissions, man."));
+    const permSection = CardService.newCardSection();
+    permSection.addWidget(CardService.newTextParagraph().setText("Need some permissions, man."));
     const permAction = CardService.newAction().setFunctionName("onRequestFileScopeButtonClicked");
     const permButton = CardService.newTextButton().setText("Give 'em").setOnClickAction(permAction);
-    cardSection.addWidget(permButton);
+    permSection.addWidget(permButton);
+    cardBuilder.addSection(permSection);
   }
-  return CardService.newCardBuilder().addSection(cardSection).build();
+  return cardBuilder.build();
 }
 /**
  * Get the central webapp page, or change its dimensions.
@@ -85,7 +90,9 @@ function initializeSpreadsheet() {
   for (let columnIndex = 1; columnIndex < userEmailArray.length; ++columnIndex)
     for (let rowIndex = 1; rowIndex < territoryArray.length; ++rowIndex)
       // Check to see if the cell is empty
-      if (!sheetStocks.data[0].rowData[rowIndex].values[columnIndex])
+      if (!sheetStocks.data[0].rowData[rowIndex].values[columnIndex] ||
+        !sheetStocks.data[0].rowData[rowIndex].values[columnIndex].effectiveValue ||
+        !sheetStocks.data[0].rowData[rowIndex].values[columnIndex].effectiveValue.numberValue)
         Bus3.requestArrayPush(requestArray, "updateCells", Bus3.newUpdateSingleCellRequest(sheetStocks, 0 as any,
           Bus3.fromDimensionIndex(columnIndex, "COLUMNS") + Bus3.fromDimensionIndex(rowIndex, "ROWS")));
   // Update and unlock
