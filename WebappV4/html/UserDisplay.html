@@ -100,8 +100,9 @@ function updateUserDisplay() {
   }
   userDisplay.doReadyState("update");
   google.script.run
-  .withSuccessHandler(function (/** @type Record<string, Record<string, number>> */ updates) {
+  .withSuccessHandler(function (/** @type Record<string, Record<string, number>> */ updatesJSON) {
     userDisplay.successHandler("update");
+    const updates = JSON.parse(updatesJSON);
     for (const userEmail in updates)
       for (const key in updates[userEmail])
         document.getElementById(key === "sum" ? `user-sum-${userEmail}` :
@@ -119,7 +120,7 @@ function initializeUserDisplayConstants() {
   userDisplay.activeUserEmail = Array.from(document.getElementById("active-user-display")
     .getElementsByClassName("UserEmailSpan"))[0].innerText;
   userDisplay.infiniteUserSumEmail = Array.from(document.getElementsByClassName("UserSumSpan"))
-    .filter(element => element.innerText === "Infinity")[0].id.substring("user-sum-".length);
+    .filter(element => element.innerText === "Infinity")[0].id.substring(("user-sum-").length);
   userDisplay.initialized = true;
 }
 </script>

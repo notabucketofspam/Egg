@@ -103,7 +103,7 @@ function updateUserDisplay() {
     // Add sum to update
     const userSumEffectiveValue = sheetTransactions.data[0].rowData[1].values[columnIndex].effectiveValue;
     update["sum"] = userSumEffectiveValue.stringValue ?
-      Number(userSumEffectiveValue.stringValue) : userSumEffectiveValue.numberValue;
+      userSumEffectiveValue.stringValue as any : userSumEffectiveValue.numberValue;
     // Add territories to update
     for (let rowIndex = 1; rowIndex < territoryArray.length; ++rowIndex)
       update[territoryArray[rowIndex]] =
@@ -111,5 +111,5 @@ function updateUserDisplay() {
     // Push update
     updates[userEmailArray[columnIndex]] = update;
   }
-  return updates;
+  return JSON.stringify(updates);
 }
