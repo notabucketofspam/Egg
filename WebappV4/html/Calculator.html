@@ -314,7 +314,7 @@ function stockTradeErrorCheck(stockTrade) {
     Number(document.getElementById(`stock-own-${stockTrade.terr}-${stockTrade.tx}`).innerText))
     errorMessages.push("- Sender doesn't have enough stocks.");
   // This only works with EggBank if the sum is set to "Infinity"
-  if (terrValid && fetchStockPriceCalled && rxValid && stockTrade.sum >
+  if (terrValid && fetchStockPriceCalled && rxValid && !stockTrade.sacrifice && stockTrade.sum >
     Number(document.getElementById(`user-sum-${stockTrade.rx}`).innerText))
     errorMessages.push("- Requester must acquire additional funding to make a purchase.");
   return errorMessages;
