@@ -17,7 +17,7 @@ const commandRegister: Oracle.CommandRegister = {
    * Restart the specified Worker thread upon request.
    * @param {Oracle.ExtWorkerMessage} message Sent from a Worker thread
    */
-  restart(message) {
+  restart(message: Oracle.ExtWorkerMessage) {
     workerRegister[message.source].restart();
   }
 };

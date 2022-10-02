@@ -1,5 +1,5 @@
 // Oracle setup
-import * as OUtil from "./OUtil.js"
+import * as OUtil from "./OUtil.js";
 // Other setup
 import * as Express from "express";
 import Logger from "bunyan";
