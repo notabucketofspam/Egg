@@ -30,7 +30,7 @@ while getopts "$_options" _flag; do
     r)ssh -i "./httpd-private-key" httpd@$_domain \
 "cd /httpd/egg && npm restart --silent";;
     s)ssh -i "./httpd-private-key" httpd@$_domain \
-"cd /httpd/egg && npm server-restart --silent"
+"cd /httpd/egg && npm run server-restart --silent"
       echo;;
   esac
 done
