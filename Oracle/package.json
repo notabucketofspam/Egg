@@ -14,7 +14,9 @@
     "update-dependencies": "ncu -u && npm i",
     "reload-dependencies": "rm -rf node_modules && npm install --production",
     "server-restart": "curl -s localhost:39000/admin/restart",
-    "test": "node -e \"let n=process.argv[1];require('http').get(`http://localhost:39000/test_${n?n:0}`,r=>r.setEncoding('utf8').on('readable',()=>{let d=r.read();process.stdout.write(d?d:'');}));\""
+    "start": "tmux send-keys -t 0 \"node .\" Enter",
+    "stop": "node -e \"process.kill(Number(require('node:fs').readFileSync(require('node:path').normalize(process.cwd()+'/log/process.pid'),{encoding:'utf8'})),'SIGINT');\"",
+    "test": "node -e \"let n=process.argv[1];require('node:http').get('http://localhost:39000/test_'+String(n?n:0),r=>r.setEncoding('utf8').on('readable',()=>{let d=r.read();process.stdout.write(d?d:'');}));\""
   },
   "dependencies": {
     "bunyan": "^1.8.15",
