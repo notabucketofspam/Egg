@@ -78,7 +78,7 @@ export async function readdirRecursive(dir: fs.Dir, files: string[]) {
  * @param {string[]} reply Alternating list of keys and values
  * @returns {Record<string, string>} New object with each key set to the respective value
  */
-export function fromMapReply(reply: [string]) {
+export function fromMapReply(reply: string[]) {
   const newobj: Record<string, string> = {};
   for (let index = 0; index < reply.length; index += 2)
     newobj[reply[index]] = reply[index + 1];

@@ -28,7 +28,7 @@ export async function exec(request: Express.Request, response: Express.Response)
     return [400, { error: errorMessages.join("\n<br>\n") }];
   const subkey = generateSubkey();
   const send = OUtil.fromMapReply(await oregano.ioredis.evalsha(oregano.scripts["StockPrice"], 1, subkey, "submit",
-    ...(Object.entries(submission).filter(([key, value]) => submissionKeys.includes(key)).flat())));
+    ...(Object.entries(submission).filter(([key, value]) => submissionKeys.includes(key)).flat())) as string[]);
   if (send["err"])
     return [500, { error: send["err"] }];
   return [200, { subkey }];

@@ -39,7 +39,7 @@ do {
   await OUtil.readdirRecursive(luaDir, scriptFiles);
   await Promise.all(scriptFiles.map(async function (scriptFile) {
     scripts[path.basename(scriptFile, ".lua")] = await ioredis.script("LOAD",
-      fs.readFileSync(scriptFile, { encoding: "utf8" }));
+      fs.readFileSync(scriptFile, { encoding: "utf8" })) as string;
   }));
 } while (0);
 // Middleware setup
