@@ -100,4 +100,16 @@ const commandRegister: Oracle.CommandRegister = {
   }
 };
 // Apparently TSC thinks it's imperative for parentPort to be non-null
-parentPort!.on("message", commandRegister.exec);
+//parentPort!.on("message", commandRegister.exec);
+/**
+ * Graceful shutdown.
+ * @returns {Promise<number>} Exit code
+ */
+export async function terminate() {
+  let code = 0;
+  await Promise.all<void>([
+    new Promise<void>(resolve => void server.close(() => resolve())),
+    new Promise<void>(resolve => ioredis.script("FLUSH", () => ioredis.quit(() => resolve())))
+  ]).catch<void>(() => void (code = 1));
+  return code;
+}
