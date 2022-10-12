@@ -1,0 +1,3 @@
+"rsync-include.txt" text eol=lf
+"rsync-exclude.txt" text eol=lf
+"push.sh" text eol=lf
