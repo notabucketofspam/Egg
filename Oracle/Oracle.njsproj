@@ -59,6 +59,7 @@
     <Folder Include="source\Methods\post\exec\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\ExtWSS.ts" />
     <TypeScriptCompile Include="source\Methods\get\admin\restart.ts" />
     <TypeScriptCompile Include="source\Methods\get\test\test_0.ts" />
     <TypeScriptCompile Include="source\Methods\get\test\test_1.ts" />

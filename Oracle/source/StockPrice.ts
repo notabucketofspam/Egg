@@ -13,6 +13,8 @@ app.set("case sensitive routing", true);
 app.use(express.json());
 import cors from "cors";
 app.use(cors());
+// WebSocket setup
+import ExtWSS from "./ExtWSS.js";
 // Logger setup
 import Logger from "bunyan";
 const logger = Logger.createLogger({
@@ -69,8 +71,10 @@ app.use(function (error: Error, request: Express.Request, response: Express.Resp
   const errorStack = error.stack ? error.stack : `Some sort of error occurred:\n${String(error)}`;
   response.status(500).send({ error: errorStack });
 });
-// Listen for requests
+// Listen for HTTP requests
 const server = app.listen(39000, "localhost");
+// Listen for WebSocket connections
+const wss = new ExtWSS({ server });
 /** List of commands known to this Worker thread. */
 const commandRegister: Oracle.CommandRegister = {
   /**
@@ -107,6 +111,7 @@ const commandRegister: Oracle.CommandRegister = {
  */
 export async function terminate() {
   let code = 0;
+  wss.terminate();
   await Promise.all<void>([
     new Promise<void>(resolve => void server.close(() => resolve())),
     new Promise<void>(resolve => ioredis.script("FLUSH", () => ioredis.quit(() => resolve())))
