@@ -7,7 +7,11 @@ _print_help() {
   echo "  -h    print this message"
 }
 _push() {
-  ng build --progress=false
+  _buildmsg=$(ng build --progress=false)
+  if [ $? -ne 0 ]; then
+    echo "Fail"
+    exit
+  fi
   rsync --compress --recursive \
 --include-from="rsync-include.txt" --exclude-from="rsync-exclude.txt" \
 --delete -e "ssh -i \"./httpd-private-key\"" ./ httpd@$_domain:/httpd/egg/
