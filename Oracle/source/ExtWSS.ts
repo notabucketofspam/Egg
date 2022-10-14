@@ -26,7 +26,7 @@ export default class ExtWSS extends WebSocketServer {
     this.on("connection", function (client, request) {
       server.aliveClients.set(client, true);
       client.on("message", function (data, isBinary) {
-        if (isBinary && (data as Buffer)[0] === pongFrame[0]) {
+        if (isBinary && (data as Buffer).length === 1 && (data as Buffer)[0] === pongFrame[0]) {
           //console.log("Pong!");
           server.aliveClients.set(this, true);
         } else {
