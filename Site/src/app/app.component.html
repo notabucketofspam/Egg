@@ -2,5 +2,9 @@
   <h1>Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
 </div>
-<hr>
+<hr />
 What's poppin', gamers?
+<br />
+<button (click)="toggleWebSocket()">{{ buttonText }}</button>
+<br />
+<div *ngFor="let message of messages">{{ message }}<br /></div>
