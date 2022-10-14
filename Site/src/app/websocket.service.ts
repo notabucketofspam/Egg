@@ -39,7 +39,7 @@ export class WebSocketService implements OnDestroy {
     clearTimeout(this.pingTimeout);
     this.pingTimeout = setTimeout(function (ws) {
       ws.subject.complete();
-    }, 5000, this);
+    }, 31000, this);
   }
   subscribe(observer?: PartialObserver<WebSocketMessage>) {
     return this.subject.pipe(this.filter).subscribe(observer);
