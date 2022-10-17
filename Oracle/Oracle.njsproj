@@ -41,38 +41,39 @@
     <Content Include="rsync-exclude.txt" />
     <Content Include="rsync-include.txt" />
     <Content Include="teal\Oracle.d.tl" />
-    <Content Include="teal\StockPrice.tl" />
+    <Content Include="old\StockPrice.tl" />
     <Content Include="tlconfig.lua" />
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="html\" />
-    <Folder Include="source\Commands\" />
-    <Folder Include="source\Commands\StockPrice\" />
+    <Folder Include="old\" />
+    <Folder Include="old\Commands\" />
+    <Folder Include="old\Commands\StockPrice\" />
     <Folder Include="teal\" />
     <Folder Include="source\" />
-    <Folder Include="source\Methods\" />
-    <Folder Include="source\Methods\get\" />
-    <Folder Include="source\Methods\get\admin\" />
-    <Folder Include="source\Methods\get\test\" />
-    <Folder Include="source\Methods\post\" />
-    <Folder Include="source\Methods\post\exec\" />
+    <Folder Include="old\Methods\" />
+    <Folder Include="old\Methods\get\" />
+    <Folder Include="old\Methods\get\admin\" />
+    <Folder Include="old\Methods\get\test\" />
+    <Folder Include="old\Methods\post\" />
+    <Folder Include="old\Methods\post\exec\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="source\ExtWSS.ts" />
     <TypeScriptCompile Include="source\Game.ts" />
-    <TypeScriptCompile Include="source\Methods\get\admin\restart.ts" />
-    <TypeScriptCompile Include="source\Methods\get\test\test_0.ts" />
-    <TypeScriptCompile Include="source\Methods\get\test\test_1.ts" />
-    <TypeScriptCompile Include="source\Methods\get\test\test_2.ts" />
-    <TypeScriptCompile Include="source\Commands\StockPrice\fetch.ts" />
-    <TypeScriptCompile Include="source\Commands\StockPrice\submit.ts" />
-    <TypeScriptCompile Include="source\Commands\StockPrice\undo.ts" />
-    <TypeScriptCompile Include="source\Methods\post\exec\stock-price.ts" />
-    <TypeScriptCompile Include="source\Oracle.d.ts" />
+    <TypeScriptCompile Include="old\Methods\get\admin\restart.ts" />
+    <TypeScriptCompile Include="old\Methods\get\test\test_0.ts" />
+    <TypeScriptCompile Include="old\Methods\get\test\test_1.ts" />
+    <TypeScriptCompile Include="old\Methods\get\test\test_2.ts" />
+    <TypeScriptCompile Include="old\Commands\StockPrice\fetch.ts" />
+    <TypeScriptCompile Include="old\Commands\StockPrice\submit.ts" />
+    <TypeScriptCompile Include="old\Commands\StockPrice\undo.ts" />
+    <TypeScriptCompile Include="old\Methods\post\exec\stock-price.ts" />
+    <TypeScriptCompile Include="old\Oracle.d.ts" />
     <TypeScriptCompile Include="source\Main.ts" />
-    <TypeScriptCompile Include="source\OUtil.ts" />
-    <TypeScriptCompile Include="source\StockPrice.ts" />
+    <TypeScriptCompile Include="old\OUtil.ts" />
+    <TypeScriptCompile Include="old\StockPrice.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>
