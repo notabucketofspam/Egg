@@ -1,4 +1,4 @@
-// Node 
+// Node setup
 import http from "node:http";
 // WebSocket setup
 import ExtWSS from "./ExtWSS.js";
