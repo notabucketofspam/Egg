@@ -35,10 +35,12 @@ function messagePass(worker: Worker) {
 }
 //workerRegister["StockPrice"] = new OUtil.ExtWorker(path.normalize(`${process.cwd()}/build/StockPrice.js`), { },
 //  messagePass);
-import * as StockPrice from "./StockPrice.js";
+//import * as StockPrice from "./StockPrice.js";
+import * as Game from "./Game.js";
 // Clean shutdown
 process.once("SIGINT", async function (signal) {
   //console.log(`Exit StockPrice: ${await workerRegister["StockPrice"].terminate()}`);
-  console.log(`Exit StockPrice: ${await StockPrice.terminate()}`);
+  //console.log(`Exit StockPrice: ${await StockPrice.terminate()}`);
+  console.log(`Exit Game: ${await Game.terminate()}`);
   console.log(`Exit Main: ${signal}`);
 });
