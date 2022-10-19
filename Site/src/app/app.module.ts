@@ -8,13 +8,15 @@ import { StorageComponent } from './storage/storage.component';
 import { AppRoutingModule } from './app-routing.module';
 import { GameComponent } from './game/game.component';
 import { HomeComponent } from './home/home.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StorageComponent,
     GameComponent,
-    HomeComponent
+    HomeComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
