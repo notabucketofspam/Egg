@@ -1,1 +1,19 @@
-<p>home works!</p>
+<div class="TwoColumn">
+  <h1>Eggonomics</h1>
+  <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
+</div>
+<hr />
+What's poppin', gamers?
+<br />
+<div class="TwoColumn">
+  <div>
+    <button (click)="toggleWebSocket()">{{ buttonText }}</button>
+    <br />
+    <div *ngFor="let message of messages">{{ message }}<br /></div>
+  </div>
+  <app-storage></app-storage>
+</div>
+<br />
+<div>
+  <button [routerLink]="['/game', game]">Click the link, I dare ya</button>
+</div>
