@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { AppComponent } from './app.component';
 import { WebSocketService } from './websocket.service';
 import { StorageComponent } from './storage/storage.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { StorageComponent } from './storage/storage.component';
   ],
   imports: [
     BrowserModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AppRoutingModule
   ],
   providers: [WebSocketService],
   bootstrap: [AppComponent]
