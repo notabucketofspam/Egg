@@ -7,12 +7,14 @@ import { WebSocketService } from './websocket.service';
 import { StorageComponent } from './storage/storage.component';
 import { AppRoutingModule } from './app-routing.module';
 import { GameComponent } from './game/game.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StorageComponent,
-    GameComponent
+    GameComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
