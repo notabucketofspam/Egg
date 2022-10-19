@@ -6,11 +6,13 @@ import { AppComponent } from './app.component';
 import { WebSocketService } from './websocket.service';
 import { StorageComponent } from './storage/storage.component';
 import { AppRoutingModule } from './app-routing.module';
+import { GameComponent } from './game/game.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    StorageComponent
+    StorageComponent,
+    GameComponent
   ],
   imports: [
     BrowserModule,
