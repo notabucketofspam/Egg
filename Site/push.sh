@@ -7,7 +7,7 @@ _print_help() {
   echo "  -h    print this message"
 }
 _push() {
-  _buildmsg=$(ng build --progress=false)
+  _buildmsg=$(ng build --progress=false --configuration=production)
   if [ $? -ne 0 ]; then
     echo "Fail"
     exit

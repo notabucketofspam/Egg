@@ -3,6 +3,8 @@ import { filter, MonoTypeOperatorFunction, PartialObserver } from 'rxjs';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 import { webSocket } from "rxjs/webSocket";
 
+import { environment } from "../environments/environment";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +14,7 @@ export class WebSocketService implements OnDestroy {
   private pongFrame = Uint8Array.from([0xA]);
   private pingTimeout!: NodeJS.Timer;
   private subject = webSocket<WebSocketMessage>({
-    url: "wss://eggonomics.net/wss",
+    url: environment.webSocketUrl,
     binaryType: "blob",
     deserializer: event => event.data as WebSocketMessage,
     serializer: value => value
