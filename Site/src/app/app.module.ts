@@ -9,7 +9,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { GameComponent } from './game/game.component';
 import { HomeComponent } from './home/home.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { GameDataService } from './game-data.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +23,7 @@ import { GameDataService } from './game-data.service';
     ReactiveFormsModule,
     AppRoutingModule
   ],
-  providers: [WebSocketService, GameDataService],
+  providers: [WebSocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
