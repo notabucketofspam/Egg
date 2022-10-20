@@ -9,7 +9,6 @@ import { WebSocketService } from '../websocket.service';
 })
 export class HomeComponent implements OnDestroy {
   constructor(private websocket: WebSocketService) { }
-  title = 'Eggonomics';
   private buttonToggled = false;
   buttonText = "Plug it in, coach";
   messages: string[] = [];
@@ -30,7 +29,7 @@ export class HomeComponent implements OnDestroy {
   }
   ngOnDestroy() {
     if (this.buttonToggled) {
-      this.buttonToggled = !this.buttonToggled;
+      this.buttonToggled = false;
       this.websocket.complete();
     }
   }
