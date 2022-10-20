@@ -1,4 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 
 import { WebSocketService } from '../websocket.service';
 
@@ -12,16 +14,23 @@ export class HomeComponent implements OnDestroy {
   private buttonToggled = false;
   buttonText = "Plug it in, coach";
   messages: string[] = [];
-  game = "sauce";
+  private subscription!: Subscription;
   toggleWebSocket() {
     this.buttonToggled = !this.buttonToggled;
     if (this.buttonToggled) {
       // Connect to WebSocket
-      this.websocket.subscribe();
+      this.subscription = this.websocket.subscribe({
+        next: (value) => {
+          if (typeof value === "string")
+            this.messages.push(value);
+        }
+      });
+      this.websocket.next(JSON.stringify({ cmd: "ls" }));
       this.buttonText = "Get it outta here";
       this.messages.push("New connection.", "Check console (F12) for pings.");
     } else {
       // Disconnect from WebSocket
+      this.subscription.unsubscribe();
       this.websocket.complete();
       this.buttonText = "Plug it in, coach";
       this.messages.push("Closed connection.");
@@ -30,6 +39,7 @@ export class HomeComponent implements OnDestroy {
   ngOnDestroy() {
     if (this.buttonToggled) {
       this.buttonToggled = false;
+      this.subscription.unsubscribe();
       this.websocket.complete();
     }
   }
