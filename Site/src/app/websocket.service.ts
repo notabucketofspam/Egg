@@ -28,7 +28,8 @@ export class WebSocketService implements OnDestroy {
         if (bufferUint8.length === 1 && bufferUint8[0] === ws.pingFrame[0]) {
           ws.subject.next(ws.pongFrame);
           ws.isAlive();
-          console.log("Ping!");
+          if (!environment.production)
+            console.log("Ping!");
         }
       });
       return false;
