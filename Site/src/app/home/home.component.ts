@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 import { WebSocketService } from '../websocket.service';
 
@@ -7,7 +7,7 @@ import { WebSocketService } from '../websocket.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnDestroy {
   constructor(private websocket: WebSocketService) { }
   title = 'Eggonomics';
   private buttonToggled = false;
@@ -27,5 +27,9 @@ export class HomeComponent {
       this.buttonText = "Plug it in, coach";
       this.messages.push("Closed connection.");
     }
+  }
+  ngOnDestroy() {
+    if (this.buttonToggled)
+      this.websocket.complete();
   }
 }
