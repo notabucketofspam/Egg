@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
 import { GameSyncService } from '../game-sync.service';
+import { WebSocketService } from '../websocket.service';
 
 @Component({
   selector: 'app-storage',
@@ -17,7 +18,8 @@ export class StorageComponent implements OnInit {
   messages: string[] = [];
   storageForm = new FormGroup({
     game: new FormControl("", this.emptyStringValidator),
-    user: new FormControl("", this.emptyStringValidator)
+    user: new FormControl("", this.emptyStringValidator),
+    delete: new FormControl(false)
   });
   constructor(private router: Router, private gameSync: GameSyncService) { }
   ngOnInit() {
@@ -44,11 +46,26 @@ export class StorageComponent implements OnInit {
     localStorage.setItem("lastGame", JSON.stringify([this.lastGame, this.lastUser]));
   }
   onSubmit() {
-    if (this.lastGame && this.lastUser && !this.storageForm.controls['game'].valid
+    let deleteGame = false;
+    if (this.storageForm.value.delete) {
+      // Delete game
+      deleteGame = true;
+      this.game = this.storageForm.value.game!.trim();
+      const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
+      if (gameExistsIndex >= 0) {
+        this.storage.splice(gameExistsIndex, 1);
+        localStorage.setItem("games", JSON.stringify(this.storage));
+      }
+      if (this.lastGame === this.game)
+        localStorage.removeItem("lastGame");
+      this.gameSync.lastCommand = "delete";
+    } else if (this.lastGame && this.lastUser && !this.storageForm.controls['game'].valid
       && !this.storageForm.controls['user'].valid) {
+      // Continue last game
       [this.game, this.user] = [this.lastGame, this.lastUser];
       this.gameSync.lastCommand = "load";
     } else {
+      // Load old game / create new game
       this.game = this.storageForm.controls['game'].valid ?
         this.storageForm.value.game!.trim() :
         Date.now().toString(16).padStart(14, "0");
@@ -59,9 +76,13 @@ export class StorageComponent implements OnInit {
       else
         this.gameSync.lastCommand = "new";
     }
-    this.setStorage();
     this.storageForm.reset();
-    this.router.navigate(['/game', this.game, 'user', this.user]);
+    if (deleteGame) {
+      this.router.navigate(['/game', this.game, 'user', "DELETE"]);
+    } else {
+      this.setStorage();
+      this.router.navigate(['/game', this.game, 'user', this.user]);
+    }
   }
   clearStorage() {
     localStorage.clear();
