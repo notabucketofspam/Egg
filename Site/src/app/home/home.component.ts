@@ -1,6 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 
 import { WebSocketService } from '../websocket.service';
 
@@ -39,7 +38,6 @@ export class HomeComponent implements OnDestroy {
     if (this.buttonToggled) {
       this.buttonToggled = false;
       this.subscription.unsubscribe();
-      this.websocket.complete();
     }
   }
 }
