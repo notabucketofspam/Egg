@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
+import { GameSyncService } from '../game-sync.service';
 
 @Component({
   selector: 'app-storage',
@@ -18,7 +19,7 @@ export class StorageComponent implements OnInit {
     game: new FormControl("", this.emptyStringValidator),
     user: new FormControl("", this.emptyStringValidator)
   });
-  constructor(private router: Router) { }
+  constructor(private router: Router, private gameSync: GameSyncService) { }
   ngOnInit() {
     const games = localStorage.getItem("games")
     if (games)
@@ -45,13 +46,18 @@ export class StorageComponent implements OnInit {
   onSubmit() {
     if (this.lastGame && this.lastUser && !this.storageForm.controls['game'].valid
       && !this.storageForm.controls['user'].valid) {
-    [this.game, this.user] = [this.lastGame, this.lastUser];
+      [this.game, this.user] = [this.lastGame, this.lastUser];
+      this.gameSync.lastCommand = "load";
     } else {
       this.game = this.storageForm.controls['game'].valid ?
         this.storageForm.value.game!.trim() :
         Date.now().toString(16).padStart(14, "0");
       this.user = this.storageForm.value.user!.trim();
       [this.lastGame, this.lastUser] = [this.game, this.user];
+      if (this.storageForm.controls['game'].valid)
+        this.gameSync.lastCommand = "load";
+      else
+        this.gameSync.lastCommand = "new";
     }
     this.setStorage();
     this.storageForm.reset();
