@@ -9,12 +9,14 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit, OnDestroy {
-  game = "";
+  game!: string;
+  user!: string;
   subscription!: Subscription;
   constructor(private route: ActivatedRoute, private title: Title) { }
   ngOnInit(): void {
     this.subscription = this.route.params.subscribe(params => {
       this.game = params['game'];
+      this.user = params["user"];
       this.title.setTitle(`Game ${this.game} | Eggonomics`);
     });
   }
