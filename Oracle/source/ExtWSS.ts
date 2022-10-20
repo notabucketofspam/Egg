@@ -14,6 +14,8 @@ export default class ExtWSS extends WebSocketServer {
     this.pingTimer = setInterval(function (server) {
       for (const [client, isAlive] of server.aliveClients.entries()) {
         if (!isAlive) {
+          client.off("message", () => void 0);
+          client.off("close", () => void 0);
           client.terminate();
           server.aliveClients.delete(client);
           continue;
