@@ -1,5 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 import { WebSocketService } from '../websocket.service';
 
@@ -24,9 +25,11 @@ export class HomeComponent implements OnDestroy {
             this.messages.push(value);
         }
       });
-      this.websocket.next(JSON.stringify({ cmd: "ls" }));
+      this.websocket.next(JSON.stringify({ type: "ls" }));
       this.buttonText = "Get it outta here";
-      this.messages.push("New connection.", "Check console (F12) for pings.");
+      this.messages.push("New connection.");
+      if (!environment.production)
+        this.messages.push("Check console (F12) for pings.");
     } else {
       // Disconnect from WebSocket
       this.subscription.unsubscribe();
