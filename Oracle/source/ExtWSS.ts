@@ -32,7 +32,7 @@ export default class ExtWSS extends WebSocketServer {
           //console.log("Pong!");
           server.aliveClients.set(this, true);
         } else {
-          server.emit("message", data, isBinary);
+          server.emit("message", client, data, isBinary);
         }
       });
       client.once("close", function () {
