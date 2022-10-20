@@ -31,7 +31,6 @@ export class HomeComponent implements OnDestroy {
     } else {
       // Disconnect from WebSocket
       this.subscription.unsubscribe();
-      this.websocket.complete();
       this.buttonText = "Plug it in, coach";
       this.messages.push("Closed connection.");
     }
