@@ -74,6 +74,7 @@
     <TypeScriptCompile Include="source\Main.ts" />
     <TypeScriptCompile Include="old\OUtil.ts" />
     <TypeScriptCompile Include="old\StockPrice.ts" />
+    <TypeScriptCompile Include="source\Util.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>
