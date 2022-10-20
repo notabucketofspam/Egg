@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
+import { AbstractControl, FormControl, FormGroup, ValidationErrors } from "@angular/forms";
 import { Router } from '@angular/router';
 import { GameSyncService } from '../game-sync.service';
-import { WebSocketService } from '../websocket.service';
 
 @Component({
   selector: 'app-storage',
