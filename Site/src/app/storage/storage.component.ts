@@ -51,6 +51,7 @@ export class StorageComponent implements OnInit {
       // Delete game
       deleteGame = true;
       this.game = this.storageForm.value.game!.trim();
+      this.user = "DELETE";
       const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
       if (gameExistsIndex >= 0) {
         this.storage.splice(gameExistsIndex, 1);
@@ -77,12 +78,9 @@ export class StorageComponent implements OnInit {
         this.gameSync.lastCommand = "new";
     }
     this.storageForm.reset();
-    if (deleteGame) {
-      this.router.navigate(['/game', this.game, 'user', "DELETE"]);
-    } else {
+    if (!deleteGame)
       this.setStorage();
-      this.router.navigate(['/game', this.game, 'user', this.user]);
-    }
+    this.router.navigate(['/game', this.game, 'user', this.user]);
   }
   clearStorage() {
     localStorage.clear();
