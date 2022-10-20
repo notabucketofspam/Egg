@@ -34,6 +34,7 @@ export default class ExtWSS extends WebSocketServer {
         }
       });
       client.once("close", function () {
+        client.off("message", () => void 0);
         server.aliveClients.delete(this);
       });
     });
