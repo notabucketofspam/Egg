@@ -29,7 +29,9 @@ export class HomeComponent implements OnDestroy {
     }
   }
   ngOnDestroy() {
-    if (this.buttonToggled)
+    if (this.buttonToggled) {
+      this.buttonToggled = !this.buttonToggled;
       this.websocket.complete();
+    }
   }
 }
