@@ -25,7 +25,7 @@ export class HomeComponent implements OnDestroy {
             this.messages.push(value);
         }
       });
-      this.websocket.next(JSON.stringify({ type: "ls" }));
+      this.websocket.next(JSON.stringify({ cmd: "ls" }));
       this.buttonText = "Get it outta here";
       this.messages.push("New connection.");
       if (!environment.production)
