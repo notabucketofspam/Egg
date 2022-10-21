@@ -50,6 +50,7 @@
     <Folder Include="old\" />
     <Folder Include="old\Commands\" />
     <Folder Include="old\Commands\StockPrice\" />
+    <Folder Include="source\cmd\" />
     <Folder Include="teal\" />
     <Folder Include="source\" />
     <Folder Include="old\Methods\" />
@@ -60,6 +61,7 @@
     <Folder Include="old\Methods\post\exec\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\cmd\ls.ts" />
     <TypeScriptCompile Include="source\ExtWSS.ts" />
     <TypeScriptCompile Include="source\Game.ts" />
     <TypeScriptCompile Include="old\Methods\get\admin\restart.ts" />
