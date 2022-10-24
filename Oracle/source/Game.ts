@@ -22,13 +22,28 @@ do {
   }));
 } while (0);
 const commandRegisterObjectKeys = Object.keys(commandRegister);
+// Redis / KeyDB setup (...again)
+import IORedis from "ioredis";
+const ioredis = new IORedis();
+const scripts: Record<string, string> = {};
+do {
+  const luaDir = fs.opendirSync(path.normalize(`${process.cwd()}/lua`), { encoding: "utf8" });
+  const scriptPaths: string[] = [];
+  await readdirRecursive(luaDir, scriptPaths);
+  await Promise.all(scriptPaths.map(async function (scriptFile) {
+    scripts[path.basename(scriptFile, ".lua")] = await ioredis.script("LOAD",
+      fs.readFileSync(scriptFile, { encoding: "utf8" })) as string;
+  }));
+} while (0);
 // Listen for messages (pongs have already been filtered out)
 wss.on("message", function (client: WebSocket, data: WebSocket.RawData, isBinary: boolean) {
   const dataObject = JSON.parse(data.toString());
   if (dataObject.cmd && commandRegisterObjectKeys.includes(dataObject.cmd)) {
     commandRegister[dataObject.cmd]({
       client,
-      activeGames
+      activeGames,
+      ioredis,
+      scripts
     }, dataObject);
   }
 });
@@ -37,7 +52,8 @@ export async function terminate() {
   wss.off("message", () => void 0);
   wss.terminate();
   await Promise.all<void>([
-    new Promise<void>(resolve => void server.close(() => resolve()))
+    new Promise<void>(resolve => void server.close(() => resolve())),
+    new Promise<void>(resolve => ioredis.script("FLUSH", () => ioredis.quit(() => resolve())))
   ]).catch<void>(() => void (code = 1));
   return code;
 }

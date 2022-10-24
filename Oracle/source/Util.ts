@@ -3,6 +3,8 @@ import path from "node:path";
 import fs from "node:fs";
 // WebSocket setup
 import WebSocket from "ws";
+// Redis / KeyDB setup
+import Redis from "ioredis";
 /**
  * Find all files in a directory tree.
  * @param {fs.Dir} dir The current directory
@@ -35,5 +37,7 @@ export function fromMapReply(reply: string[]) {
  */
 export type Util = {
   client: WebSocket,
-  activeGames: Map<string, Map<WebSocket, string>>
+  activeGames: Map<string, Map<WebSocket, string>>,
+  ioredis: Redis,
+  scripts: Record<string, string>
 };
