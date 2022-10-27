@@ -90,12 +90,15 @@ export class StorageComponent implements OnInit, OnDestroy {
       this.subscription = this.websocket.subscribe({
         next: (value) => {
           if (typeof value === "string") {
-            const newGame = JSON.parse(value);
-            if (newGame.newGame) {
-              this.game = newGame.newGame;
+            const reply = JSON.parse(value);
+            if (reply.newGame) {
+              this.game = reply.newGame;
               [this.lastGame, this.lastUser] = [this.game, this.user];
               this.setStorage();
               this.router.navigate(['/game', this.game, 'user', this.user]);
+              this.subscription!.unsubscribe();
+            } else if (reply.error) {
+              this.messages.push(`Error: ${reply.error}`);
               this.subscription!.unsubscribe();
             }
           }
