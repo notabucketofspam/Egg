@@ -87,7 +87,6 @@ export class StorageComponent implements OnInit, OnDestroy {
       this.setStorage();
       this.router.navigate(['/game', this.game, 'user', this.user]);
     } else if (lastCommand === "new") {
-      this.setStorage();
       this.subscription = this.websocket.subscribe({
         next: (value) => {
           if (typeof value === "string") {
