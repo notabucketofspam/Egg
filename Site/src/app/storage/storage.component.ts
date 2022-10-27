@@ -94,6 +94,7 @@ export class StorageComponent implements OnInit, OnDestroy {
             const newGame = JSON.parse(value);
             if (newGame.newGame) {
               this.game = newGame.newGame;
+              this.setStorage();
               this.router.navigate(['/game', this.game, 'user', this.user]);
               this.subscription!.unsubscribe();
             }
@@ -101,7 +102,7 @@ export class StorageComponent implements OnInit, OnDestroy {
         }
       });
       this.websocket.next(JSON.stringify({ cmd: "new" }));
-    } else {
+    } else if (lastCommand === "delete") {
       this.subscription = this.websocket.subscribe({
         next: (value) => {
           this.messages.push(`Game ${this.game} deleted`);
