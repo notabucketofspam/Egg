@@ -13,9 +13,9 @@ import { WebSocketService } from '../websocket.service';
 export class GameComponent implements OnInit, OnDestroy {
   game!: string;
   user!: string;
-  subscription!: Subscription;
+  private subscription!: Subscription;
   constructor(private route: ActivatedRoute, private title: Title,
-    private gameSync: GameSyncService, private websocket: WebSocketService) { }
+    private websocket: WebSocketService) { }
   ngOnInit(): void {
     this.subscription = this.route.params.subscribe(params => {
       this.game = params['game'];

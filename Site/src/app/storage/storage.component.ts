@@ -1,26 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors } from "@angular/forms";
 import { Router } from '@angular/router';
-import { GameSyncService } from '../game-sync.service';
+import { Subscription } from 'rxjs';
+import { WebSocketService } from '../websocket.service';
 
 @Component({
   selector: 'app-storage',
   templateUrl: './storage.component.html',
   styleUrls: ['./storage.component.css', "../app.component.css"]
 })
-export class StorageComponent implements OnInit {
+export class StorageComponent implements OnInit, OnDestroy {
   game!: string;
   user!: string;
   lastGame?: string;
   lastUser?: string;
   storage: string[][] = [];
   messages: string[] = [];
+  private subscription?: Subscription;  
   storageForm = new FormGroup({
     game: new FormControl("", this.emptyStringValidator),
     user: new FormControl("", this.emptyStringValidator),
     delete: new FormControl(false)
   });
-  constructor(private router: Router, private gameSync: GameSyncService) { }
+  constructor(private router: Router,
+    private websocket: WebSocketService) { }
   ngOnInit() {
     const games = localStorage.getItem("games")
     if (games)
@@ -30,6 +33,10 @@ export class StorageComponent implements OnInit {
     const lastGame = localStorage.getItem("lastGame");
     if (lastGame)
       [this.lastGame, this.lastUser] = JSON.parse(lastGame);
+  }
+  ngOnDestroy() {
+    if (this.subscription)
+      this.subscription.unsubscribe();
   }
   getStorage() {
     this.messages.length = 0;
@@ -45,12 +52,10 @@ export class StorageComponent implements OnInit {
     localStorage.setItem("lastGame", JSON.stringify([this.lastGame, this.lastUser]));
   }
   onSubmit() {
-    let deleteGame = false;
+    let lastCommand = "";
     if (this.storageForm.value.delete) {
       // Delete game
-      deleteGame = true;
       this.game = this.storageForm.value.game!.trim();
-      this.user = "DELETE";
       const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
       if (gameExistsIndex >= 0) {
         this.storage.splice(gameExistsIndex, 1);
@@ -58,28 +63,53 @@ export class StorageComponent implements OnInit {
       }
       if (this.lastGame === this.game)
         localStorage.removeItem("lastGame");
-      this.gameSync.lastCommand = "delete";
+      lastCommand = "delete";
     } else if (this.lastGame && this.lastUser && !this.storageForm.controls['game'].valid
       && !this.storageForm.controls['user'].valid) {
       // Continue last game
       [this.game, this.user] = [this.lastGame, this.lastUser];
-      this.gameSync.lastCommand = "load";
+      lastCommand = "load";
     } else {
       // Load old game / create new game
-      this.game = this.storageForm.controls['game'].valid ?
-        this.storageForm.value.game!.trim() :
-        Date.now().toString(16).padStart(14, "0");
+      if (this.storageForm.controls['game'].valid) {
+        lastCommand = "load";
+        this.game = this.storageForm.value.game!.trim();
+      }
+      else {
+        lastCommand = "new";
+        //this.game = Date.now().toString(16).padStart(14, "0");
+      }
       this.user = this.storageForm.value.user!.trim();
       [this.lastGame, this.lastUser] = [this.game, this.user];
-      if (this.storageForm.controls['game'].valid)
-        this.gameSync.lastCommand = "load";
-      else
-        this.gameSync.lastCommand = "new";
     }
     this.storageForm.reset();
-    if (!deleteGame)
+    if (lastCommand === "load") {
       this.setStorage();
-    this.router.navigate(['/game', this.game, 'user', this.user]);
+      this.router.navigate(['/game', this.game, 'user', this.user]);
+    } else if (lastCommand === "new") {
+      this.setStorage();
+      this.subscription = this.websocket.subscribe({
+        next: (value) => {
+          if (typeof value === "string") {
+            const newGame = JSON.parse(value);
+            if (newGame.newGame) {
+              this.game = newGame.newGame;
+              this.router.navigate(['/game', this.game, 'user', this.user]);
+              this.subscription!.unsubscribe();
+            }
+          }
+        }
+      });
+      this.websocket.next(JSON.stringify({ cmd: "new" }));
+    } else {
+      this.subscription = this.websocket.subscribe({
+        next: (value) => {
+          this.messages.push(`Game ${this.game} deleted`);
+          this.subscription!.unsubscribe();
+        }
+      });
+      this.websocket.next(JSON.stringify({ cmd: "delete" }));
+    }
   }
   clearStorage() {
     localStorage.clear();
