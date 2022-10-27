@@ -109,7 +109,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           this.subscription!.unsubscribe();
         }
       });
-      this.websocket.next(JSON.stringify({ cmd: "delete" }));
+      this.websocket.next(JSON.stringify({ cmd: "delete", game: this.game }));
     }
   }
   clearStorage() {
