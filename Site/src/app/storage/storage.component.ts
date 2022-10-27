@@ -80,10 +80,10 @@ export class StorageComponent implements OnInit, OnDestroy {
         //this.game = Date.now().toString(16).padStart(14, "0");
       }
       this.user = this.storageForm.value.user!.trim();
-      [this.lastGame, this.lastUser] = [this.game, this.user];
     }
     this.storageForm.reset();
     if (lastCommand === "load") {
+      [this.lastGame, this.lastUser] = [this.game, this.user];
       this.setStorage();
       this.router.navigate(['/game', this.game, 'user', this.user]);
     } else if (lastCommand === "new") {
@@ -94,6 +94,7 @@ export class StorageComponent implements OnInit, OnDestroy {
             const newGame = JSON.parse(value);
             if (newGame.newGame) {
               this.game = newGame.newGame;
+              [this.lastGame, this.lastUser] = [this.game, this.user];
               this.setStorage();
               this.router.navigate(['/game', this.game, 'user', this.user]);
               this.subscription!.unsubscribe();
@@ -101,7 +102,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           }
         }
       });
-      this.websocket.next(JSON.stringify({ cmd: "new" }));
+      this.websocket.next(JSON.stringify({ cmd: "new", user: this.user }));
     } else if (lastCommand === "delete") {
       this.subscription = this.websocket.subscribe({
         next: (value) => {
