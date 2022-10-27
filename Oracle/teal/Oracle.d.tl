@@ -17,5 +17,12 @@ global record redis
 end
 global ARGV: {string}
 global KEYS: {string}
+global record Set
+  set: {string: boolean}
+end
+global record Map
+  map: {string: Reply}
+end
+global type Reply = string | number | boolean | nil | {Reply}
 -- Needed for compatibility with Lua 5.1
 global unpack = table.unpack

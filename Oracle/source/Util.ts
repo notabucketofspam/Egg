@@ -23,21 +23,25 @@ export async function readdirRecursive(dir: fs.Dir, files: string[]) {
 }
 /**
  * Turn a Redis map reply into an object.
- * @param {string[]} reply Alternating list of keys and values
- * @returns {Record<string, string>} New object with each key set to the respective value
+ * @param {RedisReply[]} reply Alternating list of keys (string) and values (RedisReply)
+ * @returns {Record<string, RedisReply>} New object with each key set to the respective value
  */
-export function fromMapReply(reply: string[]) {
-  const newobj: Record<string, string> = {};
+export function fromMapReply(reply: RedisReply[]) {
+  const newobj: Record<string, RedisReply> = {};
   for (let index = 0; index < reply.length; index += 2)
-    newobj[reply[index]] = reply[index + 1];
+    newobj[reply[index] as string] = reply[index + 1];
   return newobj;
 }
 /**
  * Resources for command execution
  */
-export type Util = {
+export declare type Util = {
   client: WebSocket,
   activeGames: Map<string, Map<WebSocket, string>>,
   ioredis: Redis,
   scripts: Record<string, string>
 };
+/**
+ * What an IORedis promise might resolve to.
+ */
+export declare type RedisReply = string | number | RedisReply[];
