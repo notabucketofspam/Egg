@@ -40,7 +40,9 @@
     <Content Include="push.sh" />
     <Content Include="rsync-exclude.txt" />
     <Content Include="rsync-include.txt" />
+    <Content Include="teal\add-user.tl" />
     <Content Include="teal\ls.tl" />
+    <Content Include="teal\new.tl" />
     <Content Include="teal\Oracle.d.tl" />
     <Content Include="old\StockPrice.tl" />
     <Content Include="tlconfig.lua" />
@@ -63,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="source\cmd\ls.ts" />
+    <TypeScriptCompile Include="source\cmd\new.ts" />
     <TypeScriptCompile Include="source\ExtWSS.ts" />
     <TypeScriptCompile Include="source\Game.ts" />
     <TypeScriptCompile Include="old\Methods\get\admin\restart.ts" />
