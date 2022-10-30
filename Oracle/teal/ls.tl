@@ -5,10 +5,9 @@ local send: Map = {}
 send.map = {}
 -- Get list of games
 local games = redis.call("SMEMBERS", "games") as Set
--- FIX not indexed correctly
 for game in pairs(games.set) do
   send.map[game] = {}
-  local users = redis.call("SMEMBERS", "game:" .. game .. ":users") as Set
+  local users = redis.call("SMEMBERS", "game:"..game..":users") as Set
   for user in pairs(users.set) do
     table.insert(send.map[game] as {string}, user)
   end
