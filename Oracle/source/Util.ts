@@ -37,7 +37,7 @@ export function fromMapReply(reply: RedisReply[]) {
  */
 export declare type Util = {
   client: WebSocket,
-  activeGames: Map<string, Map<WebSocket, string>>,
+  aliveClients: Map<WebSocket, ClientMeta>,
   ioredis: Redis,
   scripts: Record<string, string>
 };
@@ -45,3 +45,11 @@ export declare type Util = {
  * What an IORedis promise might resolve to.
  */
 export declare type RedisReply = string | number | RedisReply[];
+/**
+ * Metadata about a WebSocket client
+ */
+export declare type ClientMeta = {
+  isAlive: boolean,
+  game?: string,
+  user?: string
+};

@@ -8,7 +8,6 @@ import ExtWSS from "./ExtWSS.js";
 const server = http.createServer();
 const wss = new ExtWSS({ server });
 server.listen(39000, "localhost");
-const activeGames = new Map<string, Map<WebSocket, string>>();
 // Command register setup (...again)
 import { readdirRecursive } from "./Util.js";
 const commandRegister: Record<string, any> = { };
@@ -41,7 +40,7 @@ wss.on("message", function (client: WebSocket, data: WebSocket.RawData, isBinary
   if (dataObject.cmd && commandRegisterObjectKeys.includes(dataObject.cmd)) {
     commandRegister[dataObject.cmd]({
       client,
-      activeGames,
+      aliveClients: wss.aliveClients,
       ioredis,
       scripts
     }, dataObject);

@@ -5,7 +5,7 @@ type New = {
   user: string
 };
 export const cmd = "new";
-export async function exec({ client, activeGames, ioredis, scripts }: Util, data: New) {
+export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: New) {
   const gameKey = Date.now().toString(16).padStart(14, "0");
   const newStatus = await ioredis.evalsha(scripts["new"], 0, gameKey) as RedisReply;
   if (newStatus === "OK") {
