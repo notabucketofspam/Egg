@@ -50,6 +50,9 @@ export class WebSocketService implements OnDestroy {
   next(value: WebSocketMessage) {
     this.subject.next(value);
   }
+  nextJ(value: any) {
+    this.subject.next(JSON.stringify(value));
+  }
   error(err: any) {
     this.subject.error(err);
   }
