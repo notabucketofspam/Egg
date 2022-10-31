@@ -17,7 +17,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   };
   send.users = await ioredis.smembers(`game:${data.game}:users`);
   if (!send.users.includes(data.user))
-    send.err = "ENOUSER Current user is not in users set";
+    [send.err, send.why] = ["ENOUSER", "Current user is not in users set"];
   else
     await Promise.all([
       ioredis.hgetall(`game:${data.game}:price`).then(reply => send.price = reply),
