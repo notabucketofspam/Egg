@@ -12,7 +12,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   clientMeta.game = data.game;
   clientMeta.user = data.user;
   const send: Record<string, any> = {
-    cmd: "load"
+    cmd: "load",
+    user: { }
   };
   send.users = await ioredis.smembers(`game:${data.game}:users`);
   if (!send.users.includes(data.user))
@@ -23,7 +24,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       ioredis.hgetall(`game:${data.game}:delta`).then(reply => send.delta = reply),
       ioredis.hgetall(`game:${data.game}:pw`).then(reply => send.pw = reply),
       ioredis.hgetall(`game:${data.game}:round`).then(reply => send.round = reply),
-      Promise.all(send.users.map((user: string) =>
+      Promise.all(send.users.map((user: string) => 
+        send.user[user] = {} &&
         Promise.all([
           ioredis.hgetall(`game:${data.game}:user:${user}:own`).then(reply => send.user[user].own = reply),
           ioredis.hgetall(`game:${data.game}:user:${user}:member`).then(reply => send.user[user].member = reply)
