@@ -64,6 +64,7 @@
     <Folder Include="old\Methods\post\exec\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="source\cmd\ls.ts" />
     <TypeScriptCompile Include="source\cmd\new.ts" />
     <TypeScriptCompile Include="source\ExtWSS.ts" />
