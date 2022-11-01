@@ -12,13 +12,13 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   clientMeta.game = data.game;
   clientMeta.user = data.user;
   const send: Record<string, any> = {
-    cmd: "load"
+    cmd: "load",
+    user: { }
   };
   send.users = await ioredis.smembers(`game:${data.game}:users`);
   if (!send.users.includes(data.user))
     [send.err, send.why] = ["ENOUSER", "Current user is not in users set"];
   else
-    send.user = {} &&
     await Promise.all([
       ioredis.hgetall(`game:${data.game}:price`).then(reply => send.price = reply),
       ioredis.hgetall(`game:${data.game}:delta`).then(reply => send.delta = reply),
