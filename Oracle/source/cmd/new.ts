@@ -13,9 +13,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     if (addUserStatus === "OK") {
       client.send(JSON.stringify({ cmd: "new", newGame: gameKey }));
     } else {
-      client.send(JSON.stringify({ cmd: "new", error: "Failed to add user" }));
+      client.send(JSON.stringify({ cmd: "new", err: "EADDUSER", why: "Failed to add user" }));
     }
   } else {
-    client.send(JSON.stringify({ cmd: "new", error: "Failed to create new game" }));
+    client.send(JSON.stringify({ cmd: "new", err: "ENEWGAME", why: "Failed to create new game" }));
   }
 }
