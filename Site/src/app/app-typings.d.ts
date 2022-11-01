@@ -1,4 +1,5 @@
 declare const enum Cmd {
+  Ls = "ls",
   Load = "load",
   Update = "update",
   New = "new",
@@ -11,6 +12,10 @@ declare type Next = {
   err?: string,
   why?: string
 };
+declare interface List extends Next {
+  cmd: Cmd.Ls;
+  games: Record<string, string[]>;
+}
 declare interface State extends Next {
   cmd: Cmd.Load;
   users: string[];
