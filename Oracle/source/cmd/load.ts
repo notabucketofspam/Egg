@@ -15,9 +15,15 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     cmd: "load",
     user: { }
   };
+  const games = await ioredis.smembers("games");
+  if (!games.includes(data.game)) {
+    [send.err, send.why] = ["ENOGAME", "Current game is not in games set"];
+    client.send(JSON.stringify(send));
+    return;
+  }
   send.users = await ioredis.smembers(`game:${data.game}:users`);
   if (!send.users.includes(data.user))
-    [send.err, send.why] = ["ENOUSER", "Current user is not in users set"];
+    [send.err, send.why] = ["ENOUSER", "Current user is not in users set of game"];
   else
     await Promise.all([
       ioredis.hgetall(`game:${data.game}:price`).then(reply => send.price = reply),
