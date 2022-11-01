@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 
 import { WebSocketService } from '../websocket.service';
 
@@ -14,33 +14,38 @@ export class HomeComponent implements OnDestroy {
   private buttonToggled = false;
   buttonText = "Plug it in, coach";
   messages: string[] = [];
-  private subscription!: Subscription;
+  private subscriptions: Record<string, Subscription> = {};
   toggleWebSocket() {
     this.buttonToggled = !this.buttonToggled;
     if (this.buttonToggled) {
       // Connect to WebSocket
-      this.subscription = this.websocket.subscribe({
-        next: (value) => {
-          if (typeof value === "string")
-            this.messages.push(value);
-        }
-      });
-      this.websocket.next(JSON.stringify({ cmd: "ls" }));
       this.buttonText = "Get it outta here";
+      this.subscriptions["toggle"] = this.websocket.subscribe();
       this.messages.push("New connection.");
       if (!environment.production)
         this.messages.push("Check console (F12) for pings.");
     } else {
       // Disconnect from WebSocket
-      this.subscription.unsubscribe();
+      this.subscriptions["toggle"].unsubscribe();
       this.buttonText = "Plug it in, coach";
       this.messages.push("Closed connection.");
     }
   }
+  listGames() {
+    this.subscriptions["ls"] = this.websocket.subscribe({
+      next: (value) => {
+        const reply = JSON.parse(value as string) as Next;
+        if (reply.cmd === Cmd.Ls)
+          this.messages.push(value as string);
+        this.subscriptions["ls"].unsubscribe();
+      }
+    });
+    this.websocket.nextJ({ cmd: Cmd.Ls });
+  }
   ngOnDestroy() {
-    if (this.buttonToggled) {
-      this.buttonToggled = false;
-      this.subscription.unsubscribe();
-    }
+    if (this.subscriptions["toggle"])
+      this.subscriptions["toggle"].unsubscribe();
+    if (this.subscriptions["ls"])
+      this.subscriptions["ls"].unsubscribe();
   }
 }
