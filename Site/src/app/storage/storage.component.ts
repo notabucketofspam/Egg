@@ -52,7 +52,7 @@ export class StorageComponent implements OnInit, OnDestroy {
     localStorage.setItem("lastGame", JSON.stringify([this.lastGame, this.lastUser]));
   }
   onSubmit() {
-    let lastCommand = "";
+    let cmd: string;
     if (this.storageForm.value.delete) {
       // Delete game
       this.game = this.storageForm.value.game!.trim();
@@ -63,56 +63,61 @@ export class StorageComponent implements OnInit, OnDestroy {
       }
       if (this.lastGame === this.game)
         localStorage.removeItem("lastGame");
-      lastCommand = "delete";
+      cmd = Cmd.Delete;
     } else if (this.lastGame && this.lastUser && !this.storageForm.controls['game'].valid
       && !this.storageForm.controls['user'].valid) {
       // Continue last game
       [this.game, this.user] = [this.lastGame, this.lastUser];
-      lastCommand = "load";
+      cmd = Cmd.Load;
     } else {
       // Load old game / create new game
       if (this.storageForm.controls['game'].valid) {
-        lastCommand = "load";
+        cmd = Cmd.Load;
         this.game = this.storageForm.value.game!.trim();
-      }
-      else {
-        lastCommand = "new";
-        //this.game = Date.now().toString(16).padStart(14, "0");
+      } else {
+        cmd = Cmd.New;
       }
       this.user = this.storageForm.value.user!.trim();
     }
     this.storageForm.reset();
-    if (lastCommand === "load") {
-      [this.lastGame, this.lastUser] = [this.game, this.user];
-      this.setStorage();
-      this.router.navigate(['/game', this.game, 'user', this.user]);
-    } else if (lastCommand === "new") {
-      this.subscription = this.websocket.subscribe({
-        next: (value) => {
-          if (typeof value === "string") {
-            const reply = JSON.parse(value);
-            if (reply.newGame) {
-              this.game = reply.newGame;
-              [this.lastGame, this.lastUser] = [this.game, this.user];
-              this.setStorage();
-              this.router.navigate(['/game', this.game, 'user', this.user]);
-              this.subscription!.unsubscribe();
-            } else if (reply.error) {
-              this.messages.push(`Error: ${reply.error}`);
-              this.subscription!.unsubscribe();
+    switch (cmd) {
+      case Cmd.Load: {
+        [this.lastGame, this.lastUser] = [this.game, this.user];
+        this.setStorage();
+        this.router.navigate(['/game', this.game, 'user', this.user]);
+        break;
+      }
+      case Cmd.New: {
+        this.subscription = this.websocket.subscribe({
+          next: (value) => {
+            const reply = JSON.parse(value as string) as Next;
+            switch (reply.cmd) {
+              case Cmd.New: {
+                if (reply.err) {
+                  this.messages.push(reply.err, reply.why!);
+                  this.subscription!.unsubscribe();
+                  break;
+                }
+                this.game = (reply as NewGame).newGame;
+                [this.lastGame, this.lastUser] = [this.game, this.user];
+                this.setStorage();
+                this.router.navigate(['/game', this.game, 'user', this.user]);
+                this.subscription!.unsubscribe();
+                break;
+              }
+              default: break;
             }
           }
-        }
-      });
-      this.websocket.next(JSON.stringify({ cmd: "new", user: this.user }));
-    } else if (lastCommand === "delete") {
-      this.subscription = this.websocket.subscribe({
-        next: (value) => {
-          this.messages.push(`Game ${this.game} deleted`);
-          this.subscription!.unsubscribe();
-        }
-      });
-      this.websocket.next(JSON.stringify({ cmd: "delete", game: this.game }));
+        });
+        this.websocket.nextJ({ cmd: Cmd.New, user: this.user });
+        break;
+      }
+      case Cmd.Delete: {
+        this.websocket.nextJ({ cmd: Cmd.Delete, game: this.game });
+        this.messages.push(`Game ${this.game} deleted`);
+        break;
+      }
+      default: break;
     }
   }
   clearStorage() {
