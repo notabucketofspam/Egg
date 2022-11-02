@@ -33,6 +33,17 @@ export function fromMapReply(reply: RedisReply[]) {
   return newobj;
 }
 /**
+ * Turn a Redis sorted set reply (ZRANGE) into an object
+ * @param {string[]} reply Alternating list of members and scores
+ * @returns {Record<string, number>} The new sorted set
+ */
+export function fromZrange(reply: string[]) {
+  const newobj: Record<string, number> = {};
+  for (let i = 0; i < reply.length; i += 2)
+    newobj[reply[i]] = Number(reply[i + 1]);
+  return newobj;
+}
+/**
  * Resources for command execution
  */
 export declare type Util = {

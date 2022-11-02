@@ -1,4 +1,4 @@
-import { Util } from "../Util.js";
+import { fromZrange, Util } from "../Util.js";
 // Command
 type Load = {
   cmd: "load",
@@ -42,6 +42,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       ioredis.smembers(`game:${data.game}:can-trade`).then(reply => send["can-trade"] = reply),
       ioredis.hgetall(`game:${data.game}:pa`).then(reply => send.pa = reply),
       ioredis.hgetall(`game:${data.game}:cash`).then(reply => send.cash = reply),
+      ioredis.zrange(`game:${data.game}:init`, 0, 6).then(reply => send.init = fromZrange(reply)),
+      ioredis.zrange(`game:${data.game}:second-init`, 0, 6).then(reply => send["second-init"] = fromZrange(reply))
     ]);
   client.send(JSON.stringify(send));
 }

@@ -21,6 +21,8 @@ if user ~= nil then
   redis.call("SADD", "game:"..gameKey..":can-trade", user)
   redis.call("HSET", "game:"..gameKey..":pa", user, "0")
   redis.call("HSET", "game:"..gameKey..":cash", user, "3000")
+  redis.call("ZADD", "game:"..gameKey..":init", "0", user)
+  redis.call("ZADD", "game:"..gameKey..":second-init", "0", user)
   send = redis.status_reply("OK")
 else
   -- No user
