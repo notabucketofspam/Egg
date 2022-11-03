@@ -7,6 +7,7 @@ type Delete = {
 export const cmd = "delete";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Delete) {
   try {
+    await ioredis.evalsha(scripts["delete"], 0, data.game);
     for (const [aliveClient, clientMeta] of aliveClients) {
       if (clientMeta.game === data.game) {
         aliveClient.off("message", () => void 0);
@@ -15,7 +16,6 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         aliveClients.delete(aliveClient);
       }
     }
-    await ioredis.evalsha(scripts["delete"], 0, data.game);
     client.send(JSON.stringify({ cmd: "delete", ok: true }));
   } catch (err: unknown) {
     client.send(JSON.stringify({ cmd: "delete", err: "ENOGAME", why: "The game provided does not exist" }));
