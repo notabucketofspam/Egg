@@ -37,6 +37,8 @@ declare interface State extends Next {
   ["can-trade"]: string[];
   pa: Record<string, string>;
   cash: Record<string, string>;
+  init: Record<string, number>;
+  ["second-init"]: Record<string, number>;
 }
 declare interface Frame extends Next {
   cmd: Cmd.Update;
@@ -59,6 +61,8 @@ declare interface Frame extends Next {
   ["can-trade"]?: string[];
   pa?: Record<string, string>;
   cash?: Record<string, string>;
+  init?: Record<string, number>;
+  ["second-init"]?: Record<string, number>;
 }
 declare interface NewGame extends Next {
   cmd: Cmd.New;
