@@ -11,6 +11,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     await ioredis.evalsha(scripts["new"], 0, gameKey);
     try {
       await ioredis.evalsha(scripts["add-user"], 0, gameKey, data.user);
+      client.send(JSON.stringify({ cmd: "new", newGame: gameKey }));
     } catch (err: unknown) {
       client.send(JSON.stringify({ cmd: "new", err: "EADDUSER", why: "Failed to add user" }));
     }
