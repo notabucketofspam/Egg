@@ -16,6 +16,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         aliveClients.delete(aliveClient);
       }
     }
+    client.send(JSON.stringify({ cmd: "delete", ok: true }));
   } else {
     client.send(JSON.stringify({ cmd: "delete", err: "ENOGAME", why: "The game provided does not exist" }));
   }
