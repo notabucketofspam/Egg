@@ -57,13 +57,6 @@ export class StorageComponent implements OnInit, OnDestroy {
     if (this.storageForm.value.delete) {
       // Delete game
       this.game = this.storageForm.value.game!.trim();
-      const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
-      if (gameExistsIndex >= 0) {
-        this.storage.splice(gameExistsIndex, 1);
-        localStorage.setItem("games", JSON.stringify(this.storage));
-      }
-      if (this.lastGame === this.game)
-        localStorage.removeItem("lastGame");
       cmd = Cmd.Delete;
     } else if (this.lastGame && this.lastUser && !this.storageForm.controls['game'].valid
       && !this.storageForm.controls['user'].valid) {
@@ -127,6 +120,13 @@ export class StorageComponent implements OnInit, OnDestroy {
             if (reply.err) {
               this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
             } else {
+              const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
+              if (gameExistsIndex >= 0) {
+                this.storage.splice(gameExistsIndex, 1);
+                localStorage.setItem("games", JSON.stringify(this.storage));
+              }
+              if (this.lastGame === this.game)
+                localStorage.removeItem("lastGame");
               this.messages.push(`Game ${this.game} deleted`);
             }
             this.subscription!.unsubscribe();
