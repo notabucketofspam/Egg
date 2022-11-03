@@ -1,4 +1,4 @@
-import { RedisReply, Util } from "../Util.js";
+import { Util } from "../Util.js";
 // Command
 type Delete = {
   cmd: "delete",
@@ -6,8 +6,8 @@ type Delete = {
 };
 export const cmd = "delete";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Delete) {
-  const status = await ioredis.evalsha(scripts["delete"], 0, data.game) as RedisReply;
-  if (status === "OK") {
+  try {
+    await ioredis.evalsha(scripts["delete"], 0, data.game);
     for (const [aliveClient, clientMeta] of aliveClients) {
       if (clientMeta.game === data.game) {
         aliveClient.off("message", () => void 0);
@@ -17,7 +17,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       }
     }
     client.send(JSON.stringify({ cmd: "delete", ok: true }));
-  } else {
+  } catch (err: unknown) {
     client.send(JSON.stringify({ cmd: "delete", err: "ENOGAME", why: "The game provided does not exist" }));
   }
 }
