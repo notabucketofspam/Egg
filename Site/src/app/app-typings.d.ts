@@ -19,48 +19,48 @@ declare interface List extends Next {
 declare interface State extends Next {
   cmd: Cmd.Load;
   users: string[];
-  price: Record<string, string>;
-  delta: Record<string, string>;
-  pw: Record<string, string>;
+  price: Record<string, number>;
+  delta: Record<string, number>;
+  pw: Record<string, number>;
   round: {
-    round: string,
-    phase: string
+    round: number,
+    phase: number
   };
   user: {
     [user: string]: {
-      own: Record<string, string>,
-      member: Record<string, string>
+      own: Record<string, number>,
+      member: Record<string, number>
     }
   };
   ready: string[];
-  pledge: Record<string, string>;
+  pledge: Record<string, number>;
   ["can-trade"]: string[];
-  pa: Record<string, string>;
-  cash: Record<string, string>;
+  pa: Record<string, number>;
+  cash: Record<string, number>;
   init: Record<string, number>;
   ["second-init"]: Record<string, number>;
 }
 declare interface Frame extends Next {
   cmd: Cmd.Update;
   users?: string[];
-  price?: Record<string, string>;
-  delta?: Record<string, string>;
-  pw?: Record<string, string>;
+  price?: Record<string, number>;
+  delta?: Record<string, number>;
+  pw?: Record<string, number>;
   round?: {
-    round?: string,
-    phase?: string
+    round?: number,
+    phase?: number
   };
   user?: {
     [user: string]: {
-      own?: Record<string, string>,
-      member?: Record<string, string>
+      own?: Record<string, number>,
+      member?: Record<string, number>
     }
   };
   ready?: string[];
-  pledge?: Record<string, string>;
+  pledge?: Record<string, number>;
   ["can-trade"]?: string[];
-  pa?: Record<string, string>;
-  cash?: Record<string, string>;
+  pa?: Record<string, number>;
+  cash?: Record<string, number>;
   init?: Record<string, number>;
   ["second-init"]?: Record<string, number>;
 }
