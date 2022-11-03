@@ -114,10 +114,17 @@ export class StorageComponent implements OnInit, OnDestroy {
       }
       case Cmd.Delete: {
         this.subscription = this.websocket.subscribe({
-          next: (value) => this.subscription!.unsubscribe()
+          next: (value) => {
+            const reply = JSON.parse(value as string) as Next;
+            if (reply.err) {
+              this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+            } else {
+              this.messages.push(`Game ${this.game} deleted`);
+            }
+            this.subscription!.unsubscribe();
+          }
         });
         this.websocket.nextJ({ cmd: Cmd.Delete, game: this.game });
-        this.messages.push(`Game ${this.game} deleted`);
         break;
       }
       default: break;
