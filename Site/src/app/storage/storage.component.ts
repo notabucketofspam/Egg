@@ -117,19 +117,21 @@ export class StorageComponent implements OnInit, OnDestroy {
         this.subscription = this.websocket.subscribe({
           next: (value) => {
             const reply = JSON.parse(value as string) as Next;
-            if (reply.err) {
-              this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
-            } else {
-              const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
-              if (gameExistsIndex >= 0) {
-                this.storage.splice(gameExistsIndex, 1);
-                localStorage.setItem("games", JSON.stringify(this.storage));
+            if (reply.cmd === Cmd.Delete) {
+              if (reply.err) {
+                this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+              } else {
+                const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
+                if (gameExistsIndex >= 0) {
+                  this.storage.splice(gameExistsIndex, 1);
+                  localStorage.setItem("games", JSON.stringify(this.storage));
+                }
+                if (this.lastGame === this.game)
+                  localStorage.removeItem("lastGame");
+                this.messages.push(`Game ${this.game} deleted`);
               }
-              if (this.lastGame === this.game)
-                localStorage.removeItem("lastGame");
-              this.messages.push(`Game ${this.game} deleted`);
+              this.subscription!.unsubscribe();
             }
-            this.subscription!.unsubscribe();
           }
         });
         this.websocket.nextJ({ cmd: Cmd.Delete, game: this.game });
@@ -139,20 +141,22 @@ export class StorageComponent implements OnInit, OnDestroy {
         this.subscription = this.websocket.subscribe({
           next: (value) => {
             const reply = JSON.parse(value as string) as Next;
-            if (reply.err) {
-              this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
-            } else {
-              const matchedGames = this.storage.filter(gameSet => gameSet[0] === this.game);
-              const matchedUserIndex = matchedGames.findIndex(gameSet => gameSet[1] === this.user);
-              if (matchedUserIndex >= 0) {
-                this.storage.splice(matchedUserIndex, 1);
-                localStorage.setItem("games", JSON.stringify(this.storage));
+            if (reply.cmd === Cmd.RemoveUser) {
+              if (reply.err) {
+                this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+              } else {
+                const matchedGames = this.storage.filter(gameSet => gameSet[0] === this.game);
+                const matchedUserIndex = matchedGames.findIndex(gameSet => gameSet[1] === this.user);
+                if (matchedUserIndex >= 0) {
+                  this.storage.splice(matchedUserIndex, 1);
+                  localStorage.setItem("games", JSON.stringify(this.storage));
+                }
+                if (this.lastGame === this.game && this.lastUser === this.user)
+                  localStorage.removeItem("lastGame");
+                this.messages.push(`User ${this.user} of ${this.game} removed`);
               }
-              if (this.lastGame === this.game && this.lastUser === this.user)
-                localStorage.removeItem("lastGame");
-              this.messages.push(`User ${this.user} of ${this.game} removed`);
+              this.subscription!.unsubscribe();
             }
-            this.subscription!.unsubscribe();
           }
         });
         this.websocket.nextJ({ cmd: Cmd.RemoveUser, game: this.game, user: this.user });
