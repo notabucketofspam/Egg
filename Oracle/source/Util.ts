@@ -44,6 +44,17 @@ export function fromZrange(reply: string[]) {
   return newobj;
 }
 /**
+ * Turn a Redis hash reply (HGETALL) into an object with values as numbers
+ * @param {string[]} reply Object with string fields and number values
+ * @returns {Record<string, number>} The new object
+ */
+export function fromHgetall(reply: Record<string, string>) {
+  const newobj: Record<string, number> = {};
+  for (const field of Object.keys(reply))
+    newobj[field] = Number(reply[field]);
+  return newobj;
+}
+/**
  * Resources for command execution
  */
 export declare type Util = {
