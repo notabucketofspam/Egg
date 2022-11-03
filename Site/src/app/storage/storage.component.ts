@@ -20,7 +20,8 @@ export class StorageComponent implements OnInit, OnDestroy {
   storageForm = new FormGroup({
     game: new FormControl("", this.emptyStringValidator),
     user: new FormControl("", this.emptyStringValidator),
-    delete: new FormControl(false)
+    delete: new FormControl(false),
+    ["remove-user"]: new FormControl(false)
   });
   constructor(private router: Router,
     private websocket: WebSocketService) { }
@@ -70,14 +71,21 @@ export class StorageComponent implements OnInit, OnDestroy {
       [this.game, this.user] = [this.lastGame, this.lastUser];
       cmd = Cmd.Load;
     } else {
-      // Load old game / create new game
+      // Load old game / create new game / remove user
+      this.user = this.storageForm.value.user!.trim();
       if (this.storageForm.controls['game'].valid) {
-        cmd = Cmd.Load;
         this.game = this.storageForm.value.game!.trim();
+        if (this.storageForm.value['remove-user']) {
+          // Remove user
+          cmd = Cmd.RemoveUser;
+        } else {
+          // Load game
+          cmd = Cmd.Load;
+        }
       } else {
+        // New game
         cmd = Cmd.New;
       }
-      this.user = this.storageForm.value.user!.trim();
     }
     this.storageForm.reset();
     switch (cmd) {
@@ -125,6 +133,29 @@ export class StorageComponent implements OnInit, OnDestroy {
           }
         });
         this.websocket.nextJ({ cmd: Cmd.Delete, game: this.game });
+        break;
+      }
+      case Cmd.RemoveUser: {
+        this.subscription = this.websocket.subscribe({
+          next: (value) => {
+            const reply = JSON.parse(value as string) as Next;
+            if (reply.err) {
+              this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+            } else {
+              const matchedGames = this.storage.filter(gameSet => gameSet[0] === this.game);
+              const matchedUserIndex = matchedGames.findIndex(gameSet => gameSet[1] === this.user);
+              if (matchedUserIndex >= 0) {
+                this.storage.splice(matchedUserIndex, 1);
+                localStorage.setItem("games", JSON.stringify(this.storage));
+              }
+              if (this.lastGame === this.game && this.lastUser === this.user)
+                localStorage.removeItem("lastGame");
+              this.messages.push(`User ${this.user} of ${this.game} removed`);
+            }
+            this.subscription!.unsubscribe();
+          }
+        });
+        this.websocket.nextJ({ cmd: Cmd.RemoveUser, game: this.game, user: this.user });
         break;
       }
       default: break;

@@ -17,14 +17,20 @@
         [disabled]="this.storageForm.controls['game'].valid||!this.storageForm.controls['user'].valid">
         Create <span class="Underline">new</span> game
       </button>
+      <br />
       <button type="submit"
         [disabled]="!this.lastGame||!this.lastUser||this.storageForm.controls['game'].valid||this.storageForm.controls['user'].valid">
         Continue <span class="Underline">last</span> game
       </button>
       <button type="submit"
-        [disabled]="!this.storageForm.controls['game'].valid"
+        [disabled]="this.storageForm.valid||!this.storageForm.controls['game'].valid"
         (click)="this.storageForm.controls['delete'].setValue(true)">
         Delete <span class="Underline">this</span> game
+      </button>
+      <br />
+      <button type="submit" [disabled]="!storageForm.valid"
+        (click)="this.storageForm.controls['remove-user'].setValue(true)">
+        Remove <span class="Underline">that</span> user
       </button>
     </form>
   </div>
