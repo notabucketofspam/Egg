@@ -64,6 +64,12 @@ export class GameComponent implements OnInit, OnDestroy {
         this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
         break;
       }
+      case Cmd.Disconnect: {
+        console.log(value);
+        this.clear();
+        this.messages.push(`cmd: ${value.cmd}`, (value as Disconnect).reason);
+        break;
+      }
       default: {
         const error = { cmd: value.cmd, err: "ENOCMD", why: "Invalid or unexpected command" };
         console.log(error);
@@ -74,6 +80,9 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   addUser() {
     this.websocket.nextJ({ cmd: Cmd.AddUser, game: this.game, user: this.user });
+  }
+  clear() {
+    this.state = {} as State;
   }
   load(state: State) {
     this.state = state as State;

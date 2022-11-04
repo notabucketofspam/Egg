@@ -5,7 +5,8 @@ declare const enum Cmd {
   New = "new",
   AddUser = "add-user",
   Delete = "delete",
-  RemoveUser = "remove-user"
+  RemoveUser = "remove-user",
+  Disconnect = "disconnect"
 }
 declare type Next = {
   cmd: Cmd,
@@ -80,4 +81,8 @@ declare interface DeleteGame extends Next {
 declare interface RemoveUser extends Next {
   cmd: Cmd.RemoveUser;
   ok: boolean;
+}
+declare interface Disconnect extends Next {
+  cmd: Cmd.Disconnect;
+  reason: string;
 }
