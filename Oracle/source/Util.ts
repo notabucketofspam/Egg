@@ -96,6 +96,10 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
         // No user provided as parameter
         return JSON.stringify({ cmd, err: err.message, why: "No user provided as parameter", proof });
       }
+      case "ENOCMD": {
+        // Invalid or unexpected command
+        return JSON.stringify({ cmd, err: err.message, why: "Invalid or unexpected command", proof });
+      }
       default: {
         // Unknown error
         return JSON.stringify({ cmd, err: err.message, why: "Unknown error", proof });

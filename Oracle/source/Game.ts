@@ -9,7 +9,7 @@ const server = http.createServer();
 const wss = new ExtWSS({ server });
 server.listen(39000, "localhost");
 // Command register setup (...again)
-import { readdirRecursive } from "./Util.js";
+import { fromScriptError, readdirRecursive } from "./Util.js";
 const commandRegister: Record<string, any> = { };
 do {
   const commandsDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/cmd`), { encoding: "utf8" });
@@ -44,6 +44,9 @@ wss.on("message", function (client: WebSocket, data: WebSocket.RawData, isBinary
       ioredis,
       scripts
     }, dataObject);
+  } else {
+    const cmd = typeof dataObject.cmd === "string" ? dataObject.cmd as string : "no-cmd";
+    client.send(fromScriptError(cmd, new Error("ENOCMD"), { "valid-cmds": commandRegisterObjectKeys }));
   }
 });
 export async function terminate() {
