@@ -3,6 +3,7 @@ redis.setresp(3)
 -- Things to be returned from the script
 local send: {string: string}
 local gameKey = ARGV[1]
+-- Check that game exists
 local games = redis.call("SMEMBERS", "games") as Set
 local gameExists = false
 for game in pairs(games.set) do
@@ -11,6 +12,7 @@ for game in pairs(games.set) do
   end
 end
 if gameExists then
+  -- Delete game
   redis.call("SREM", "games", gameKey)
   redis.call("FT.DROPINDEX", "game:"..gameKey..":index", "DD")
   local users = redis.call("SMEMBERS", "game:"..gameKey..":users") as Set
@@ -23,7 +25,8 @@ if gameExists then
     "game:"..gameKey..":cash", "game:"..gameKey..":init", "game:"..gameKey..":second-init")
   send = redis.status_reply("OK")
 else
-  send = redis.error_reply("NOGAME The game provided does not exist")
+  -- No game in games set
+  send = redis.error_reply("ENOGAME")
 end
 -- Final reply
 return send

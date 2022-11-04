@@ -11,6 +11,19 @@ local hsetConglomerates = {
 }
 local gameKey = ARGV[1]
 local user = ARGV[2]
+-- Check that game exists
+local games = redis.call("SMEMBERS", "games") as Set
+local gameExists = false
+for game in pairs(games.set) do
+  if game == gameKey then
+    gameExists = true
+  end
+end
+if not gameExists then
+  send = redis.error_reply("ENOGAME")
+  return send
+end
+-- Check that user is provided
 if user ~= nil then
   -- Add new user data
   redis.call("HSET", "game:"..gameKey..":user:"..user..":own", unpack(hsetConglomerates))
@@ -26,7 +39,7 @@ if user ~= nil then
   send = redis.status_reply("OK")
 else
   -- No user
-  send = redis.error_reply("NOUSER No user provided")
+  send = redis.error_reply("ENOUSER")
 end
 -- Final reply
 return send

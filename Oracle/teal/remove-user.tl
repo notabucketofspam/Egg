@@ -4,6 +4,7 @@ redis.setresp(3)
 local send: {string: string}
 local gameKey = ARGV[1]
 local username = ARGV[2]
+-- Check that game exists
 local games = redis.call("SMEMBERS", "games") as Set
 local gameExists = false
 for game in pairs(games.set) do
@@ -12,6 +13,7 @@ for game in pairs(games.set) do
   end
 end
 if gameExists then
+  -- Check that user exists in game
   local users = redis.call("SMEMBERS", "game:"..gameKey..":users") as Set
   local userExists = false
   for user in pairs(users.set) do
@@ -20,6 +22,7 @@ if gameExists then
     end
   end
   if userExists then
+    -- Remove user
     redis.call("DEL", "game:"..gameKey..":user:"..username..":own", "game:"..gameKey..":user:"..username..":member")
     redis.call("SREM", "game:"..gameKey..":users", username)
     redis.call("SREM", "game:"..gameKey..":ready", username)
@@ -31,10 +34,12 @@ if gameExists then
     redis.call("ZREM", "game:"..gameKey..":second-init", username)
     send = redis.status_reply("OK")
   else
-    send = redis.error_reply("NOUSER The game provided has no such user")
+    -- No user in game
+    send = redis.error_reply("ENOUSER")
   end
 else
-  send = redis.error_reply("NOGAME The game provided does not exist")
+  -- No game in games set
+  send = redis.error_reply("ENOGAME")
 end
 -- Final reply
 return send
