@@ -10,7 +10,8 @@ declare const enum Cmd {
 declare type Next = {
   cmd: Cmd,
   err?: string,
-  why?: string
+  why?: string,
+  proof?: Record<string, any>
 };
 declare interface List extends Next {
   cmd: Cmd.Ls;
