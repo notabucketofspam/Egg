@@ -66,6 +66,7 @@
     <Folder Include="old\Methods\post\exec\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\cmd\add-user.ts" />
     <TypeScriptCompile Include="source\cmd\delete.ts" />
     <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="source\cmd\ls.ts" />
