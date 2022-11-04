@@ -11,6 +11,7 @@ import { HomeComponent } from './home/home.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { GameSyncService } from './game-sync.service';
 import { ConglomerateComponent } from './conglomerate/conglomerate.component';
+import { CompanyComponent } from './company/company.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ConglomerateComponent } from './conglomerate/conglomerate.component';
     GameComponent,
     HomeComponent,
     PageNotFoundComponent,
-    ConglomerateComponent
+    ConglomerateComponent,
+    CompanyComponent
   ],
   imports: [
     BrowserModule,
