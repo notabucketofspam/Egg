@@ -1,4 +1,4 @@
-import { fromHgetall, fromZrange, Util } from "../Util.js";
+import { fromHgetall, fromZrange, fromScriptError, Util } from "../Util.js";
 // Command
 type Load = {
   cmd: "load",
@@ -16,14 +16,12 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     user: { }
   };
   const games = await ioredis.smembers("games");
-  if (!games.includes(data.game)) {
-    [send.err, send.why] = ["ENOGAME", "Current game is not in games set"];
-    client.send(JSON.stringify(send));
-    return;
-  }
+  if (!games.includes(data.game))
+    return client.send(fromScriptError("load", new Error("ENOGAME"), { games, game: data.game }));
   send.users = await ioredis.smembers(`game:${data.game}:users`);
   if (!send.users.includes(data.user))
-    [send.err, send.why] = ["ENOUSER", "Current user is not in users set of game"];
+    return client.send(fromScriptError("load", new Error("ENOUSER"),
+      { users: send.users, user: data.user, game: data.game }));
   else
     await Promise.all([
       ioredis.hgetall(`game:${data.game}:price`).then(reply => send.price = fromHgetall(reply)),

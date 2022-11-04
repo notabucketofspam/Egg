@@ -75,3 +75,33 @@ export declare type ClientMeta = {
   game?: string,
   user?: string
 };
+/**
+ * Construct an appropriate client response to a server error (if there is one)
+ * @param {string} cmd The command in question
+ * @param {Error} [err] The error from script, if any
+ * @returns {string} JSON string for sending to the client
+ */
+export function fromScriptError(cmd: string, err?: Error, proof?: Record<string, any>) {
+  if (err) {
+    switch (err.message) {
+      case "ENOGAME": {
+        // No game in games set
+        return JSON.stringify({ cmd, err: err.message, why: "No game in games set", proof });
+      }
+      case "ENOUSER": {
+        // No user in users set of game
+        return JSON.stringify({ cmd, err: err.message, why: "No user in users set of game", proof });
+      }
+      case "ENOUSERPARAM": {
+        // No user provided as parameter
+        return JSON.stringify({ cmd, err: err.message, why: "No user provided as parameter", proof });
+      }
+      default: {
+        // Unknown error
+        return JSON.stringify({ cmd, err: err.message, why: "Unknown error", proof });
+      }
+    }
+  } else {
+    return JSON.stringify({ cmd, ok: true });
+  }
+}

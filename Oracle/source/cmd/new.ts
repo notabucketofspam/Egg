@@ -1,4 +1,4 @@
-import { Util } from "../Util.js";
+import { fromScriptError, Util } from "../Util.js";
 // Command
 type New = {
   cmd: "new",
@@ -12,10 +12,10 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     try {
       await ioredis.evalsha(scripts["add-user"], 0, gameKey, data.user);
       client.send(JSON.stringify({ cmd: "new", newGame: gameKey }));
-    } catch (err: unknown) {
-      client.send(JSON.stringify({ cmd: "new", err: "EADDUSER", why: "Failed to add user" }));
+    } catch (err) {
+      client.send(fromScriptError("new", err as Error));
     }
-  } catch (err: unknown) {
-    client.send(JSON.stringify({ cmd: "new", err: "ENEWGAME", why: "Failed to create new game" }));
+  } catch (err) {
+    client.send(fromScriptError("new", new Error("EUNKNOWN")));
   }
 }

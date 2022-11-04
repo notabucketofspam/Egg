@@ -1,4 +1,4 @@
-import { Util } from "../Util.js";
+import { fromScriptError, Util } from "../Util.js";
 // Command
 type RemoveUser = {
   cmd: "remove-user",
@@ -17,8 +17,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         aliveClients.delete(aliveClient);
       }
     }
-    client.send(JSON.stringify({ cmd: "remove-user", ok: true }));
-  } catch (err: unknown) {
-    client.send(JSON.stringify({ cmd: "remove-user", err: "ENOUSER", why: "The game provided has no such user" }));
+    client.send(fromScriptError("remove-user"));
+  } catch (err) {
+    client.send(fromScriptError("remove-user", err as Error));
   }
 }

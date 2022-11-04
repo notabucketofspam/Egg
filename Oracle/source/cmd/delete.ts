@@ -1,4 +1,4 @@
-import { Util } from "../Util.js";
+import { fromScriptError, Util } from "../Util.js";
 // Command
 type Delete = {
   cmd: "delete",
@@ -16,8 +16,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         aliveClients.delete(aliveClient);
       }
     }
-    client.send(JSON.stringify({ cmd: "delete", ok: true }));
-  } catch (err: unknown) {
-    client.send(JSON.stringify({ cmd: "delete", err: "ENOGAME", why: "The game provided does not exist" }));
+    client.send(fromScriptError("delete"));
+  } catch (err) {
+    client.send(fromScriptError("delete", err as Error));
   }
 }
