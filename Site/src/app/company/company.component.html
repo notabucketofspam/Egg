@@ -1,1 +1,50 @@
-<p>company works!</p>
+<span class="BigTitle">{{ company }}</span>
+<div class="FlexCom">
+  <div class="Stock">
+    <span class="Title">Stock</span>
+    <div class="Price" *ngIf="state.price">
+      {{ state.price[conglomerate+':'+company] | currency }}
+    </div>
+    <div class="Delta" *ngIf="state.delta">
+      <div class="DeltaNumbers">
+        <div class="DeltaNumber">
+          {{ state.delta[conglomerate+':'+company] | currency }}
+        </div>
+        <div class="DeltaNumber">
+          {{ deltaPercent | percent }}
+        </div>
+      </div>
+      <div class="DeltaGraph">
+        {{ deltaEmoji }}
+      </div>
+    </div>
+    <form [formGroup]="purchaseForm" (ngSubmit)="addToCart()" class="PurchaseForm">
+      <div class="Purchase">
+        <div class="PurchaseButton">
+          <button (click)="increaseAmount(-1)" type="button" [disabled]="!available"><</button>
+        </div>
+        <div class="PurchaseText">
+          <span class="PurchaseSpan">Available: {{ available }}</span>
+          <input type="number" value="0" formControlName="amount" min="0" [max]="this.available" />
+        </div>
+        <div class="PurchaseButton">
+          <button (click)="increaseAmount(1)" type="button" [disabled]="!available">></button>
+        </div>
+      </div>
+      <div class="AddToCart">
+        <button type="submit" style="font-size: 115%;"
+        [disabled]="!purchaseForm.controls['amount'].value">Add to cart</button>
+      </div>
+    </form>
+  </div>
+  <div class="Users">
+    <span class="Title">Users</span>
+    <div *ngFor="let user of state.users" class="User">
+      <div class="Username">{{ user }}</div>
+      <div class="UserProps">
+        <div class="UserProp">Own: {{ state.user[user].own[conglomerate+':'+company] }}</div>
+        <div class="UserProp">Member: {{ state.user[user].member[conglomerate+':'+company] }}</div>
+      </div>
+    </div>
+  </div>
+</div>

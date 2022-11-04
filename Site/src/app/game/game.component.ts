@@ -89,7 +89,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   load(state: State) {
     this.state = state as State;
-
+    
   }
   update(frame: Frame) {
 

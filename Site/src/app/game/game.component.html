@@ -1,26 +1,32 @@
-<b>Game: {{ game }}</b>
-<br />
-Return from whence you came...
-<br />
-<button routerLink="">Rotate back through CT</button>
-<div *ngFor="let message of messages">{{ message }}<br /></div>
-<div *ngIf="!connected">
+<div class="TwoColumn">
+  <h1>Eggonomics</h1>
+  <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
+</div>
+<b>Game: {{ game }}; User: {{ user }}</b>
+&nbsp;<button routerLink="">Exit</button>
+<div *ngIf="!connected; else connectedTemplate">
+  <div *ngFor="let message of messages">{{ message }}<br /></div>
   <button routerLink="">Exit</button>
 </div>
-<div *ngIf="value.err">
-  <div *ngFor="let message of errorMessages">{{ message }}<br /></div>
-  <div [ngSwitch]="value.err">
-    <div *ngSwitchCase="'ENOGAME'">
-      <button routerLink="">Exit</button>
-    </div>
-    <div *ngSwitchCase="'ENOUSER'">
-      <button (click)="addUser()">Add user</button>
-    </div>
-    <div *ngSwitchDefault>
-      <b>GENERIC ERROR</b>
+<ng-template #connectedTemplate>
+  <div *ngIf="value.err; else conglomeratesTemplate">
+    <div *ngFor="let message of errorMessages">{{ message }}<br /></div>
+    <div [ngSwitch]="value.err">
+      <div *ngSwitchCase="'ENOGAME'">
+        <button routerLink="">Exit</button>
+      </div>
+      <div *ngSwitchCase="'ENOUSER'">
+        <button (click)="addUser()">Add user</button>
+      </div>
+      <div *ngSwitchDefault>
+        <b>GENERIC ERROR</b>
+      </div>
     </div>
   </div>
-</div>
-<div class="FlexGrid">
-  <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con" class="Con"></app-conglomerate>
-</div>
+</ng-template>
+<ng-template #conglomeratesTemplate>
+  <div class="FlexGrid">
+    <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con" class="Con"
+    [state]="state"></app-conglomerate>
+  </div>
+</ng-template>

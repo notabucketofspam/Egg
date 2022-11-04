@@ -1,1 +1,5 @@
-{{ conglomerate}}
+<span class="BiggerTitle">{{ conglomerate }}</span>
+<div class="FlexGridAuto">
+  <app-company *ngFor="let com of conglomerates[conglomerate]" [company]="com" class="Com"
+  [state]="state" [conglomerate]="conglomerate"></app-company>
+</div>

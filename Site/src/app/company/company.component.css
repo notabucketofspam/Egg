@@ -1,0 +1,116 @@
+.FlexCom {
+  display: flex;
+  width: auto;
+  flex-direction: row;
+  height: auto;
+}
+.Title {
+  margin: 0% 50%;
+  font-size: 125%;
+}
+.BigTitle {
+  margin: 0% 50%;
+  font-size: 150%;
+}
+.Users {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 50%;
+  border-width: 1px 0px 0px 1px;
+  border-color: black;
+  border-style: solid;
+}
+.User {
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+  display: flex;
+  flex-direction: column;
+}
+.Username {
+  display: flex;
+  margin: 0% auto;
+  font-weight: bold;
+}
+.UserProps {
+  display: flex;
+  flex-direction: row;
+}
+.UserProp {
+  display: flex;
+  flex: 1;
+}
+.Stock {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 50%;
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+}
+.Price {
+  display: flex;
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+  font-size: 200%;
+}
+.Delta {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+}
+.DeltaTitle {
+  display: flex;
+  flex-basis: 50%;
+}
+.DeltaNumbers {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 67%;
+}
+.DeltaNumber {
+  display: flex;
+  flex: 1;
+}
+.DeltaGraph {
+  display: flex;
+  flex: 2;
+  flex-basis: 33%;
+  font-size: 200%;
+}
+.PurchaseForm {
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+  display: flex;
+  flex-direction: column;
+}
+.Purchase {
+  display: flex;
+  flex-direction: row;
+}
+.PurchaseButton {
+  display: flex;
+  font-size: 200%
+}
+.PurchaseText {
+  display: flex;
+  flex-direction: column;
+}
+.AddToCart {
+  display: flex;
+  flex-direction: row;
+  margin: 0% auto;
+}
+.PurchaseSpan {
+  font-size: 100%;
+}
+@media only screen and (min-width: 1280px) {
+  .PurchaseSpan {
+    font-size: 85%;
+  }
+}

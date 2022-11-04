@@ -1,1 +1,9 @@
-
+.Com {
+  flex-basis: 45%;
+  border: solid black 1px;
+  margin: 5px;
+}
+.BiggerTitle {
+  margin: 0% 50%;
+  font-size: 200%;
+}
