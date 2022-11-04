@@ -40,7 +40,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.value = value;
     if (value.err) {
       console.log(value);
-      this.errorMessages.push(`cmd: ${value.cmd}`, value.err, value.why!);
+      this.errorMessages.push(`cmd: ${value.cmd}`, value.err, value.why!, JSON.stringify(value.proof));
       return;
     } else {
       this.errorMessages.length = 0;
