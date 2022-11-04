@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-conglomerate',
@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./conglomerate.component.css']
 })
 export class ConglomerateComponent implements OnInit {
-
+  @Input() conglomerate!: string;
   constructor() { }
 
   ngOnInit(): void {

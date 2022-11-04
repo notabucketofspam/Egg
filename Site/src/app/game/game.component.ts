@@ -18,6 +18,7 @@ export class GameComponent implements OnInit, OnDestroy {
   state = {} as State;
   value = {} as Next;
   connected = true;
+  conglomerates = ["Cathy", "Terry", "Gary", "Doug"];
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
   ngOnInit(): void {
