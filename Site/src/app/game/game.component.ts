@@ -17,6 +17,7 @@ export class GameComponent implements OnInit, OnDestroy {
   errorMessages: string[] = [];
   state = {} as State;
   value = {} as Next;
+  connected = true;
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
   ngOnInit(): void {
@@ -68,6 +69,7 @@ export class GameComponent implements OnInit, OnDestroy {
         console.log(value);
         this.clear();
         this.messages.push(`cmd: ${value.cmd}`, (value as Disconnect).reason);
+        this.connected = false;
         break;
       }
       default: {
