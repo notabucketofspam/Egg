@@ -71,6 +71,7 @@ declare interface NewGame extends Next {
 }
 declare interface AddUser extends Next {
   cmd: Cmd.AddUser;
+  ok: boolean;
 }
 declare interface DeleteGame extends Next {
   cmd: Cmd.Delete;
@@ -78,4 +79,5 @@ declare interface DeleteGame extends Next {
 }
 declare interface RemoveUser extends Next {
   cmd: Cmd.RemoveUser;
+  ok: boolean;
 }
