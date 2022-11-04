@@ -12,7 +12,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     for (const [aliveClient, clientMeta] of aliveClients) {
       if (clientMeta.game === data.game) {
         if (clientMeta.user === data.user) {
-          aliveClient.send({ cmd: "disconnect", reason: "User removed from users set of game" });
+          aliveClient.send(JSON.stringify({ cmd: "disconnect", reason: "User removed from users set of game" }));
           aliveClient.off("message", () => void 0);
           aliveClient.off("close", () => void 0);
           aliveClient.terminate();

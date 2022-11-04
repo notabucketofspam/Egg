@@ -10,7 +10,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     await ioredis.evalsha(scripts["delete"], 0, data.game);
     for (const [aliveClient, clientMeta] of aliveClients) {
       if (clientMeta.game === data.game) {
-        aliveClient.send({ cmd: "disconnect", reason: "Game deleted from games set" });
+        aliveClient.send(JSON.stringify({ cmd: "disconnect", reason: "Game deleted from games set" }));
         aliveClient.off("message", () => void 0);
         aliveClient.off("close", () => void 0);
         aliveClient.terminate();
