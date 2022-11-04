@@ -10,6 +10,7 @@ import { GameComponent } from './game/game.component';
 import { HomeComponent } from './home/home.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { GameSyncService } from './game-sync.service';
+import { ConglomerateComponent } from './conglomerate/conglomerate.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { GameSyncService } from './game-sync.service';
     StorageComponent,
     GameComponent,
     HomeComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    ConglomerateComponent
   ],
   imports: [
     BrowserModule,
