@@ -79,6 +79,7 @@ export declare type ClientMeta = {
  * Construct an appropriate client response to a server error (if there is one)
  * @param {string} cmd The command in question
  * @param {Error} [err] The error from script, if any
+ * @param {Record<string, any>} [proof] Evidence for the error, if any
  * @returns {string} JSON string for sending to the client
  */
 export function fromScriptError(cmd: string, err?: Error, proof?: Record<string, any>) {
