@@ -39,7 +39,7 @@ if user ~= nil then
   send = redis.status_reply("OK")
 else
   -- No user
-  send = redis.error_reply("ENOUSER")
+  send = redis.error_reply("ENOUSERPARAM")
 end
 -- Final reply
 return send
