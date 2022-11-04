@@ -10,14 +10,17 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   try {
     await ioredis.evalsha(scripts["remove-user"], 0, data.game, data.user);
     for (const [aliveClient, clientMeta] of aliveClients) {
-      if (clientMeta.game === data.game && clientMeta.user === data.user) {
-        aliveClient.off("message", () => void 0);
-        aliveClient.off("close", () => void 0);
-        aliveClient.terminate();
-        aliveClients.delete(aliveClient);
+      if (clientMeta.game === data.game) {
+        if (clientMeta.user === data.user) {
+          aliveClient.off("message", () => void 0);
+          aliveClient.off("close", () => void 0);
+          aliveClient.terminate();
+          aliveClients.delete(aliveClient);
+        } else {
+          aliveClient.send(fromScriptError("remove-user"));
+        }
       }
     }
-    client.send(fromScriptError("remove-user"));
   } catch (err) {
     client.send(fromScriptError("remove-user", err as Error));
   }
