@@ -96,6 +96,7 @@
 .Purchase {
   display: flex;
   flex-direction: row;
+  justify-content: center;
 }
 .PurchaseButton {
   display: flex;
