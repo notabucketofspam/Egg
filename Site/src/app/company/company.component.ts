@@ -36,7 +36,7 @@ export class CompanyComponent implements OnInit, OnChanges {
 
   }
   addToCart() {
-    console.log(this.purchaseForm);
+    console.log("amount:", this.purchaseForm.controls["amount"].value);
     this.purchaseForm.reset({ amount: 0 });
   }
   increaseAmount(increase: number) {
