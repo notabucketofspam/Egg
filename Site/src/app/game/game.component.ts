@@ -18,7 +18,8 @@ export class GameComponent implements OnInit, OnDestroy {
   state = {} as State;
   value = {} as Next;
   connected = true;
-  conglomerates = ["Cathy", "Terry", "Gary", "Doug"];
+  conglomerates = [["Cathy", "Cash Back Cathy (Food)"], ["Terry", "One-Time Terry  (Real Estate)"],
+    ["Gary", "Goodwill Gary (Tech)"], ["Doug", "Doug Dividends (Recreation)"]];
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
   ngOnInit(): void {

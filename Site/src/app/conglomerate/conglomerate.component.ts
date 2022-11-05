@@ -8,12 +8,17 @@ import { Component, Input, OnInit } from '@angular/core';
 export class ConglomerateComponent implements OnInit {
   @Input() conglomerate!: string;
   @Input() state!: State;
-  conglomerates: Record<string, string[]> = {
-    Cathy: ["CREAM", "BEER", "CRUNCH", "ROLL"],
-    Terry: ["TOW", "TAP", "TOWN", "TENT"],
-    Gary: ["CALC", "GUI", "GLIT", "GPU"],
-    Doug: ["CANN", "DOOD", "DUG", "CLUB"]
+  conglomerates: Record<string, string[][]> = {
+    Cathy: [["CREAM", "Cathy's Creamed Corn"], ["BEER", "Cathy's Cold Ones"],
+      ["CRUNCH", "Cathy Crunch"], ["ROLL", "Cathy's Kaiser Rolls"]],
+    Terry: [["TOW", "Terry Towers"], ["TAP", "Terry's Taphouses"],
+      ["TOWN", "Terry's Timeshares"], ["TENT", "Terry's Tents"]],
+    Gary: [["CALC", "Gary's Graphing Solutions"], ["GUI", "Gary's GUIs"],
+      ["GLIT", "Glitches with Gary"], ["GPU", "Gary's Graphical Solutions"]],
+    Doug: [["CANN", "Doug's Dispenceries"], ["DOOD", "Doodles by Doug"],
+      ["DUG", "Doug-Outs"], ["CLUB", "Doug's Dance Club"]]
   }
+  @Input() description!: string;
   constructor() { }
 
   ngOnInit(): void {

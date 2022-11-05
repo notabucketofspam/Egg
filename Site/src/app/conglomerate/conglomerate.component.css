@@ -4,6 +4,11 @@
   margin: 5px;
 }
 .BiggerTitle {
-  margin: 0% 50%;
+  display: flex;
   font-size: 200%;
+}
+.TitleBlock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

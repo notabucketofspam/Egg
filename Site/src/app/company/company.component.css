@@ -5,12 +5,16 @@
   height: auto;
 }
 .Title {
-  margin: 0% 50%;
+  align-self: center;
   font-size: 125%;
 }
 .BigTitle {
-  margin: 0% 50%;
   font-size: 150%;
+}
+.TitleBlock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .Users {
   display: flex;

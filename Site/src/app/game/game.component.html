@@ -26,7 +26,7 @@
 </ng-template>
 <ng-template #conglomeratesTemplate>
   <div class="FlexGrid">
-    <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con" class="Con"
-    [state]="state"></app-conglomerate>
+    <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con"
+    [state]="state" [description]="con[1]"></app-conglomerate>
   </div>
 </ng-template>

@@ -16,6 +16,7 @@ export class CompanyComponent implements OnInit, OnChanges {
   purchaseForm = new FormGroup({
     amount: new FormControl(0)
   });
+  @Input() description!: string;
   constructor() { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"].currentValue.delta) {
