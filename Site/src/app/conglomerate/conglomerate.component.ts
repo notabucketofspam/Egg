@@ -8,6 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export class ConglomerateComponent implements OnInit {
   @Input() conglomerate!: string;
   @Input() state!: State;
+  @Input() user!: string;
   conglomerates: Record<string, string[][]> = {
     Cathy: [["CREAM", "Cathy's Creamed Corn"], ["BEER", "Cathy's Cold Ones"],
       ["CRUNCH", "Cathy Crunch"], ["ROLL", "Cathy's Kaiser Rolls"]],

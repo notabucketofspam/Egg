@@ -13,6 +13,8 @@ export class CompanyComponent implements OnInit, OnChanges {
   deltaPercent!: number;
   deltaEmoji!: string;
   available!: number;
+  @Input() user!: string;
+  buyOrSellButton = "Add to cart";
   purchaseForm = new FormGroup({
     amount: new FormControl(0)
   });
@@ -36,12 +38,25 @@ export class CompanyComponent implements OnInit, OnChanges {
 
   }
   addToCart() {
-    console.log("amount:", this.purchaseForm.controls["amount"].value);
-    this.purchaseForm.reset({ amount: 0 });
+    // Check if it's less than user owns, more than available, or not an integer
+    if (this.purchaseForm.controls["amount"].value!
+      < -this.state.user[this.user].own[this.conglomerate + ':' + this.company]
+      || this.purchaseForm.controls["amount"].value! > this.available
+      || this.purchaseForm.controls["amount"].value! % 1 !== 0) {
+      console.log(`Error on ${this.conglomerate + ':' + this.company} amount:`,
+        this.purchaseForm.controls["amount"].value);
+    } else {
+      console.log(`${this.conglomerate + ':' + this.company} amount:`,
+        this.purchaseForm.controls["amount"].value);
+      this.purchaseForm.reset({ amount: 0 });
+      this.buyOrSellButton = "Add to cart";
+    }
   }
   increaseAmount(increase: number) {
-    if (this.purchaseForm.controls["amount"].value! + increase >= 0
+    if (this.purchaseForm.controls["amount"].value! + increase
+      >= -this.state.user[this.user].own[this.conglomerate + ':' + this.company]
       && this.purchaseForm.controls["amount"].value! + increase <= this.available)
       this.purchaseForm.controls["amount"].setValue(this.purchaseForm.controls["amount"].value! + increase);
+      this.buyOrSellButton = this.purchaseForm.controls["amount"].value! >= 0 ? "Add to cart" : "Sell off stocks";
   }
 }

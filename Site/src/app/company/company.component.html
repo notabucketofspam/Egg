@@ -28,7 +28,8 @@
         </div>
         <div class="PurchaseText">
           <span class="PurchaseSpan">Available: {{ available }}</span>
-          <input type="number" value="0" formControlName="amount" min="0" [max]="this.available" />
+          <input type="number" value="0" formControlName="amount" [max]="0.5" class="PurchaseInput"
+          min="0" step="1" />
         </div>
         <div class="PurchaseButton">
           <button (click)="increaseAmount(1)" type="button" [disabled]="!available">></button>
@@ -36,7 +37,7 @@
       </div>
       <div class="AddToCart">
         <button type="submit" style="font-size: 115%;"
-        [disabled]="!purchaseForm.controls['amount'].value">Add to cart</button>
+        [disabled]="!purchaseForm.controls['amount'].value">{{ buyOrSellButton }}</button>
       </div>
     </form>
   </div>
