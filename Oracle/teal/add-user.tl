@@ -5,7 +5,7 @@ local send: {string: string}
 -- List of conglomerates / stocks (products) and their initial prices / values
 local hsetConglomerates = {
   "Cathy:CREAM", "0", "Cathy:BEER", "0", "Cathy:CRUNCH", "0", "Cathy:ROLL", "0",
-  "Terry:TOW", "0", "Terry:TAP", "0", "Terry:TOWN", "0", "Terry:TENT", "0",
+  "Terry:TOWER", "0", "Terry:TAP", "0", "Terry:TIME", "0", "Terry:TENT", "0",
   "Gary:CALC", "0", "Gary:GUI", "0", "Gary:GLIT", "0", "Gary:GPU", "0",
   "Doug:CANN", "0", "Doug:DOOD", "0", "Doug:DUG", "0", "Doug:CLUB", "0"
 }
