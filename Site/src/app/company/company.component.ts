@@ -19,6 +19,10 @@ export class CompanyComponent implements OnInit, OnChanges {
     amount: new FormControl(0)
   });
   @Input() description!: string;
+  tradeOfferForm = new FormGroup({
+    tx: new FormControl(this.user),
+    amount: new FormControl(0)
+  });
   constructor() { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"].currentValue.delta) {
@@ -38,25 +42,33 @@ export class CompanyComponent implements OnInit, OnChanges {
 
   }
   addToCart() {
-    // Check if it's less than user owns, more than available, or not an integer
-    if (this.purchaseForm.controls["amount"].value!
-      < -this.state.user[this.user].own[this.conglomerate + ':' + this.company]
-      || this.purchaseForm.controls["amount"].value! > this.available
-      || this.purchaseForm.controls["amount"].value! % 1 !== 0) {
-      console.log(`Error on ${this.conglomerate + ':' + this.company} amount:`,
-        this.purchaseForm.controls["amount"].value);
-    } else {
-      console.log(`${this.conglomerate + ':' + this.company} amount:`,
-        this.purchaseForm.controls["amount"].value);
-      this.purchaseForm.reset({ amount: 0 });
-      this.buyOrSellButton = "Add to cart";
-    }
+    console.log(`addToCart ${this.conglomerate + ':' + this.company} amount:`,
+      this.purchaseForm.controls["amount"].value);
+    this.purchaseForm.reset({ amount: 0 });
+    this.buyOrSellButton = "Add to cart";
+  }
+  tradeOffer() {
+    console.log("tradeOffer", this.conglomerate + ':' + this.company,
+      `tx: ${this.tradeOfferForm.controls["tx"].value};`,
+      `amount: ${this.tradeOfferForm.controls["amount"].value}`);
+    this.tradeOfferForm.reset({ tx: this.user, amount: 0 });
   }
   increaseAmount(increase: number) {
-    if (this.purchaseForm.controls["amount"].value! + increase
-      >= -this.state.user[this.user].own[this.conglomerate + ':' + this.company]
-      && this.purchaseForm.controls["amount"].value! + increase <= this.available)
-      this.purchaseForm.controls["amount"].setValue(this.purchaseForm.controls["amount"].value! + increase);
-      this.buyOrSellButton = this.purchaseForm.controls["amount"].value! >= 0 ? "Add to cart" : "Sell off stocks";
+    if (this.purchaseForm.controls["amount"].value !== null) {
+      if (this.purchaseForm.controls["amount"].value + increase
+        >= -this.state.user[this.user].own[this.conglomerate + ':' + this.company]
+        && this.purchaseForm.controls["amount"].value + increase <= this.available)
+        this.purchaseForm.controls["amount"].setValue(this.purchaseForm.controls["amount"].value + increase);
+      this.buyOrSellButton = this.purchaseForm.controls["amount"].value >= 0 ? "Add to cart" : "Sell off stocks";
+    }
+  }
+  increaseTradeOfferAmount(increase: number) {
+    if (this.tradeOfferForm.controls['amount'].value !== null
+      && this.tradeOfferForm.controls['tx'].value !== null
+      && this.tradeOfferForm.controls['tx'].value !== this.user
+      && this.tradeOfferForm.controls["amount"].value + increase
+      <= this.state.user[this.tradeOfferForm.controls['tx'].value].own[this.conglomerate + ':' + this.company]
+      && this.tradeOfferForm.controls["amount"].value + increase >= 0)
+        this.tradeOfferForm.controls["amount"].setValue(this.tradeOfferForm.controls["amount"].value + increase);
   }
 }

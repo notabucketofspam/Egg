@@ -122,3 +122,36 @@
     font-size: 85%;
   }
 }
+.TradeOfferForm {
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+  display: flex;
+  flex-direction: column;
+}
+.TradeOfferText {
+  display: flex;
+  justify-content: center;
+}
+.TradeSelect {
+  display: flex;
+  width: 100px;
+}
+.TradeDiv {
+  display: flex;
+  flex-direction: row;
+}
+.TradeInput {
+  display: flex;
+  width: 70px;
+}
+.TradeButton {
+  display: flex;
+  flex-direction: row;
+  margin: 0% auto;
+  font-size: 115%;
+}
+.TradeOfferButton {
+  display: flex;
+  font-size: 150%;
+}

@@ -28,8 +28,8 @@
         </div>
         <div class="PurchaseText">
           <span class="PurchaseSpan">Available: {{ available }}</span>
-          <input type="number" value="0" formControlName="amount" [max]="0.5" class="PurchaseInput"
-          min="0" step="1" />
+          <input type="number" value="0" formControlName="amount" max="0.5" class="PurchaseInput"
+            min="0" step="1" />
         </div>
         <div class="PurchaseButton">
           <button (click)="increaseAmount(1)" type="button" [disabled]="!available">></button>
@@ -37,8 +37,38 @@
       </div>
       <div class="AddToCart">
         <button type="submit" style="font-size: 115%;"
-        [disabled]="!purchaseForm.controls['amount'].value">{{ buyOrSellButton }}</button>
+          [disabled]="!purchaseForm.controls['amount'].value||purchaseForm.controls['amount'].value<-this.state.user[this.user].own[this.conglomerate+':'+this.company]||purchaseForm.controls['amount'].value>this.available||purchaseForm.controls['amount'].value%1!==0">
+          {{ buyOrSellButton }}
+        </button>
       </div>
+    </form>
+    <form [formGroup]="tradeOfferForm" (ngSubmit)="tradeOffer()" class="TradeOfferForm">
+      <div class="TradeOfferText">&#9888;TRADE OFFER&#9888;</div>
+      <div class="TradeDiv">
+        <label for="r=tx-select">From:&nbsp;</label>
+        <select formControlName="tx" id="tx-select" class="TradeSelect">
+          <ng-container *ngFor="let tx of this.state.users">
+            <option [ngValue]="tx" *ngIf="tx === this.user"></option>
+            <option [ngValue]="tx" *ngIf="tx !== this.user">
+              {{ tx }}
+            </option>
+          </ng-container>
+        </select>
+      </div>
+      <div class="TradeDiv" style="justify-content: center;">
+        <div class="TradeOfferButton">
+          <button (click)="increaseTradeOfferAmount(-1)" type="button"><</button>
+        </div>
+        <input class="TradeInput" type="number" value="0" formControlName="amount" id="amount-input"
+          max="0.5" min="0" step="1" />
+        <div class="TradeOfferButton">
+          <button (click)="increaseTradeOfferAmount(1)" type="button">></button>
+        </div>
+      </div>
+      <button type="submit" class="TradeButton"
+      [disabled]="!tradeOfferForm.controls['tx'].value||!tradeOfferForm.controls['amount'].value||tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.state.user[tradeOfferForm.controls['tx'].value].own[this.conglomerate+':'+this.company]||tradeOfferForm.controls['amount'].value%1!==0">
+        Submit offer
+      </button>
     </form>
   </div>
   <div class="Users">
