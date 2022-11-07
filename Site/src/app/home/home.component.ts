@@ -20,8 +20,8 @@ export class HomeComponent implements OnDestroy {
           this.messages.length = 0;
           this.messages.push("Remote games:");
           this.messages.push(value as string);
+          this.subscriptions["ls"].unsubscribe();
         }
-        this.subscriptions["ls"].unsubscribe();
       }
     });
     this.websocket.nextJ({ cmd: Cmd.Ls });
