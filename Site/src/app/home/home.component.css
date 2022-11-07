@@ -2,3 +2,7 @@
   display: grid;
   grid-template-columns: repeat(2, max-content);
 }
+#home-div {
+  display: flex;
+  flex-direction: column;
+}

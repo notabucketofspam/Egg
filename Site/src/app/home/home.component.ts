@@ -1,6 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { environment } from '../../environments/environment';
 
 import { WebSocketService } from '../websocket.service';
 
@@ -17,8 +16,11 @@ export class HomeComponent implements OnDestroy {
     this.subscriptions["ls"] = this.websocket.subscribe({
       next: (value) => {
         const reply = JSON.parse(value as string) as Next;
-        if (reply.cmd === Cmd.Ls)
+        if (reply.cmd === Cmd.Ls) {
+          this.messages.length = 0;
+          this.messages.push("Remote games:");
           this.messages.push(value as string);
+        }
         this.subscriptions["ls"].unsubscribe();
       }
     });

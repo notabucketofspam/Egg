@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors } from "@angular/forms";
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -15,7 +15,7 @@ export class StorageComponent implements OnInit, OnDestroy {
   lastGame?: string;
   lastUser?: string;
   storage: string[][] = [];
-  messages: string[] = [];
+  @Input() messages: string[] = [];
   private subscription?: Subscription;  
   storageForm = new FormGroup({
     game: new FormControl("", this.emptyStringValidator),
