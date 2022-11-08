@@ -5,3 +5,23 @@
 .Underline {
   text-decoration: underline;
 }
+.StorageDiv {
+  display: flex;
+  flex-direction: row;
+}
+#storage-inputs-div {
+  display: flex;
+  flex-direction: column;
+}
+.Messages {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+.Message {
+  display: flex;
+}
+.Form {
+  display: block;
+  width: 250px;
+}
