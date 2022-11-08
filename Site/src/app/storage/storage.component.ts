@@ -41,14 +41,19 @@ export class StorageComponent implements OnInit, OnDestroy {
   }
   getStorage() {
     this.messages.length = 0;
-    this.messages.push("Trash summary:");
+    this.messages.push("Local games:");
     for (let i = 0; i < localStorage.length; ++i)
       this.messages.push(`${localStorage.key(i)!}: ${localStorage.getItem(localStorage.key(i)!)!}`);
   }
   setStorage() {
     const gameExists = this.storage.find(gameSet => gameSet[0] === this.game);
-    if (!gameExists)
+    if (gameExists) {
+      const userInGameExists = gameExists.find(gameSet => gameSet[1] === this.user)
+      if (!userInGameExists)
+        this.storage.push([this.game, this.user]);
+    } else {
       this.storage.push([this.game, this.user]);
+    }
     localStorage.setItem("games", JSON.stringify(this.storage));
     localStorage.setItem("lastGame", JSON.stringify([this.lastGame, this.lastUser]));
   }
@@ -166,8 +171,12 @@ export class StorageComponent implements OnInit, OnDestroy {
     }
   }
   clearStorage() {
-    localStorage.clear();
-    this.messages.push("Trash emptied");
+    delete this.lastGame;
+    delete this.lastUser;
+    localStorage.setItem("games", "[]");
+    localStorage.removeItem("lastGame");
+    this.messages.length = 0;
+    this.messages.push("Local games cache cleared");
     setTimeout(function (app) {
       app.messages.length = 0;
     }, 6000, this);
