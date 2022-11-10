@@ -45,7 +45,7 @@ export class HomeComponent implements OnDestroy {
         this.showLists["messages"] = false;
         break;
       }
-      case "message": {
+      case "messages": {
         this.showLists["online"] = false;
         this.showLists["local"] = false;
         this.showLists["messages"] = true;
