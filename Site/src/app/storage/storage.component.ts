@@ -126,13 +126,25 @@ export class StorageComponent implements OnInit, OnDestroy {
               if (reply.err) {
                 this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
               } else {
-                const gameExistsIndex = this.storage.findIndex(gameSet => gameSet[0] === this.game);
-                if (gameExistsIndex >= 0) {
-                  this.storage.splice(gameExistsIndex, 1);
+                let gamesFound = 0;
+                const removeGames = (storage: string[][]) => {
+                  const gameIndex = storage.findIndex(gameSet => gameSet[0] === this.game);
+                  if (gameIndex >= 0) {
+                    ++gamesFound;
+                    storage.splice(gameIndex, 1);
+                    removeGames(storage);
+                  } else {
+                    return;
+                  }
+                };
+                removeGames(this.storage);
+                if (gamesFound)
                   localStorage.setItem("games", JSON.stringify(this.storage));
-                }
-                if (this.lastGame === this.game)
+                if (this.lastGame === this.game) {
+                  delete this.lastGame;
+                  delete this.lastUser;
                   localStorage.removeItem("lastGame");
+                }
                 this.messages.push(`Game ${this.game} deleted`);
               }
               this.subscription!.unsubscribe();
@@ -150,14 +162,17 @@ export class StorageComponent implements OnInit, OnDestroy {
               if (reply.err) {
                 this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
               } else {
-                const matchedGames = this.storage.filter(gameSet => gameSet[0] === this.game);
-                const matchedUserIndex = matchedGames.findIndex(gameSet => gameSet[1] === this.user);
-                if (matchedUserIndex >= 0) {
-                  this.storage.splice(matchedUserIndex, 1);
+                const matchedGameIndex = this.storage
+                  .findIndex(gameSet => gameSet[0] === this.game && gameSet[1] === this.user);
+                if (matchedGameIndex >= 0) {
+                  this.storage.splice(matchedGameIndex, 1);
                   localStorage.setItem("games", JSON.stringify(this.storage));
                 }
-                if (this.lastGame === this.game && this.lastUser === this.user)
+                if (this.lastGame === this.game && this.lastUser === this.user) {
+                  delete this.lastGame;
+                  delete this.lastUser;
                   localStorage.removeItem("lastGame");
+                }
                 this.messages.push(`User ${this.user} of ${this.game} removed`);
               }
               this.subscription!.unsubscribe();
@@ -177,9 +192,6 @@ export class StorageComponent implements OnInit, OnDestroy {
     localStorage.removeItem("lastGame");
     this.messages.length = 0;
     this.messages.push("Local games cache cleared");
-    setTimeout(function (app) {
-      app.messages.length = 0;
-    }, 6000, this);
   }
   private emptyStringValidator(control: AbstractControl<string, string>): ValidationErrors | null {
     const trimmedLength = control.value && control.value.trim().length;
