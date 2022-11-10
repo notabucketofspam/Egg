@@ -46,9 +46,9 @@ export class StorageComponent implements OnInit, OnDestroy {
       this.messages.push(`${localStorage.key(i)!}: ${localStorage.getItem(localStorage.key(i)!)!}`);
   }
   setStorage() {
-    const gameExists = this.storage.find(gameSet => gameSet[0] === this.game);
+    const gameExists = this.storage.filter(gameSet => gameSet[0] === this.game);
     if (gameExists) {
-      const userInGameExists = gameExists.find(gameSet => gameSet[1] === this.user)
+      const userInGameExists = gameExists.find(gameSet => gameSet[1] === this.user);
       if (!userInGameExists)
         this.storage.push([this.game, this.user]);
     } else {
