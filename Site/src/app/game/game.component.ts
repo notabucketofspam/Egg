@@ -20,6 +20,7 @@ export class GameComponent implements OnInit, OnDestroy {
   connected = true;
   conglomerates = [["Cathy", "Cash Back Cathy (Food)"], ["Terry", "One-Time Terry  (Real Estate)"],
     ["Gary", "Goodwill Gary (Tech)"], ["Doug", "Doug Dividends (Recreation)"]];
+  cart: CartItem[] = [];
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
   ngOnInit(): void {
@@ -94,5 +95,9 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   update(frame: Frame) {
 
+  }
+  addCartItem($event: CartItem) {
+    console.log($event);
+    this.cart.push($event);
   }
 }

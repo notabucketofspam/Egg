@@ -86,3 +86,10 @@ declare interface Disconnect extends Next {
   cmd: Cmd.Disconnect;
   reason: string;
 }
+declare interface CartItem {
+  tx?: string;
+  rx: string;
+  con: string;
+  com: string;
+  ct: number;
+}

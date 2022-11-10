@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-conglomerate',
@@ -20,9 +20,12 @@ export class ConglomerateComponent implements OnInit {
       ["DUG", "Doug-Outs"], ["CLUB", "Doug's Dance Club"]]
   }
   @Input() description!: string;
+  @Output() cartBubbleEE = new EventEmitter<CartItem>();
   constructor() { }
 
   ngOnInit(): void {
   }
+  cartBubble($event: CartItem) {
 
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
@@ -15,6 +15,7 @@ export class CompanyComponent implements OnInit, OnChanges {
   available!: number;
   @Input() user!: string;
   buyOrSellButton = "Add to cart";
+  @Output() cartActionEE = new EventEmitter<CartItem>();
   purchaseForm = new FormGroup({
     amount: new FormControl(0)
   });
@@ -42,15 +43,23 @@ export class CompanyComponent implements OnInit, OnChanges {
 
   }
   addToCart() {
-    console.log(`addToCart ${this.conglomerate + ':' + this.company} amount:`,
-      this.purchaseForm.controls["amount"].value);
+    this.cartActionEE.emit({
+      rx: this.user,
+      con: this.conglomerate,
+      com: this.company,
+      ct: this.purchaseForm.controls["amount"].value!
+    });
     this.purchaseForm.reset({ amount: 0 });
     this.buyOrSellButton = "Add to cart";
   }
   tradeOffer() {
-    console.log("tradeOffer", this.conglomerate + ':' + this.company,
-      `tx: ${this.tradeOfferForm.controls["tx"].value};`,
-      `amount: ${this.tradeOfferForm.controls["amount"].value}`);
+    this.cartActionEE.emit({
+      tx: this.tradeOfferForm.controls["tx"].value!,
+      rx: this.user,
+      con: this.conglomerate,
+      com: this.company,
+      ct: this.tradeOfferForm.controls["amount"].value!
+    });
     this.tradeOfferForm.reset({ tx: this.user, amount: 0 });
   }
   increaseAmount(increase: number) {

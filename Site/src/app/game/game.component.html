@@ -27,6 +27,6 @@
 <ng-template #conglomeratesTemplate>
   <div class="FlexGrid">
     <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con"
-    [state]="state" [description]="con[1]" [user]="user"></app-conglomerate>
+    [state]="state" [description]="con[1]" [user]="user" (cartBubbleEE)="addCartItem($event)"></app-conglomerate>
   </div>
 </ng-template>
