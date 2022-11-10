@@ -22,6 +22,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         }
       }
     }
+    client.send(fromScriptError("remove-user"));
   } catch (err) {
     client.send(fromScriptError("remove-user", err as Error));
   }
