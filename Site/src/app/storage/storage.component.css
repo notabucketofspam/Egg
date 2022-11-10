@@ -32,6 +32,9 @@
   display: block;
   margin: 0px auto auto auto;
 }
+dl {
+  white-space: nowrap;
+}
 dt {
   margin: auto auto auto 10%;
 }
