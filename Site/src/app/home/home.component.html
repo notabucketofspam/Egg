@@ -6,8 +6,6 @@
 What's poppin', gamers?
 <br />
 <div id="home-div">
-  <app-storage [messages]="messages"></app-storage>
-  <div>
-    <button (click)="listGames()">List online games</button>
-  </div>
+  <app-storage [messages]="messages" [onlineList]="onlineList" (onlineListEE)="listOnlineGames()"
+  (showListEE)="showList($event)" [showLists]="showLists"></app-storage>
 </div>

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors } from "@angular/forms";
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -16,7 +16,11 @@ export class StorageComponent implements OnInit, OnDestroy {
   lastUser?: string;
   storage: string[][] = [];
   @Input() messages: string[] = [];
-  private subscription?: Subscription;  
+  private subscription?: Subscription;
+  @Input() showLists!: Record<string, boolean>;
+  @Input() onlineList?: Record<string, string[]>;
+  @Output() showListEE = new EventEmitter<string>();
+  @Output() onlineListEE = new EventEmitter<void>();
   storageForm = new FormGroup({
     game: new FormControl("", this.emptyStringValidator),
     user: new FormControl("", this.emptyStringValidator),
@@ -39,11 +43,9 @@ export class StorageComponent implements OnInit, OnDestroy {
     if (this.subscription)
       this.subscription.unsubscribe();
   }
+  Object = Object;
   getStorage() {
-    this.messages.length = 0;
-    this.messages.push("Local games:");
-    for (let i = 0; i < localStorage.length; ++i)
-      this.messages.push(`${localStorage.key(i)!}: ${localStorage.getItem(localStorage.key(i)!)!}`);
+    this.showListEE.emit("local");
   }
   setStorage() {
     const gameExists = this.storage.filter(gameSet => gameSet[0] === this.game);
@@ -100,7 +102,9 @@ export class StorageComponent implements OnInit, OnDestroy {
             switch (reply.cmd) {
               case Cmd.New: {
                 if (reply.err) {
-                  this.messages.push(reply.err, reply.why!);
+                  this.messages.length = 0;
+                  this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+                  this.showListEE.emit("messages");
                   this.subscription!.unsubscribe();
                   break;
                 }
@@ -124,7 +128,9 @@ export class StorageComponent implements OnInit, OnDestroy {
             const reply = JSON.parse(value as string) as Next;
             if (reply.cmd === Cmd.Delete) {
               if (reply.err) {
+                this.messages.length = 0;
                 this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+                this.showListEE.emit("messages");
               } else {
                 let gamesFound = 0;
                 const removeGames = (storage: string[][]) => {
@@ -145,7 +151,9 @@ export class StorageComponent implements OnInit, OnDestroy {
                   delete this.lastUser;
                   localStorage.removeItem("lastGame");
                 }
+                this.messages.length = 0;
                 this.messages.push(`Game ${this.game} deleted`);
+                this.showListEE.emit("messages");
               }
               this.subscription!.unsubscribe();
             }
@@ -161,6 +169,7 @@ export class StorageComponent implements OnInit, OnDestroy {
             if (reply.cmd === Cmd.RemoveUser) {
               if (reply.err) {
                 this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+                this.showListEE.emit("messages");
               } else {
                 const matchedGameIndex = this.storage
                   .findIndex(gameSet => gameSet[0] === this.game && gameSet[1] === this.user);
@@ -173,7 +182,9 @@ export class StorageComponent implements OnInit, OnDestroy {
                   delete this.lastUser;
                   localStorage.removeItem("lastGame");
                 }
+                this.messages.length = 0;
                 this.messages.push(`User ${this.user} of ${this.game} removed`);
+                this.showListEE.emit("messages");
               }
               this.subscription!.unsubscribe();
             }
@@ -192,6 +203,7 @@ export class StorageComponent implements OnInit, OnDestroy {
     localStorage.removeItem("lastGame");
     this.messages.length = 0;
     this.messages.push("Local games cache cleared");
+    this.showListEE.emit("messages");
   }
   private emptyStringValidator(control: AbstractControl<string, string>): ValidationErrors | null {
     const trimmedLength = control.value && control.value.trim().length;

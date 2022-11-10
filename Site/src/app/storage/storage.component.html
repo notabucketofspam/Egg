@@ -13,22 +13,22 @@
         Continue <span class="Underline">old</span> game
       </button>
       <button type="submit"
-        [disabled]="this.storageForm.controls['game'].valid||!this.storageForm.controls['user'].valid">
+              [disabled]="this.storageForm.controls['game'].valid||!this.storageForm.controls['user'].valid">
         Create <span class="Underline">new</span> game
       </button>
       <br />
       <button type="submit"
-        [disabled]="!this.lastGame||!this.lastUser||this.storageForm.controls['game'].valid||this.storageForm.controls['user'].valid">
+              [disabled]="!this.lastGame||!this.lastUser||this.storageForm.controls['game'].valid||this.storageForm.controls['user'].valid">
         Continue <span class="Underline">last</span> game
       </button>
       <button type="submit"
-        [disabled]="this.storageForm.valid||!this.storageForm.controls['game'].valid"
-        (click)="this.storageForm.controls['delete'].setValue(true)">
+              [disabled]="this.storageForm.valid||!this.storageForm.controls['game'].valid"
+              (click)="this.storageForm.controls['delete'].setValue(true)">
         Delete <span class="Underline">this</span> game
       </button>
       <br />
       <button type="submit" [disabled]="!storageForm.valid"
-        (click)="this.storageForm.controls['remove-user'].setValue(true)">
+              (click)="this.storageForm.controls['remove-user'].setValue(true)">
         Remove <span class="Underline">that</span> user
       </button>
     </form>
@@ -37,8 +37,41 @@
       <button (click)="getStorage()">Get local games</button>
       <button (click)="clearStorage()">Clear local games</button>
     </div>
+    <div class="StorageDiv">
+      <button (click)="onlineListEE.emit()">List online games</button>
+    </div>
   </div>
   <div class="Messages">
     <div class="Message" *ngFor="let message of messages">{{ message }}<br /></div>
+  </div>
+  <div id="lists">
+    <div *ngIf="showLists['online']">
+      <b>Online games:</b>
+      <dl class="List" *ngIf="onlineList">
+        <ng-container *ngFor="let game of Object.keys(onlineList)">
+          <dt>{{game}}</dt>
+          <dd *ngFor="let user of onlineList[game]">{{user}}</dd>
+        </ng-container>
+      </dl>
+    </div>
+    <div *ngIf="showLists['local']">
+      <b>Local games:</b>
+      <dl class="List">
+        <ng-container *ngFor="let gameSet of storage">
+          <dt>{{gameSet[0]}}</dt>
+          <dd>{{gameSet[1]}}</dd>
+        </ng-container>
+      </dl>
+      <div *ngIf="lastGame">
+        <b>Last local game:</b>
+        <dl class="List">
+          <dt>{{lastGame}}</dt>
+          <dd>{{lastUser}}</dd>
+        </dl>
+      </div>
+    </div>
+    <div *ngIf="showLists['messages']">
+      <div class="Message" *ngFor="let message of messages">{{ message }}<br /></div>
+    </div>
   </div>
 </div>

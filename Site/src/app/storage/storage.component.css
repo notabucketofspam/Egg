@@ -25,3 +25,17 @@
   display: block;
   width: 250px;
 }
+#lists {
+  display: flex;
+}
+.List {
+  display: block;
+  margin: 0px auto auto auto;
+}
+dt {
+  margin: auto auto auto 10%;
+}
+dd {
+  margin: auto auto auto 20%;
+}
+
