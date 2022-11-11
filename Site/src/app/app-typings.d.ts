@@ -87,6 +87,7 @@ declare interface Disconnect extends Next {
   reason: string;
 }
 declare interface CartItem {
+  key: string;
   tx?: string;
   rx: string;
   con: string;

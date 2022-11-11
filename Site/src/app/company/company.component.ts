@@ -44,6 +44,7 @@ export class CompanyComponent implements OnInit, OnChanges {
   }
   addToCart() {
     this.cartActionEE.emit({
+      key: Date.now().toString(16).padStart(14, "0"),
       rx: this.user,
       con: this.conglomerate,
       com: this.company,
@@ -54,6 +55,7 @@ export class CompanyComponent implements OnInit, OnChanges {
   }
   tradeOffer() {
     this.cartActionEE.emit({
+      key: Date.now().toString(16).padStart(14, "0"),
       tx: this.tradeOfferForm.controls["tx"].value!,
       rx: this.user,
       con: this.conglomerate,
