@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { TimeService } from '../time.service';
 
 @Component({
   selector: 'app-cart',
@@ -8,7 +9,9 @@ import { Component, Input, OnInit } from '@angular/core';
 export class CartComponent implements OnInit {
   down = false;
   @Input() cart!: CartItem[];
-  constructor() { }
+  @Output() cartEE = new EventEmitter<string>();
+  timestamp = "0".repeat(14);
+  constructor(private time: TimeService) { }
 
   ngOnInit(): void {
   }
@@ -17,5 +20,7 @@ export class CartComponent implements OnInit {
   }
   removeItem(index: number) {
     this.cart.splice(index, 1);
+    this.timestamp = this.time.gen();
+    this.cartEE.emit(this.timestamp);
   }
 }

@@ -6,4 +6,7 @@ import { Injectable } from '@angular/core';
 export class TimeService {
 
   constructor() { }
+  gen() {
+    return Date.now().toString(16).padStart(14, "0");
+  }
 }

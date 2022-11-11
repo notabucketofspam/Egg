@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { TimeService } from '../time.service';
 
 @Component({
   selector: 'app-company',
@@ -25,6 +26,7 @@ export class CompanyComponent implements OnInit, OnChanges {
     amount: new FormControl(0)
   });
   constructor() { }
+  constructor(private time: TimeService) { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"].currentValue.delta) {
       this.deltaPercent = this.state.delta[this.conglomerate + ':' + this.company]
@@ -44,7 +46,7 @@ export class CompanyComponent implements OnInit, OnChanges {
   }
   addToCart() {
     this.cartActionEE.emit({
-      key: Date.now().toString(16).padStart(14, "0"),
+      key: this.time.gen(),
       rx: this.user,
       con: this.conglomerate,
       com: this.company,
@@ -55,7 +57,7 @@ export class CompanyComponent implements OnInit, OnChanges {
   }
   tradeOffer() {
     this.cartActionEE.emit({
-      key: Date.now().toString(16).padStart(14, "0"),
+      key: this.time.gen(),
       tx: this.tradeOfferForm.controls["tx"].value!,
       rx: this.user,
       con: this.conglomerate,

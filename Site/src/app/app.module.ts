@@ -9,10 +9,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { GameComponent } from './game/game.component';
 import { HomeComponent } from './home/home.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { GameSyncService } from './game-sync.service';
 import { ConglomerateComponent } from './conglomerate/conglomerate.component';
 import { CompanyComponent } from './company/company.component';
 import { CartComponent } from './cart/cart.component';
+import { TimeService } from './time.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +30,7 @@ import { CartComponent } from './cart/cart.component';
     ReactiveFormsModule,
     AppRoutingModule
   ],
-  providers: [WebSocketService, GameSyncService],
+  providers: [WebSocketService, TimeService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
