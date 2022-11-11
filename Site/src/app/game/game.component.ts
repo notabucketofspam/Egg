@@ -98,6 +98,17 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   addCartItem($event: CartItem) {
     console.log($event);
-    this.cart.push($event);
+    const sameItemIndex = this.cart
+      .findIndex(item => item.tx === $event.tx && item.con === $event.con && item.com === $event.com);
+    if (sameItemIndex < 0) {
+      // No same item in cart
+      this.cart.push($event);
+    } else {
+      // There is a similar item in cart, so replace it
+      $event.ct += this.cart[sameItemIndex].ct;
+      this.cart.splice(sameItemIndex, 1);
+      if ($event.ct)
+        this.cart.push($event);
+    }
   }
 }
