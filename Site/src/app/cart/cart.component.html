@@ -1,1 +1,14 @@
-<p>cart works!</p>
+<div id="cart-div">
+  <button id="cart-button" (click)="toggleCart()" [class.Down]="down" [class.Up]="!down">CART</button>
+  <div [class.On]="down" [class.Off]="!down" id="cart-display">
+    <dl class="List">
+      <ng-template ngFor let-item [ngForOf]="cart" let-i="index">
+        <dt><span class="Remove" (click)="removeItem(i)">X</span> Item {{item.key}}</dt>
+        <dd>Conglomerate: {{item.con}}</dd>
+        <dd>Company: {{item.com}}</dd>
+        <dd *ngIf="item.tx">From: {{item.tx}}</dd>
+        <dd>Amount: {{item.ct}}</dd>
+      </ng-template>
+    </dl>
+  </div>
+</div>

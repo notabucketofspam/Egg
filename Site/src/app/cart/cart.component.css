@@ -1,0 +1,68 @@
+#cart-div {
+  margin: auto;
+}
+#cart-button {
+  border-style: outset;
+  border-width: 2px;
+  border-color: #bbbbbb;
+  background-color: #eeeeee;
+  position: fixed;
+  top: 0px;
+  left: 590px;
+  font-size: 150%;
+  cursor: pointer;
+  z-index: 2;
+}
+@media only screen and (max-width: 1279px) {
+  #cart-button {
+    left: 44%;
+  }
+}
+#cart-button:hover, .Down {
+  background-color: #dddddd !important;
+}
+#cart-display {
+  width: 400px;
+  height: auto;
+  min-height: 300px;
+  border-style: outset;
+  border-width: 2px;
+  border-color: #bbbbbb;
+  background-color: #eeeeee;
+  position: fixed;
+  top: 32px;
+  left: 440px;
+  z-index: 1;
+  padding: 5px;
+}
+@media only screen and (max-width: 1279px) {
+  #cart-display {
+    left: 24%;
+  }
+}
+.On {
+  display: block;
+}
+.Off {
+  display: none;
+}
+.Up {
+  background-color: #eeeeee;
+}
+.List {
+  margin: 0% auto auto auto;
+}
+dd {
+  margin: auto auto auto 10%;
+}
+.Remove {
+  color: #ff0000;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  background-color: white;
+  padding: 0px 3px 0px 3px;
+}
+.Remove:hover {
+  cursor: pointer;
+}
