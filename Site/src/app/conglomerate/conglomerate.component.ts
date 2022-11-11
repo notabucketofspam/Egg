@@ -1,11 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-conglomerate',
   templateUrl: './conglomerate.component.html',
   styleUrls: ['./conglomerate.component.css']
 })
-export class ConglomerateComponent implements OnInit {
+export class ConglomerateComponent implements OnInit, OnDestroy {
   @Input() conglomerate!: string;
   @Input() state!: State;
   @Input() user!: string;
@@ -21,11 +22,18 @@ export class ConglomerateComponent implements OnInit {
   }
   @Input() description!: string;
   @Output() cartBubbleEE = new EventEmitter<CartItem>();
+  @Input() cart!: CartItem[];
+  @Input() cartSubject!: Subject<string>;
+  private subscriptions: Record<string, Subscription> = {};
+  cartChildSubject = new Subject<string>();
   constructor() { }
-
-  ngOnInit(): void {
+  ngOnDestroy(): void {
+    if (this.subscriptions["cart"])
+      this.subscriptions["cart"].unsubscribe();
   }
-  cartBubble($event: CartItem) {
-
+  ngOnInit(): void {
+    this.subscriptions["cart"] = this.cartSubject.subscribe(value => {
+      this.cartChildSubject.next(value);
+    });
   }
 }

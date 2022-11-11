@@ -1,4 +1,4 @@
-<app-cart [cart]="cart"></app-cart>
+<app-cart [cart]="cart" (cartEE)="removeItem($event)"></app-cart>
 <div class="TwoColumn">
   <h1>Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
@@ -27,7 +27,8 @@
 </ng-template>
 <ng-template #conglomeratesTemplate>
   <div class="FlexGrid">
-    <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con"
-    [state]="state" [description]="con[1]" [user]="user" (cartBubbleEE)="addCartItem($event)"></app-conglomerate>
+    <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con" [cart]="cart"
+    [state]="state" [description]="con[1]" [user]="user" (cartBubbleEE)="addCartItem($event)"
+    [cartSubject]="cartSubject"></app-conglomerate>
   </div>
 </ng-template>

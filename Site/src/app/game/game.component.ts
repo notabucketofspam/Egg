@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { WebSocketService } from '../websocket.service';
 
 @Component({
@@ -21,6 +21,7 @@ export class GameComponent implements OnInit, OnDestroy {
   conglomerates = [["Cathy", "Cash Back Cathy (Food)"], ["Terry", "One-Time Terry  (Real Estate)"],
     ["Gary", "Goodwill Gary (Tech)"], ["Doug", "Doug Dividends (Recreation)"]];
   cart: CartItem[] = [];
+  cartSubject = new Subject<string>();
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
   ngOnInit(): void {
@@ -110,5 +111,9 @@ export class GameComponent implements OnInit, OnDestroy {
       if ($event.ct)
         this.cart.push($event);
     }
+  }
+  removeItem($event: string) {
+    console.log("cartEvent", $event);
+    this.cartSubject.next($event);
   }
 }
