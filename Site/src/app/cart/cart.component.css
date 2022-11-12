@@ -8,12 +8,12 @@
   background-color: #eeeeee;
   position: fixed;
   top: 0px;
-  left: 590px;
+  left: 44%;
   font-size: 150%;
   cursor: pointer;
   z-index: 2;
 }
-@media only screen and (max-width: 1279px) {
+@media only screen and (max-width: 1365px) {
   #cart-button {
     left: 44%;
   }
@@ -25,19 +25,21 @@
   width: 400px;
   height: auto;
   min-height: 300px;
+  max-height: 600px;
+  overflow-y: scroll;
   border-style: outset;
   border-width: 2px;
   border-color: #bbbbbb;
   background-color: #eeeeee;
   position: fixed;
   top: 32px;
-  left: 440px;
+  left: 33%;
   z-index: 1;
   padding: 5px;
 }
-@media only screen and (max-width: 1279px) {
+@media only screen and (max-width: 1365px) {
   #cart-display {
-    left: 24%;
+    left: 23%;
   }
 }
 .On {
