@@ -154,6 +154,7 @@ export class StorageComponent implements OnInit, OnDestroy {
                 this.messages.length = 0;
                 this.messages.push(`Game ${this.game} deleted`);
                 this.showListEE.emit("messages");
+                localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
               }
               this.subscription!.unsubscribe();
             }
@@ -185,6 +186,7 @@ export class StorageComponent implements OnInit, OnDestroy {
                 this.messages.length = 0;
                 this.messages.push(`User ${this.user} of ${this.game} removed`);
                 this.showListEE.emit("messages");
+                localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
               }
               this.subscription!.unsubscribe();
             }
@@ -199,8 +201,8 @@ export class StorageComponent implements OnInit, OnDestroy {
   clearStorage() {
     delete this.lastGame;
     delete this.lastUser;
+    localStorage.clear();
     localStorage.setItem("games", "[]");
-    localStorage.removeItem("lastGame");
     this.messages.length = 0;
     this.messages.push("Local games cache cleared");
     this.showListEE.emit("messages");
