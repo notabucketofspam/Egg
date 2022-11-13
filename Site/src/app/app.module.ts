@@ -13,6 +13,7 @@ import { ConglomerateComponent } from './conglomerate/conglomerate.component';
 import { CompanyComponent } from './company/company.component';
 import { CartComponent } from './cart/cart.component';
 import { TimeService } from './time.service';
+import { PublicWorkComponent } from './public-work/public-work.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { TimeService } from './time.service';
     PageNotFoundComponent,
     ConglomerateComponent,
     CompanyComponent,
-    CartComponent
+    CartComponent,
+    PublicWorkComponent
   ],
   imports: [
     BrowserModule,
