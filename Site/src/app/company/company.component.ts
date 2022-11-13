@@ -14,7 +14,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   @Input() state!: State;
   deltaPercent!: number;
   deltaEmoji!: string;
-  available!: number;
+  available = 0;
   @Input() user!: string;
   buyOrSellButton = "Add to cart";
   @Output() cartActionEE = new EventEmitter<CartItem>();
@@ -43,7 +43,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     if (changes["state"]) {
       if (changes["state"].currentValue.delta) {
         this.deltaPercent = this.state.delta[this.comShort]
-          / this.state.price[this.conglomerate + ':' + this.company];
+          / this.state.price[this.comShort];
         this.deltaEmoji = this.state.delta[this.comShort] < 0 ? "\u{1F4C9}" : "\u{1F4C8}";
       }
       if (changes["state"].currentValue.user) {
@@ -72,30 +72,33 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
             });
           }
         });
+        this.projected.available = this.available - this.withdraw.available;
+        this.state.users.forEach(user => {
+          this.projected.user[user].own[this.comShort] = this.state.user[user].own[this.comShort]
+            - this.withdraw.user[user].own[this.comShort];
+        });
       }
     }
   }
   ngOnInit(): void {
     this.subscriptions["cart"] = this.cartSubject.subscribe(value => {
+      this.state.users.forEach(user => {
+        this.withdraw.user[user].own[this.comShort] = 0;
+      });
+      this.withdraw.available = 0;
       this.cart.forEach(item => {
         if (item.com === this.company) {
-          //console.log("ITEM", item.con + ":" + item.com, value, item.ct);
           if (item.tx)
             this.withdraw.user[item.tx].own[item.con + ":" + item.com] = item.ct;
           else
             this.withdraw.available = item.ct;
+          this.withdraw.user[this.user].own[this.comShort] -= item.ct;
         }
       });
       this.projected.available = this.available - this.withdraw.available;
       this.state.users.forEach(user => {
         this.projected.user[user].own[this.comShort] = this.state.user[user].own[this.comShort]
           - this.withdraw.user[user].own[this.comShort];
-        //console.log(this.comShort, user, "state", this.state.user[user].own[this.comShort],
-        //  "withdraw", this.withdraw.user[user].own[this.comShort],
-        //  "projected", this.projected.user[user].own[this.comShort],
-        //  "available", this.available,
-        //  "withdraw", this.withdraw.available,
-        //  "projected", this.projected.available);
       });
     });
     this.comShort = this.conglomerate + ':' + this.company;
@@ -112,9 +115,10 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       com: this.company,
       ct: this.purchaseForm.controls["amount"].value!
     });
-    this.withdraw.available += this.purchaseForm.controls["amount"].value!;
+    const amount = this.purchaseForm.controls["amount"].value!;
+    this.withdraw.available += amount;
     this.projected.available = this.available - this.withdraw.available;
-    //console.log(this.conglomerate + ':' + this.company, "available", this.projected.available);
+    this.projected.user[this.user].own[this.comShort] += amount;
     this.purchaseForm.reset({ amount: 0 });
     this.buyOrSellButton = "Add to cart";
   }
@@ -129,17 +133,17 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     });
     const tx = this.tradeOfferForm.controls["tx"].value!;
     const amount = this.tradeOfferForm.controls["amount"].value!;
-    const com = this.conglomerate + ':' + this.company;
-    //console.log(tx, amount, com);
-    this.withdraw.user[tx].own[com] += amount;
-    this.projected.user[tx].own[com] = this.state.user[tx].own[com] - this.withdraw.user[tx].own[com];
+    this.withdraw.user[tx].own[this.comShort] += amount;
+    this.projected.user[tx].own[this.comShort] = this.state.user[tx].own[this.comShort]
+      - this.withdraw.user[tx].own[this.comShort];
+    this.projected.user[this.user].own[this.comShort] += amount;
     this.tradeOfferForm.reset({ tx: this.user, amount: 0 });
   }
   increaseAmount(increase: number) {
     if (this.purchaseForm.controls["amount"].value !== null) {
       if (this.purchaseForm.controls["amount"].value + increase
-        >= -this.state.user[this.user].own[this.conglomerate + ':' + this.company]
-        && this.purchaseForm.controls["amount"].value + increase <= this.available)
+        >= -this.projected.user[this.user].own[this.comShort]
+        && this.purchaseForm.controls["amount"].value + increase <= this.projected.available)
         this.purchaseForm.controls["amount"].setValue(this.purchaseForm.controls["amount"].value + increase);
       this.buyOrSellButton = this.purchaseForm.controls["amount"].value >= 0 ? "Add to cart" : "Sell off stocks";
     }
@@ -149,7 +153,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       && this.tradeOfferForm.controls['tx'].value !== null
       && this.tradeOfferForm.controls['tx'].value !== this.user
       && this.tradeOfferForm.controls["amount"].value + increase
-      <= this.state.user[this.tradeOfferForm.controls['tx'].value].own[this.comShort]
+      <= this.projected.user[this.tradeOfferForm.controls['tx'].value].own[this.comShort]
       && this.tradeOfferForm.controls["amount"].value + increase >= 0)
         this.tradeOfferForm.controls["amount"].setValue(this.tradeOfferForm.controls["amount"].value + increase);
   }

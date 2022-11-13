@@ -24,20 +24,20 @@
     <form [formGroup]="purchaseForm" (ngSubmit)="addToCart()" class="PurchaseForm">
       <div class="Purchase">
         <div class="PurchaseButton">
-          <button (click)="increaseAmount(-1)" type="button" [disabled]="!available"><</button>
+          <button (click)="increaseAmount(-1)" type="button"><</button>
         </div>
         <div class="PurchaseText">
-          <span class="PurchaseSpan">Available: {{ available }}</span>
+          <span class="PurchaseSpan">Available: {{ available }} ({{projected.available}})</span>
           <input type="number" value="0" formControlName="amount" max="0.5" class="PurchaseInput"
             min="0" step="1" />
         </div>
         <div class="PurchaseButton">
-          <button (click)="increaseAmount(1)" type="button" [disabled]="!available">></button>
+          <button (click)="increaseAmount(1)" type="button">></button>
         </div>
       </div>
       <div class="AddToCart">
         <button type="submit" style="font-size: 115%;"
-          [disabled]="!purchaseForm.controls['amount'].value||purchaseForm.controls['amount'].value<-this.state.user[this.user].own[this.conglomerate+':'+this.company]||purchaseForm.controls['amount'].value>this.available||purchaseForm.controls['amount'].value%1!==0">
+          [disabled]="!purchaseForm.controls['amount'].value||purchaseForm.controls['amount'].value<-this.projected.user[this.user].own[this.comShort]||purchaseForm.controls['amount'].value>this.projected.available||purchaseForm.controls['amount'].value%1!==0">
           {{ buyOrSellButton }}
         </button>
       </div>
@@ -66,7 +66,7 @@
         </div>
       </div>
       <button type="submit" class="TradeButton"
-      [disabled]="!tradeOfferForm.controls['tx'].value||!tradeOfferForm.controls['amount'].value||tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.state.user[tradeOfferForm.controls['tx'].value].own[this.conglomerate+':'+this.company]||tradeOfferForm.controls['amount'].value%1!==0">
+      [disabled]="!tradeOfferForm.controls['tx'].value||!tradeOfferForm.controls['amount'].value||tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.projected.user[tradeOfferForm.controls['tx'].value].own[this.comShort]||tradeOfferForm.controls['amount'].value%1!==0">
         Submit offer
       </button>
     </form>
@@ -76,8 +76,10 @@
     <div *ngFor="let user of state.users" class="User">
       <div class="Username">{{ user }}</div>
       <div class="UserProps">
-        <div class="UserProp">Own: {{ state.user[user].own[conglomerate+':'+company] }}</div>
-        <div class="UserProp">Tier: {{ state.user[user].member[conglomerate+':'+company] }}</div>
+        <div class="UserOwn">
+          Own: {{ state.user[user].own[comShort] }} ({{projected.user[user].own[comShort]}})
+        </div>
+        <div class="UserMember">Tier: {{ state.user[user].member[comShort] }}</div>
       </div>
     </div>
   </div>
