@@ -1,6 +1,6 @@
 <div id="cart-div">
   <button id="cart-button" (click)="toggleCart()" [class.Down]="down" [class.Up]="!down">CART</button>
-  <div [class.On]="down" [class.Off]="!down" id="cart-display">
+  <div [class.On]="down" [class.Off]="!down" id="cart-display" [ngStyle]="{'overscroll-behavior-y':'none'}">
     <dl class="List">
       <ng-template ngFor let-item [ngForOf]="cart" let-i="index">
         <dt><span class="Remove" (click)="removeItem(i)">X</span> Item {{item.key}}</dt>
