@@ -34,6 +34,11 @@ export class GameComponent implements OnInit, OnDestroy {
       });
       this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
     });
+    const cartStorage = localStorage.getItem(`game:${this.game}:user:${this.user}:cart`);
+    if (cartStorage)
+      this.cart = JSON.parse(cartStorage);
+    else
+      localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, "[]");
   }
   ngOnDestroy() {
     if (this.subscriptions["websocket"])
@@ -92,13 +97,13 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   load(state: State) {
     this.state = state as State;
-    
+    //console.log(this.cart);
   }
   update(frame: Frame) {
 
   }
   addCartItem($event: CartItem) {
-    console.log($event);
+    //console.log($event);
     const sameItemIndex = this.cart
       .findIndex(item => item.tx === $event.tx && item.con === $event.con && item.com === $event.com);
     if (sameItemIndex < 0) {
@@ -111,9 +116,11 @@ export class GameComponent implements OnInit, OnDestroy {
       if ($event.ct)
         this.cart.push($event);
     }
+    localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
   }
   removeItem($event: string) {
-    console.log("cartEvent", $event);
+    //console.log("cartEvent", $event);
     this.cartSubject.next($event);
+    localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
   }
 }
