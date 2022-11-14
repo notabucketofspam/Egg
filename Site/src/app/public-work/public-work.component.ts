@@ -46,9 +46,12 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
   }
   raise() {
     if (this.raiseForm.controls["stock"].value !== null
-      && this.raiseForm.controls["flavor"].value !== null)
+      && this.raiseForm.controls["flavor"].value !== null) {
       this.raiseEE.emit([this.raiseForm.controls["stock"].value,
       this.flavors.indexOf(this.raiseForm.controls["flavor"].value)]);
+      alert(`Congradulations! You have raised a ${this.raiseForm.controls["flavor"].value} \
+Public Work in the company ${this.raiseForm.controls["stock"].value}!`);
+    }
     this.raiseForm.reset({ stock: "---", flavor: "---"});
   }
 }
