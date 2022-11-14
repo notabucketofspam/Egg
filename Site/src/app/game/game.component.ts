@@ -123,4 +123,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.cartSubject.next($event);
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
   }
+  raisePublicWork($event: [string, number]) {
+    console.log("stock", $event[0], "pw", $event[1]);
+  }
 }

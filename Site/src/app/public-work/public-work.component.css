@@ -1,0 +1,92 @@
+/* Copy-paste hell */
+#pw-button {
+  border-style: outset;
+  border-width: 2px;
+  border-color: #bbbbbb;
+  background-color: #eeeeee;
+  position: fixed;
+  top: 0px;
+  left: 980px;
+  font-size: 150%;
+  cursor: pointer;
+  z-index: 2;
+  width: 80px;
+}
+@media only screen and (max-width: 1365px) {
+  #pw-button {
+    left: 70%;
+  }
+}
+#pw-menu {
+  width: 400px;
+  height: 300px;
+  overflow-y: scroll;
+  border-style: outset;
+  border-width: 2px;
+  border-color: #bbbbbb;
+  background-color: #eeeeee;
+  position: fixed;
+  top: 32px;
+  left: 810px;
+  z-index: 1;
+  padding: 5px;
+}
+@media only screen and (max-width: 1365px) {
+  #pw-menu {
+    left: 46%;
+  }
+}
+#pw-button:hover, .Open {
+  background-color: #dddddd !important;
+}
+.Closed {
+  background-color: #eeeeee;
+}
+.Display {
+  display: block;
+}
+.NoDisplay {
+  display: none;
+}
+#raise-button {
+  background-color: gold;
+  border-style: outset;
+  border-color: white;
+  border-width: 1px;
+  font-size: 110%;
+}
+#raise-button:hover {
+  background-color: goldenrod;
+}
+.SelectDisabled {
+  background-color: #555555;
+  color: #ffffff;
+}
+.TrueNeutral {
+  background-color: white;
+  color: black;
+}
+.MostExcellent {
+  background-color: lightskyblue;
+  color: black;
+}
+.Good {
+  background-color: lawngreen;
+  color: black;
+}
+.Bad {
+  background-color: orange;
+  color: white;
+}
+.DogWater {
+  background-color: red;
+  color: cyan;
+  font-weight: 900;
+  margin: -1.9px;
+}
+#stock-select {
+  width: 250px;
+}
+#flavor-select {
+  width: 110px;
+}

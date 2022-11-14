@@ -1,1 +1,34 @@
-<p>public-work works!</p>
+<button id="pw-button" [class]="buttonClass" (click)="toggleMenu()">PW</button>
+<div id="pw-menu" [class]="divClass" [ngStyle]="{'overscroll-behavior-y':'none'}">
+  <b>Raise a Public Work</b>
+  <form [formGroup]="raiseForm" (ngSubmit)="raise()">
+    <label for="stock-select">Company:&nbsp;</label>
+    <select id="stock-select" formControlName="stock" [class]="raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===1?'MostExcellent':raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===2?'Good':raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===3?'Bad':raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===4?'DogWater':'TrueNeutral'">
+    <option [ngValue]="'---'" [class]="'TrueNeutral'">---</option>
+      <ng-container *ngFor="let stock of stockTable">
+        <ng-container [ngSwitch]="state.pw&&state.pw[stock[0]]">
+          <option [ngValue]="stock[0]" *ngSwitchCase="0" class="TrueNeutral">{{stock[1]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="1" class="MostExcellent">{{stock[1]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="2" class="Good">{{stock[1]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="3" class="Bad">{{stock[1]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="4" class="DogWater">{{stock[1]}}</option>
+        </ng-container>
+      </ng-container>
+    </select>
+    <br />
+    <label for="flavor-select">Flavor:&nbsp;</label>
+    <select formControlName="flavor" id="flavor-select" [class]="raiseForm.controls['flavor'].value&&raiseForm.controls['flavor'].value==='Most Excellent'?'MostExcellent':raiseForm.controls['flavor'].value&&raiseForm.controls['flavor'].value==='Good'?'Good':raiseForm.controls['flavor'].value&&raiseForm.controls['flavor'].value==='Bad'?'Bad':raiseForm.controls['flavor'].value&&raiseForm.controls['flavor'].value==='Dog Water'?'DogWater':'TrueNeutral'">
+      <ng-container *ngFor="let flavor of flavors; index as i">
+        <ng-container [ngSwitch]="i">
+          <option [ngValue]="flavor" *ngSwitchCase="0" class="TrueNeutral">{{flavor}}</option>
+          <option [ngValue]="flavor" *ngSwitchCase="1" class="MostExcellent">{{flavor}}</option>
+          <option [ngValue]="flavor" *ngSwitchCase="2" class="Good">{{flavor}}</option>
+          <option [ngValue]="flavor" *ngSwitchCase="3" class="Bad">{{flavor}}</option>
+          <option [ngValue]="flavor" *ngSwitchCase="4" class="DogWater">{{flavor}}</option>
+        </ng-container>
+      </ng-container>
+    </select>
+    <br />
+    <button type="submit" id="raise-button" [disabled]="!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0">Raise</button>
+  </form>
+</div>
