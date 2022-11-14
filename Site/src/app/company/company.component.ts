@@ -78,28 +78,32 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
             - this.withdraw.user[user].own[this.comShort];
         });
       }
+      if (changes["state"].currentValue.users)
+        this.cartSubject.next(this.time.gen());
     }
   }
   ngOnInit(): void {
     this.subscriptions["cart"] = this.cartSubject.subscribe(value => {
-      this.state.users.forEach(user => {
-        this.withdraw.user[user].own[this.comShort] = 0;
-      });
-      this.withdraw.available = 0;
-      this.cart.forEach(item => {
-        if (item.com === this.company) {
-          if (item.tx)
-            this.withdraw.user[item.tx].own[item.con + ":" + item.com] = item.ct;
-          else
-            this.withdraw.available = item.ct;
-          this.withdraw.user[this.user].own[this.comShort] -= item.ct;
-        }
-      });
-      this.projected.available = this.available - this.withdraw.available;
-      this.state.users.forEach(user => {
-        this.projected.user[user].own[this.comShort] = this.state.user[user].own[this.comShort]
-          - this.withdraw.user[user].own[this.comShort];
-      });
+      if (this.state.users) {
+        this.state.users.forEach(user => {
+          this.withdraw.user[user].own[this.comShort] = 0;
+        });
+        this.withdraw.available = 0;
+        this.cart.forEach(item => {
+          if (item.com === this.company) {
+            if (item.tx)
+              this.withdraw.user[item.tx].own[item.con + ":" + item.com] = item.ct;
+            else
+              this.withdraw.available = item.ct;
+            this.withdraw.user[this.user].own[this.comShort] -= item.ct;
+          }
+        });
+        this.projected.available = this.available - this.withdraw.available;
+        this.state.users.forEach(user => {
+          this.projected.user[user].own[this.comShort] = this.state.user[user].own[this.comShort]
+            - this.withdraw.user[user].own[this.comShort];
+        });
+      }
     });
     this.comShort = this.conglomerate + ':' + this.company;
   }
