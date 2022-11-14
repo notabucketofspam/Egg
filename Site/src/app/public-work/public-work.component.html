@@ -1,5 +1,5 @@
-<button id="pw-button" [class]="buttonClass" (click)="toggleMenu()">PW</button>
-<div id="pw-menu" [class]="divClass" [ngStyle]="{'overscroll-behavior-y':'none'}">
+<button id="pw-button" [class]="menuButtonClass" (click)="toggleMenu()" class="MenuButton">PW</button>
+<div id="pw-menu" [class]="menuClass" [ngStyle]="{'overscroll-behavior-y':'none'}" class="Menu">
   <b>Raise a Public Work</b>
   <form [formGroup]="raiseForm" (ngSubmit)="raise()">
     <label for="stock-select">Company:&nbsp;</label>

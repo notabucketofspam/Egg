@@ -16,3 +16,40 @@
   flex-direction: row;
   width: auto;
 }
+.MenuButton {
+  border-style: outset;
+  border-width: 2px;
+  border-color: #bbbbbb;
+  background-color: #eeeeee;
+  position: fixed;
+  top: 0px;
+  font-size: 150%;
+  cursor: pointer;
+  z-index: 2;
+  width: 80px;
+}
+.Menu {
+  width: 400px;
+  height: 300px;
+  overflow-y: scroll;
+  border-style: outset;
+  border-width: 2px;
+  border-color: #bbbbbb;
+  background-color: #eeeeee;
+  position: fixed;
+  top: 32px;
+  z-index: 1;
+  padding: 5px;
+}
+.MenuButton:hover, .MenuOpen {
+  background-color: #dddddd !important;
+}
+.MenuClosed {
+  background-color: #eeeeee;
+}
+.Display {
+  display: block;
+}
+.NoDisplay {
+  display: none;
+}

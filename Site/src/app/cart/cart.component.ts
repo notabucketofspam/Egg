@@ -7,7 +7,9 @@ import { TimeService } from '../time.service';
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
-  down = false;
+  menuOpen = false;
+  menuButtonClass = "MenuClosed";
+  menuClass = "NoDisplay";
   @Input() cart!: CartItem[];
   @Output() cartEE = new EventEmitter<string>();
   timestamp = "0".repeat(14);
@@ -15,8 +17,10 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  toggleCart() {
-    this.down = !this.down;
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+    this.menuButtonClass = this.menuOpen ? "MenuOpen" : "MenuClosed";
+    this.menuClass = this.menuOpen ? "Display" : "NoDisplay";
   }
   removeItem(index: number) {
     this.cart.splice(index, 1);

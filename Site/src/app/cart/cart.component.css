@@ -1,39 +1,16 @@
-#cart-div {
-  margin: auto;
-}
 #cart-button {
-  border-style: outset;
-  border-width: 2px;
-  border-color: #bbbbbb;
-  background-color: #eeeeee;
-  position: fixed;
-  top: 0px;
   left: 635px;
-  font-size: 150%;
-  cursor: pointer;
-  z-index: 2;
 }
 @media only screen and (max-width: 1365px) {
   #cart-button {
     left: 44%;
   }
 }
-#cart-button:hover, .Down {
+.Down {
   background-color: #dddddd !important;
 }
 #cart-display {
-  width: 400px;
-  height: 300px;
-  overflow-y: scroll;
-  border-style: outset;
-  border-width: 2px;
-  border-color: #bbbbbb;
-  background-color: #eeeeee;
-  position: fixed;
-  top: 32px;
   left: 465px;
-  z-index: 1;
-  padding: 5px;
 }
 @media only screen and (max-width: 1365px) {
   #cart-display {
