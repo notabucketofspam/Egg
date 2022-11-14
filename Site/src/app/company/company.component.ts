@@ -38,6 +38,21 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     available: 0
   }
   comShort!: string;
+  titleBlockClass = "TrueNeutral";
+  flavorClasses = [
+    "TrueNeutral",
+    "MostExcellent",
+    "Good",
+    "Bad",
+    "DogWater"
+  ];
+  flavorIcons = [
+    "\u{26AA}",
+    "\u{1F451}",
+    "\u{1F618}",
+    "\u{1F4A2}",
+    "\u{1F52B}"
+  ];
   constructor(private time: TimeService) { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
@@ -80,6 +95,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       }
       if (changes["state"].currentValue.users)
         this.cartSubject.next(this.time.gen());
+      if (changes["state"].currentValue.pw)
+        this.titleBlockClass = this.flavorClasses[this.state.pw[this.comShort]];
     }
   }
   ngOnInit(): void {

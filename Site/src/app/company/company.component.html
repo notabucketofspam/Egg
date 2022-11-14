@@ -1,4 +1,5 @@
-<div class="TitleBlock">
+<div class="TitleBlock" [class]="titleBlockClass">
+  <span *ngIf="state.pw&&state.pw[comShort]>-1" id="icon-span">{{flavorIcons[state.pw[comShort]]}}</span>
   <span class="BigTitle">{{ company }}&nbsp;|&nbsp;</span>
   <span class="Title">{{ description }}</span>
 </div>

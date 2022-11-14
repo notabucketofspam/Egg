@@ -159,3 +159,14 @@
   display: flex;
   font-size: 150%;
 }
+#icon-span {
+  font-size: 175%;
+}
+@media only screen and (min-width: 1366px) {
+  .Title {
+    font-size: 115%;
+  }
+  #icon-span {
+    font-size: 135%;
+  }
+}
