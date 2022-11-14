@@ -13,6 +13,8 @@ export class CartComponent implements OnInit {
   @Input() cart!: CartItem[];
   @Output() cartEE = new EventEmitter<string>();
   timestamp = "0".repeat(14);
+  @Input() price!: Record<string, number>;
+  @Input() cartTotal = 0;
   constructor(private time: TimeService) { }
 
   ngOnInit(): void {

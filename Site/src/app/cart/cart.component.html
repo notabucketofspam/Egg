@@ -1,9 +1,18 @@
 <button id="cart-button" (click)="toggleMenu()" [class]="menuButtonClass" class="MenuButton">CART</button>
 <div [class]="menuClass" id="cart-display" class="Menu"
   [ngStyle]="{'overscroll-behavior-y':'none'}">
+  <div class="TotalPrice">
+    <b style="display: flex;">Total:</b>
+    <span class="Price"><b>{{cartTotal | currency}}</b></span>
+  </div>
+  <hr />
   <dl class="List">
     <ng-template ngFor let-item [ngForOf]="cart" let-i="index">
-      <dt><span class="Remove" (click)="removeItem(i)">X</span> Item {{item.key}}</dt>
+      <dt>
+        <span class="Remove" (click)="removeItem(i)">X</span>
+        <span class="ItemNo">Item {{item.key}}</span>
+        <span class="Price" *ngIf="price">{{item.ct*price[item.con+':'+item.com] | currency}}</span>
+      </dt>
       <dd>Conglomerate: {{item.con}}</dd>
       <dd>Company: {{item.com}}</dd>
       <dd *ngIf="item.tx">From: {{item.tx}}</dd>

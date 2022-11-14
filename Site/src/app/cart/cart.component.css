@@ -17,15 +17,6 @@
     left: 23%;
   }
 }
-.On {
-  display: block;
-}
-.Off {
-  display: none;
-}
-.Up {
-  background-color: #eeeeee;
-}
 .List {
   margin: 0% auto auto auto;
 }
@@ -42,4 +33,18 @@ dd {
 }
 .Remove:hover {
   cursor: pointer;
+}
+.Price {
+  display: flex;
+  margin-left: auto;
+}
+dt {
+  display: flex;
+}
+.ItemNo {
+  margin-left: 1%;
+}
+.TotalPrice {
+  display: flex;
+  margin-left: 6%;
 }

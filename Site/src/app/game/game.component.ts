@@ -22,6 +22,7 @@ export class GameComponent implements OnInit, OnDestroy {
     ["Gary", "Goodwill Gary (Tech)"], ["Doug", "Doug Dividends (Recreation)"]];
   cart: CartItem[] = [];
   cartSubject = new Subject<string>();
+  cartTotal = 0;
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
   ngOnInit(): void {
@@ -97,6 +98,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   load(state: State) {
     this.state = state as State;
+    this.setCartTotal();
     //console.log(this.cart);
   }
   update(frame: Frame) {
@@ -117,13 +119,21 @@ export class GameComponent implements OnInit, OnDestroy {
         this.cart.push($event);
     }
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
+    this.setCartTotal();
   }
   removeItem($event: string) {
     //console.log("cartEvent", $event);
     this.cartSubject.next($event);
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
+    this.setCartTotal();
   }
   raisePublicWork($event: [string, number]) {
     console.log("stock", $event[0], "pw", $event[1]);
+  }
+  setCartTotal() {
+    this.cartTotal = 0;
+    this.cart.forEach(item => {
+      this.cartTotal += item.ct * this.state.price[item.con+':'+item.com];
+    });
   }
 }
