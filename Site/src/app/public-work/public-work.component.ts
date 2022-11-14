@@ -21,6 +21,13 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
     "Bad",
     "Dog Water"
   ];
+  flavorIcons = [
+    "\u{26AA}",
+    "\u{1F451}",
+    "\u{1F618}",
+    "\u{1F4A2}",
+    "\u{1F52B}"
+  ];
   stockTable: string[][] = [
     ["---", "---", "---"],
     ["Cathy:CREAM", "CREAM", "Cathy's Creamed Corn"], ["Cathy:BEER", "BEER", "Cathy's Cold Ones"],
