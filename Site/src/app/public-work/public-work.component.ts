@@ -49,7 +49,7 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
       && this.raiseForm.controls["flavor"].value !== null) {
       this.raiseEE.emit([this.raiseForm.controls["stock"].value,
       this.flavors.indexOf(this.raiseForm.controls["flavor"].value)]);
-      alert(`Congradulations! You have raised a ${this.raiseForm.controls["flavor"].value} \
+      alert(`Congratulations! You have raised a ${this.raiseForm.controls["flavor"].value} \
 public work in the company ${this.stockTable
           .find(value => value[0] === this.raiseForm.controls["stock"].value)![2]}!`);
     }
