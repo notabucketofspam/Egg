@@ -7,11 +7,11 @@
     <option [ngValue]="'---'" [class]="'TrueNeutral'">---</option>
       <ng-container *ngFor="let stock of stockTable">
         <ng-container [ngSwitch]="pw&&pw[stock[0]]">
-          <option [ngValue]="stock[0]" *ngSwitchCase="0" class="TrueNeutral">{{stock[1]}}</option>
-          <option [ngValue]="stock[0]" *ngSwitchCase="1" class="MostExcellent">{{stock[1]}}</option>
-          <option [ngValue]="stock[0]" *ngSwitchCase="2" class="Good">{{stock[1]}}</option>
-          <option [ngValue]="stock[0]" *ngSwitchCase="3" class="Bad">{{stock[1]}}</option>
-          <option [ngValue]="stock[0]" *ngSwitchCase="4" class="DogWater">{{stock[1]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="0" class="TrueNeutral">{{stock[1]+" > "+stock[2]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="1" class="MostExcellent">{{stock[1]+" > "+stock[2]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="2" class="Good">{{stock[1]+" > "+stock[2]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="3" class="Bad">{{stock[1]+" > "+stock[2]}}</option>
+          <option [ngValue]="stock[0]" *ngSwitchCase="4" class="DogWater">{{stock[1]+" > "+stock[2]}}</option>
         </ng-container>
       </ng-container>
     </select>

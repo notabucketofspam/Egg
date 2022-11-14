@@ -56,3 +56,7 @@
 #flavor-select {
   width: 110px;
 }
+option {
+  display: flex;
+  justify-content: right;
+}
