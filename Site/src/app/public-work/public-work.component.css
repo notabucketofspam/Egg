@@ -24,39 +24,12 @@
 #raise-button:hover {
   background-color: goldenrod;
 }
-.SelectDisabled {
-  background-color: #555555;
-  color: #ffffff;
-}
-.TrueNeutral {
-  background-color: white;
-  color: black;
-}
-.MostExcellent {
-  background-color: lightskyblue;
-  color: black;
-}
-.Good {
-  background-color: lawngreen;
-  color: black;
-}
-.Bad {
-  background-color: orange;
-  color: white;
-}
-.DogWater {
-  background-color: red;
-  color: cyan;
-  font-weight: 900;
-  margin: -1.9px;
-}
 #stock-select {
   width: 250px;
 }
 #flavor-select {
   width: 110px;
 }
-option {
-  display: flex;
-  justify-content: right;
+.DogWater {
+  margin: -1.9px;
 }

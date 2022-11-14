@@ -53,3 +53,24 @@
 .NoDisplay {
   display: none;
 }
+.TrueNeutral {
+  background-color: white;
+  color: black;
+}
+.MostExcellent {
+  background-color: lightskyblue;
+  color: black;
+}
+.Good {
+  background-color: lawngreen;
+  color: black;
+}
+.Bad {
+  background-color: orange;
+  color: white;
+}
+.DogWater {
+  background-color: red;
+  color: cyan;
+  font-weight: 900;
+}
