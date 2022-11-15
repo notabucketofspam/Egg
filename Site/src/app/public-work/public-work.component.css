@@ -1,9 +1,9 @@
 #pw-button {
-  left: 980px;
+  left: 960px;
 }
 @media only screen and (max-width: 1365px) {
   #pw-button {
-    left: 70%;
+    left: 68%;
   }
 }
 #pw-menu {
