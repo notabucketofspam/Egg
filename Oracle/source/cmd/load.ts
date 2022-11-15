@@ -34,7 +34,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
           ioredis.hgetall(`game:${data.game}:user:${user}:own`)
             .then(reply => send.user[user].own = fromHgetall(reply)),
           ioredis.hgetall(`game:${data.game}:user:${user}:member`)
-            .then(reply => send.user[user].member = fromHgetall(reply))
+            .then(reply => send.user[user].member = fromHgetall(reply)),
+          ioredis.smembers(`game:${data.game}:user:${user}:offers`)
+            .then(reply => send.user[user].offers = user === data.user ? reply.map(item => JSON.parse(item)) : [])
         ])
       )),
       ioredis.smembers(`game:${data.game}:ready`).then(reply => send.ready = reply),

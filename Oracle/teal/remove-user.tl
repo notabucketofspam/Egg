@@ -23,7 +23,8 @@ if gameExists then
   end
   if userExists then
     -- Remove user
-    redis.call("DEL", "game:"..gameKey..":user:"..username..":own", "game:"..gameKey..":user:"..username..":member")
+    redis.call("DEL", "game:"..gameKey..":user:"..username..":own", "game:"..gameKey..":user:"..username..":member",
+      "game:"..gameKey..":user:"..username..":offers")
     redis.call("SREM", "game:"..gameKey..":users", username)
     redis.call("SREM", "game:"..gameKey..":ready", username)
     redis.call("HDEL", "game:"..gameKey..":pledge", username)

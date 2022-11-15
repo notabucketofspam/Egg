@@ -17,7 +17,8 @@ if gameExists then
   redis.call("FT.DROPINDEX", "game:"..gameKey..":index", "DD")
   local users = redis.call("SMEMBERS", "game:"..gameKey..":users") as Set
   for user in pairs(users.set) do
-    redis.call("DEL", "game:"..gameKey..":user:"..user..":own", "game:"..gameKey..":user:"..user..":member")
+    redis.call("DEL", "game:"..gameKey..":user:"..user..":own", "game:"..gameKey..":user:"..user..":member",
+      "game:"..gameKey..":user:"..user..":offers")
   end
   redis.call("DEL", "game:"..gameKey..":price", "game:"..gameKey..":delta", "game:"..gameKey..":pw",
     "game:"..gameKey..":round", "game:"..gameKey..":users", "game:"..gameKey..":ready",
