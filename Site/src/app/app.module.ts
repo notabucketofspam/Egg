@@ -14,6 +14,7 @@ import { CompanyComponent } from './company/company.component';
 import { CartComponent } from './cart/cart.component';
 import { TimeService } from './time.service';
 import { PublicWorkComponent } from './public-work/public-work.component';
+import { TradeOfferComponent } from './trade-offer/trade-offer.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { PublicWorkComponent } from './public-work/public-work.component';
     ConglomerateComponent,
     CompanyComponent,
     CartComponent,
-    PublicWorkComponent
+    PublicWorkComponent,
+    TradeOfferComponent
   ],
   imports: [
     BrowserModule,
