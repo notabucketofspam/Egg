@@ -1,4 +1,4 @@
-import { Component, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-trade-offer',
@@ -9,6 +9,7 @@ export class TradeOfferComponent implements OnChanges {
   menuOpen = false;
   menuButtonClass = "MenuClosed";
   menuClass = "NoDisplay";
+  @Input() price!: Record<string, number>;
   constructor() { }
   ngOnChanges() { }
   toggleMenu() {
