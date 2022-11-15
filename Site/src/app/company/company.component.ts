@@ -68,7 +68,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
           if (!this.withdraw.user[user]) {
             this.withdraw.user[user] = {
               own: {},
-              member: {}
+              member: {},
+              "trade-offers": []
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)
@@ -78,7 +79,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
           if (!this.projected.user[user]) {
             this.projected.user[user] = {
               own: {},
-              member: {}
+              member: {},
+              "trade-offers": []
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)

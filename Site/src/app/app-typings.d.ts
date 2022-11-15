@@ -31,7 +31,8 @@ declare interface State extends Next {
   user: {
     [user: string]: {
       own: Record<string, number>,
-      member: Record<string, number>
+      member: Record<string, number>,
+      "trade-offers": CartItem[]
     }
   };
   ready: string[];
@@ -55,7 +56,8 @@ declare interface Frame extends Next {
   user?: {
     [user: string]: {
       own?: Record<string, number>,
-      member?: Record<string, number>
+      member?: Record<string, number>,
+      "trade-offers"?: CartItem[]
     }
   };
   ready?: string[];
