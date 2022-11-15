@@ -169,6 +169,7 @@ export class StorageComponent implements OnInit, OnDestroy {
             const reply = JSON.parse(value as string) as Next;
             if (reply.cmd === Cmd.RemoveUser) {
               if (reply.err) {
+                this.messages.length = 0;
                 this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
                 this.showListEE.emit("messages");
               } else {
