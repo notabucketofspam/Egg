@@ -1,0 +1,16 @@
+#to-button {
+  left: 300px;
+}
+@media only screen and (max-width: 1365px) {
+  #to-button {
+    left: 21%;
+  }
+}
+#to-menu {
+  left: 135px;
+}
+@media only screen and (max-width: 1365px) {
+  #to-menu {
+    left: 0.5%;
+  }
+}
