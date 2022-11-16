@@ -1,22 +1,3 @@
-#cart-button {
-  left: 630px;
-}
-@media only screen and (max-width: 1365px) {
-  #cart-button {
-    left: 43%;
-  }
-}
-.Down {
-  background-color: #dddddd !important;
-}
-#cart-display {
-  left: 465px;
-}
-@media only screen and (max-width: 1365px) {
-  #cart-display {
-    left: 23%;
-  }
-}
 .List {
   margin: 0% auto auto auto;
 }

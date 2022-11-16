@@ -52,6 +52,54 @@
 .Menu.Bottom {
   bottom: 34px;
 }
+.MenuButton.Left {
+  left: 295px;
+}
+.MenuButton.Center {
+  left: 630px;
+}
+.MenuButton.Right {
+  left: 960px;
+}
+.Menu.Left {
+  left: 135px;
+}
+.Menu.Center {
+  left: 465px;
+}
+.Menu.Right {
+  left: 810px;
+}
+@media only screen and (max-width: 1365px) {
+  .MenuButton.Left {
+    left: 19%;
+  }
+}
+@media only screen and (max-width: 1365px) {
+  .MenuButton.Center {
+    left: 43%;
+  }
+}
+@media only screen and (max-width: 1365px) {
+  .MenuButton.Right {
+    left: 68%;
+  }
+}
+@media only screen and (max-width: 1365px) {
+  .Menu.Left {
+    left: 0.5%;
+  }
+}
+@media only screen and (max-width: 1365px) {
+  .Menu.Center {
+    left: 23%;
+  }
+}
+@media only screen and (max-width: 1365px) {
+  .Menu.Right {
+    left: 46%;
+  }
+}
 .MenuButton:hover, .MenuOpen {
   background-color: #dddddd !important;
 }
