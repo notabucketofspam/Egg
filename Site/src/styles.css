@@ -100,16 +100,16 @@
     left: 46%;
   }
 }
-.MenuButton:hover, .MenuOpen {
+.MenuButton:hover, .MenuButton.Open {
   background-color: #dddddd !important;
 }
-.MenuClosed {
+.MenuButton.Closed {
   background-color: #eeeeee;
 }
-.Display {
+.Menu.Display {
   display: block;
 }
-.NoDisplay {
+.Menu.NoDisplay {
   display: none;
 }
 /*

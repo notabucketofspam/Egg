@@ -8,7 +8,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class PublicWorkComponent implements OnInit, OnDestroy {
   menuOpen = false;
-  menuButtonClass = "MenuClosed";
+  menuButtonClass = "Closed";
   menuClass = "NoDisplay";
   raiseForm = new FormGroup({
     stock: new FormControl("---"),
@@ -48,7 +48,7 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
   ngOnInit(): void { }
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
-    this.menuButtonClass = this.menuOpen ? "MenuOpen" : "MenuClosed";
+    this.menuButtonClass = this.menuOpen ? "Open" : "Closed";
     this.menuClass = this.menuOpen ? "Display" : "NoDisplay";
   }
   raise() {

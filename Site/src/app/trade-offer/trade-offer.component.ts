@@ -7,14 +7,14 @@ import { Component, Input, OnChanges } from '@angular/core';
 })
 export class TradeOfferComponent implements OnChanges {
   menuOpen = false;
-  menuButtonClass = "MenuClosed";
+  menuButtonClass = "Closed";
   menuClass = "NoDisplay";
   @Input() price!: Record<string, number>;
   constructor() { }
   ngOnChanges() { }
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
-    this.menuButtonClass = this.menuOpen ? "MenuOpen" : "MenuClosed";
+    this.menuButtonClass = this.menuOpen ? "Open" : "Closed";
     this.menuClass = this.menuOpen ? "Display" : "NoDisplay";
   }
 }

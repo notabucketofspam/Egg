@@ -8,7 +8,7 @@ import { TimeService } from '../time.service';
 })
 export class CartComponent implements OnInit {
   menuOpen = false;
-  menuButtonClass = "MenuClosed";
+  menuButtonClass = "Closed";
   menuClass = "NoDisplay";
   @Input() cart!: CartItem[];
   @Output() cartEE = new EventEmitter<string>();
@@ -21,7 +21,7 @@ export class CartComponent implements OnInit {
   }
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
-    this.menuButtonClass = this.menuOpen ? "MenuOpen" : "MenuClosed";
+    this.menuButtonClass = this.menuOpen ? "Open" : "Closed";
     this.menuClass = this.menuOpen ? "Display" : "NoDisplay";
   }
   removeItem(index: number) {
