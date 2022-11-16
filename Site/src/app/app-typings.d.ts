@@ -95,4 +95,5 @@ declare interface CartItem {
   con: string;
   com: string;
   ct: number;
+  nix?: number;
 }
