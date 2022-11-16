@@ -15,6 +15,7 @@ import { CartComponent } from './cart/cart.component';
 import { TimeService } from './time.service';
 import { PublicWorkComponent } from './public-work/public-work.component';
 import { TradeOfferComponent } from './trade-offer/trade-offer.component';
+import { RoundComponent } from './round/round.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { TradeOfferComponent } from './trade-offer/trade-offer.component';
     CompanyComponent,
     CartComponent,
     PublicWorkComponent,
-    TradeOfferComponent
+    TradeOfferComponent,
+    RoundComponent
   ],
   imports: [
     BrowserModule,
