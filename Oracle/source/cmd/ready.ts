@@ -11,7 +11,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   try {
     const frameJson = await ioredis.evalsha(scripts["ready"], 0, data.game, data.user, String(data.ready)) as any;
     const frameObject = JSON.parse(frameJson);
-    console.log(JSON.stringify({ cmd: "update", ready: frameObject.ready, round: frameObject.round }));
+    //console.log(JSON.stringify({ cmd: "update", ready: frameObject.ready, round: frameObject.round }));
   for (const [aliveClient, clientMeta] of aliveClients)
     if (clientMeta.game === data.game)
       aliveClient.send(JSON.stringify({ cmd: "update", ready: frameObject.ready, round: frameObject.round }));
