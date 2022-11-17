@@ -12,7 +12,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     await ioredis.sadd(`game:${data.game}:ready`, data.user);
   else
     await ioredis.srem(`game:${data.game}:ready`, data.user);
-  const ready = ioredis.smembers(`game:${data.game}:ready`);
+  const ready = await ioredis.smembers(`game:${data.game}:ready`);
   for (const [aliveClient, clientMeta] of aliveClients)
     if (clientMeta.game === data.game)
       aliveClient.send(JSON.stringify({ cmd: "update", ready }));
