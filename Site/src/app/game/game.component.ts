@@ -67,7 +67,6 @@ export class GameComponent implements OnInit, OnDestroy {
         // Set changes to game state
         console.log(value);
         this.update(value as PartialState, this.state, 0);
-        setTimeout(() => console.log(this.state), 300);
         break;
       }
       case Cmd.RemoveUser:
@@ -109,7 +108,7 @@ export class GameComponent implements OnInit, OnDestroy {
    * @returns {boolean} Whether or not the parent object must be deleted (in case it's empty)
    */
   update(partial: PartialState, parent: any, depth: number) {
-    console.log("depth", depth, "partial", partial, "parent", parent);
+    //console.log("depth", depth, "partial", partial, "parent", parent);
     if (typeof partial === "object" && Object.keys(partial).length === 0) {
       // partial is an empty object, so replace parent with it (regardless of type)
       //parent = partial;
@@ -124,7 +123,7 @@ export class GameComponent implements OnInit, OnDestroy {
         // partial is a set, so replace all members
         parent.length = 0;
         parent.push(...(partial as any));
-        console.log("set", "depth", depth, "key", key, "new parent", parent);
+        //console.log("set", "depth", depth, "key", key, "new parent", parent);
         break;
       } else if (typeof value === "string" || typeof value === "number") {
         // partial is a hash, so replace the specific fields
