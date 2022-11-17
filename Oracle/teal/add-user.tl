@@ -29,7 +29,7 @@ if user ~= nil then
   redis.call("HSET", "game:"..gameKey..":user:"..user..":own", unpack(hsetConglomerates))
   redis.call("HSET", "game:"..gameKey..":user:"..user..":member", unpack(hsetConglomerates))
   redis.call("SADD", "game:"..gameKey..":users", user)
-  redis.call("SADD", "game:"..gameKey..":ready", user)
+  -- redis.call("SADD", "game:"..gameKey..":ready", user)
   redis.call("HSET", "game:"..gameKey..":pledge", user, "0")
   redis.call("SADD", "game:"..gameKey..":can-trade", user)
   redis.call("HSET", "game:"..gameKey..":pa", user, "0")
