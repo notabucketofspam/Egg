@@ -66,7 +66,8 @@ export class GameComponent implements OnInit, OnDestroy {
       case Cmd.Update: {
         // Set changes to game state
         console.log(value);
-        this.update(value as Frame);
+        this.update(value as PartialState, this.state, 0);
+        setTimeout(() => console.log(this.state), 300);
         break;
       }
       case Cmd.RemoveUser:
@@ -101,8 +102,44 @@ export class GameComponent implements OnInit, OnDestroy {
     this.setCartTotal();
     //console.log(this.cart);
   }
-  update(frame: Frame) {
-
+  /**
+   * Walk through state and apply changes where applicable
+   * @param {PartialState} partial One part of the frame update
+   * @param {any} parent A reference to the parent object
+   * @returns {boolean} Whether or not the parent object must be deleted (in case it's empty)
+   */
+  update(partial: PartialState, parent: any, depth: number) {
+    console.log("depth", depth, "partial", partial, "parent", parent);
+    if (typeof partial === "object" && Object.keys(partial).length === 0) {
+      // partial is an empty object, so replace parent with it (regardless of type)
+      //parent = partial;
+      //console.log("empty partial", partial, "new parent", parent);
+      return true;
+    }
+    for (const [key, value] of Object.entries(partial)) {
+      if (key === "cmd") {
+        // Skip key, since it's not part of the state
+        continue;
+      } else if (Number(key) >= 0) {
+        // partial is a set, so replace all members
+        parent.length = 0;
+        parent.push(...(partial as any));
+        console.log("set", "depth", depth, "key", key, "new parent", parent);
+        break;
+      } else if (typeof value === "string" || typeof value === "number") {
+        // partial is a hash, so replace the specific fields
+        parent[key] = value;
+        //console.log("hash", "depth", depth, "key", key, "parent after", parent);
+      } else if (typeof value === "object") {
+        // partial is an object (hash or set), so repeat
+        const toDelete = this.update(value, parent[key], depth + 1);
+        if (toDelete) {
+          delete parent[key];
+          parent[key] = value;
+        }
+      }
+    }
+    return false;
   }
   addCartItem($event: CartItem) {
     //console.log($event);
