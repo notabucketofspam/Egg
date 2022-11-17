@@ -71,6 +71,7 @@
     <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="source\cmd\ls.ts" />
     <TypeScriptCompile Include="source\cmd\new.ts" />
+    <TypeScriptCompile Include="source\cmd\ready.ts" />
     <TypeScriptCompile Include="source\cmd\remove-user.ts" />
     <TypeScriptCompile Include="source\ExtWSS.ts" />
     <TypeScriptCompile Include="source\Game.ts" />
