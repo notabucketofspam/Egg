@@ -46,6 +46,7 @@
     <Content Include="teal\new.tl" />
     <Content Include="teal\Oracle.d.tl" />
     <Content Include="old\StockPrice.tl" />
+    <Content Include="teal\ready.tl" />
     <Content Include="teal\remove-user.tl" />
     <Content Include="tlconfig.lua" />
     <Content Include="tsconfig.json" />

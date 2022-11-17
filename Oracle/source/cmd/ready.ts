@@ -1,4 +1,4 @@
-import { Util } from "../Util.js";
+import { fromScriptError, Util } from "../Util.js";
 // Command
 type Ready = {
   cmd: "ready",
@@ -8,12 +8,14 @@ type Ready = {
 };
 export const cmd = "ready";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Ready) {
-  if (data.ready)
-    await ioredis.sadd(`game:${data.game}:ready`, data.user);
-  else
-    await ioredis.srem(`game:${data.game}:ready`, data.user);
-  const ready = await ioredis.smembers(`game:${data.game}:ready`);
+  try {
+    const frameJson = await ioredis.evalsha(scripts["ready"], 0, data.game, data.user, String(data.ready)) as any;
+    const frameObject = JSON.parse(frameJson);
+    console.log(JSON.stringify({ cmd: "update", ready: frameObject.ready, round: frameObject.round }));
   for (const [aliveClient, clientMeta] of aliveClients)
     if (clientMeta.game === data.game)
-      aliveClient.send(JSON.stringify({ cmd: "update", ready }));
+      aliveClient.send(JSON.stringify({ cmd: "update", ready: frameObject.ready, round: frameObject.round }));
+  } catch (err) {
+    client.send(fromScriptError("update", err as Error));
+  }
 }
