@@ -14,7 +14,6 @@ export class GameComponent implements OnInit, OnDestroy {
   user!: string;
   subscriptions: Record<string, Subscription> = {};
   messages: string[] = [];
-  errorMessages: string[] = [];
   state = {} as State;
   value = {} as Next;
   connected = true;
@@ -59,10 +58,10 @@ export class GameComponent implements OnInit, OnDestroy {
     this.value = value;
     if (value.err) {
       console.log(value);
-      this.errorMessages.push(`cmd: ${value.cmd}`, value.err, value.why!, JSON.stringify(value.proof));
+      this.messages.push(`cmd: ${value.cmd}`, value.err, value.why!, JSON.stringify(value.proof));
       return;
     } else {
-      this.errorMessages.length = 0;
+      this.messages.length = 0;
     }
     switch (value.cmd) {
       case Cmd.Load: {
@@ -96,7 +95,8 @@ export class GameComponent implements OnInit, OnDestroy {
       default: {
         const error = { cmd: value.cmd, err: "ENOCMD", why: "Invalid or unexpected command" };
         console.log(error);
-        this.errorMessages.push(`cmd: ${error.cmd}`, error.err, error.why);
+        this.messages.length = 0;
+        this.messages.push(`cmd: ${error.cmd}`, error.err, error.why);
         break;
       }
     }
