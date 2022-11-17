@@ -82,6 +82,10 @@ export class GameComponent implements OnInit, OnDestroy {
         this.connected = false;
         break;
       }
+      case Cmd.Ready: {
+        console.log(value);
+        break;
+      }
       default: {
         const error = { cmd: value.cmd, err: "ENOCMD", why: "Invalid or unexpected command" };
         console.log(error);
@@ -135,5 +139,9 @@ export class GameComponent implements OnInit, OnDestroy {
     this.cart.forEach(item => {
       this.cartTotal += item.ct * this.state.price[item.con+':'+item.com];
     });
+  }
+  ready($event: boolean) {
+    console.log(`user ${this.user} ready: ${$event}`);
+    //this.websocket.nextJ({ cmd: Cmd.Ready, user: this.user, ready: $event });
   }
 }

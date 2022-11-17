@@ -1,0 +1,22 @@
+#ready-button {
+  background-color: turquoise;
+  border-style: outset;
+  border-color: darkcyan;
+  border-width: 1px;
+  font-size: 150%;
+  display: flex;
+}
+#ready-button:hover, #ready-button.True {
+  background-color: mediumturquoise;
+}
+* {
+  font-family: "ITC Legacy Sans Std Bold";
+}
+#ready-icon-span {
+  display: flex;
+  margin-left: -10%;
+}
+#container-div {
+  display: flex;
+  justify-content: center;
+}

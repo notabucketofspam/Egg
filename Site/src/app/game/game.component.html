@@ -1,6 +1,7 @@
 <app-trade-offer [price]="state.price"></app-trade-offer>
 <app-public-work [pw]="state.pw" (raiseEE)="raisePublicWork($event)"></app-public-work>
 <app-cart [cart]="cart" (cartEE)="removeItem($event)" [price]="state.price" [cartTotal]="cartTotal"></app-cart>
+<app-round [round]="state.round" (readyEE)="ready($event)"></app-round>
 <div class="TwoColumn">
   <h1>Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
