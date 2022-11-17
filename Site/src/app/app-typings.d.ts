@@ -38,36 +38,14 @@ declare interface State extends Next {
   };
   ready: string[];
   pledge: Record<string, number>;
-  ["can-trade"]: string[];
+  "can-trade": string[];
   pa: Record<string, number>;
   cash: Record<string, number>;
   init: Record<string, number>;
-  ["second-init"]: Record<string, number>;
+  "second-init": Record<string, number>;
 }
-declare interface Frame extends Next {
-  cmd: Cmd.Update;
-  users?: string[];
-  price?: Record<string, number>;
-  delta?: Record<string, number>;
-  pw?: Record<string, number>;
-  round?: {
-    round?: number,
-    phase?: number
-  };
-  user?: {
-    [user: string]: {
-      own?: Record<string, number>,
-      member?: Record<string, number>,
-      offers?: CartItem[]
-    }
-  };
-  ready?: string[];
-  pledge?: Record<string, number>;
-  ["can-trade"]?: string[];
-  pa?: Record<string, number>;
-  cash?: Record<string, number>;
-  init?: Record<string, number>;
-  ["second-init"]?: Record<string, number>;
+declare interface PartialState {
+  [key: string | number]: string | number | PartialState;
 }
 declare interface NewGame extends Next {
   cmd: Cmd.New;
