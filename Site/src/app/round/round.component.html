@@ -2,6 +2,16 @@
 <div class="Menu Bottom Center" [class]="menuClass" [ngStyle]="{'overscroll-behavior-y':'none'}">
   <div id="container-div">
     <span id="ready-icon-span">{{readyIcon}}&nbsp;</span>
-    <button id="ready-button" (click)="toggleReady()" [class.True]="ready">Ready!</button>
+    <button id="ready-button" (click)="toggleReady()" [class.True]="readyState">Ready!</button>
   </div>
+  <dl>
+    <dt>
+      Ready:
+      <span *ngFor="let username of ready; index as i"><span *ngIf="i>0">, </span>{{username}}</span>
+    </dt>
+    <dt>
+      Waiting on:
+      <span *ngFor="let username of notReady; index as i"><span *ngIf="i>0">, </span>{{username}}</span>
+    </dt>
+  </dl>
 </div>

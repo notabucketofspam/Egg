@@ -23,6 +23,14 @@ export class GameComponent implements OnInit, OnDestroy {
   cart: CartItem[] = [];
   cartSubject = new Subject<string>();
   cartTotal = 0;
+  /** One Subject for each field of State, to alert a component that a change has occurred */
+  stateSubjects: Record<string, Subject<void>> = {
+    round: new Subject<void>()
+  };
+  /** Subjects for non-State properties */
+  localSubjects: Record<string, Subject<void>> = {
+    cart: new Subject<void>()
+  };
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
   ngOnInit(): void {
@@ -67,6 +75,9 @@ export class GameComponent implements OnInit, OnDestroy {
         // Set changes to game state
         console.log(value);
         this.update(value as PartialState, this.state, 0);
+        // Alert relevant components of the changes
+        for (const key of Object.keys(value))
+          this.stateSubjects[key].next();
         break;
       }
       case Cmd.RemoveUser:
