@@ -6,7 +6,8 @@ declare const enum Cmd {
   AddUser = "add-user",
   Delete = "delete",
   RemoveUser = "remove-user",
-  Disconnect = "disconnect"
+  Disconnect = "disconnect",
+  Ready = "ready"
 }
 declare type Next = {
   cmd: Cmd,
