@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 
 @Component({
@@ -6,7 +6,7 @@ import { Subject, Subscription } from 'rxjs';
   templateUrl: './round.component.html',
   styleUrls: ['./round.component.css']
 })
-export class RoundComponent implements OnInit, OnChanges {
+export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   menuOpen = false;
   menuButtonClass = "Closed";
   menuClass = "NoDisplay";
@@ -18,23 +18,33 @@ export class RoundComponent implements OnInit, OnChanges {
   @Input() user!: string;
   @Input() users!: string[];
   notReady: string[] = [];
-  @Input() subject!: Subject<void>;
-  subscription!: Subscription;
+  @Input() roundSubject!: Subject<void>;
+  @Input() readySubject!: Subject<void>;
+  roundSubscription!: Subscription;
+  readySubscription!: Subscription;
   constructor() { }
   ngOnInit(): void {
-    if (this.subject) {
-
-    }
+    this.roundSubscription = this.roundSubject.subscribe(value => {
+      console.log("roundSubscription", value);
+    });
+    this.readySubscription = this.readySubject.subscribe(value => {
+      this.setNotReady();
+    });
+  }
+  ngOnDestroy() {
+    if (this.roundSubscription)
+      this.roundSubscription.unsubscribe();
+    if (this.readySubscription)
+      this.readySubscription.unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
-    this.subscription = this.subject.subscribe(() => {
-
-    });
     if (changes["ready"]) {
       if (this.ready && this.ready.includes(this.user)) {
         this.readyState = true;
         this.readyIcon = "\u{1F534}";
       }
+      if (this.users)
+        this.setNotReady();
     }
   }
   toggleMenu() {
@@ -46,5 +56,8 @@ export class RoundComponent implements OnInit, OnChanges {
     this.readyState = !this.readyState;
     this.readyIcon = this.readyState ? "\u{1F534}" : "\u{26AA}";
     this.readyEE.emit(this.readyState);
+  }
+  setNotReady() {
+    this.notReady = this.users.filter(username => !this.ready.includes(username));
   }
 }
