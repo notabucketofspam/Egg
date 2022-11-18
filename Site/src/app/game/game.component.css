@@ -7,3 +7,13 @@
   display: grid;
   grid-template-columns: repeat(2, max-content);
 }
+.Flex {
+  display: flex;
+}
+.Flex.Row {
+  flex-direction: row;
+}
+.Flex.ColumnReverse {
+  flex-direction: column-reverse;
+}
+
