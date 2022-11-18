@@ -36,9 +36,8 @@ dl {
   white-space: nowrap;
 }
 dt {
-  margin: auto auto auto 10%;
+  margin-left: 30px;
 }
 dd {
-  margin: auto auto auto 20%;
+  margin-left: 60px;
 }
-
