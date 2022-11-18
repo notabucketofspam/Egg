@@ -2,6 +2,9 @@
   font-family: "ITC Legacy Sans Std Bold";
   src: url("assets/ITC Legacy Sans Std Bold.otf");
 }
+* {
+  font-family: "ITC Legacy Sans Std Bold";
+}
 .FlexGrid {
   display: flex;
   flex-wrap: wrap;
