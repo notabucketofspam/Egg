@@ -14,4 +14,12 @@
       <span *ngFor="let username of notReady; index as i"><span *ngIf="i>0">, </span>{{username}}</span>
     </dt>
   </dl>
+  <dl>
+    <dt>
+      Round: <span *ngIf="round">{{round.round}}</span>
+    </dt>
+    <dt>
+      Phase: <span *ngIf="round">{{round.phase}}</span>
+    </dt>
+  </dl>
 </div>

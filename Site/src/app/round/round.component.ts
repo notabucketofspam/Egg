@@ -25,7 +25,8 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   constructor() { }
   ngOnInit(): void {
     this.roundSubscription = this.roundSubject.subscribe(value => {
-      console.log("roundSubscription", value);
+      this.readyState = false;
+      this.readyIcon = "\u{26AA}";
     });
     this.readySubscription = this.readySubject.subscribe(value => {
       this.setNotReady();
