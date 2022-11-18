@@ -40,7 +40,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         ])
       )),
       ioredis.smembers(`game:${data.game}:ready`).then(reply => send.ready = reply),
-      ioredis.hgetall(`game:${data.game}:pledge`).then(reply => send.pledge = fromHgetall(reply)),
+      ioredis.hgetall(`game:${data.game}:pledge`).then(reply => send.pledge = fromHgetall(reply))
+        .then(() => send.users
+          .forEach((user: string) => user === data.user ? 0 : send.pledge[user] -= send.pledge[user])),
       ioredis.smembers(`game:${data.game}:can-trade`).then(reply => send["can-trade"] = reply),
       ioredis.hgetall(`game:${data.game}:pa`).then(reply => send.pa = fromHgetall(reply)),
       ioredis.hgetall(`game:${data.game}:cash`).then(reply => send.cash = fromHgetall(reply)),
