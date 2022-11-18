@@ -1,5 +1,7 @@
 <app-trade-offer [price]="state.price"></app-trade-offer>
 <app-public-work [pw]="state.pw" (raiseEE)="raisePublicWork($event)"></app-public-work>
+<app-cash (reportEE)="reportPledge($event)"[localSubjects]="localSubjects"
+[cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"></app-cash>
 <app-cart [cart]="cart" (cartEE)="removeItem($event)" [price]="state.price" [cartTotal]="cartTotal"></app-cart>
 <app-round [round]="state.round" (readyEE)="ready($event)" [ready]="state.ready" [user]="this.user"
 [users]="state.users" [roundSubject]="stateSubjects['round']" [readySubject]="stateSubjects['ready']"></app-round>
