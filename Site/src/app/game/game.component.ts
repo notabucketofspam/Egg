@@ -24,7 +24,20 @@ export class GameComponent implements OnInit, OnDestroy {
   cartTotal = 0;
   /** One Subject for each field of State, to alert a component that a change has occurred */
   stateSubjects: Record<string, Subject<void>> = {
-    round: new Subject<void>()
+    cmd: new Subject<void>(),
+    users: new Subject<void>(),
+    price: new Subject<void>(),
+    delta: new Subject<void>(),
+    pw: new Subject<void>(),
+    round: new Subject<void>(),
+    user: new Subject<void>(),
+    ready: new Subject<void>(),
+    pledge: new Subject<void>(),
+    "can-trade": new Subject<void>(),
+    pa: new Subject<void>(),
+    cash: new Subject<void>(),
+    init: new Subject<void>(),
+    "second-init": new Subject<void>(),
   };
   /** Subjects for non-State properties */
   localSubjects: Record<string, Subject<void>> = {
