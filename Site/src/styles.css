@@ -29,7 +29,8 @@
 * {
   font-family: "ITC Legacy Sans Std Bold";
 }
-option {
+
+select, option {
   font-family: "ITC Legacy Sans Std Medium";
 }
 .Ultra {
