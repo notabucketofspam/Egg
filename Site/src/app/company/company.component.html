@@ -1,53 +1,54 @@
-<div class="TitleBlock" [class]="titleBlockClass">
+<div class="Title Block Flex Center" [class]="titleBlockClass">
   <span *ngIf="state.pw&&state.pw[comShort]>-1" id="icon-span">{{flavorIcons[state.pw[comShort]]}}</span>
-  <span class="BigTitle">{{ company }}&nbsp;|&nbsp;</span>
-  <span class="Title">{{ description }}</span>
+  <span class="Title Normal Ultra">{{ company }}</span>
+  <span class="Title Normal">&nbsp;|&nbsp;</span>
+  <span class="Title Small">{{ description }}</span>
 </div>
-<div class="FlexCom">
-  <div class="Stock">
-    <span class="Title">Stock</span>
-    <div class="Price" *ngIf="state.price">
+<div class="Flex Com Row">
+  <div id="stock-div" class="Flex Column TopBlack">
+    <span class="Title Small">Stock</span>
+    <div id="price-div" class="Flex TopBlack" *ngIf="state.price">
       {{ state.price[conglomerate+':'+company] | currency }}
     </div>
-    <div class="Delta" *ngIf="state.delta">
-      <div class="DeltaNumbers">
-        <div class="DeltaNumber">
+    <div id="delta-div" class="Flex Row TopBlack" *ngIf="state.delta">
+      <div id="delta-numbers" class="Flex Column">
+        <div class="Flex DeltaNumber">
           {{ state.delta[conglomerate+':'+company] | currency }}
         </div>
-        <div class="DeltaNumber">
+        <div class="Flex DeltaNumber">
           {{ deltaPercent | percent }}
         </div>
       </div>
-      <div class="DeltaGraph">
+      <div id="delta-graph" class="Flex">
         {{ deltaEmoji }}
       </div>
     </div>
-    <form [formGroup]="purchaseForm" (ngSubmit)="addToCart()" class="PurchaseForm">
-      <div class="Purchase">
-        <div class="PurchaseButton">
+    <form [formGroup]="purchaseForm" (ngSubmit)="addToCart()" class="TopBlack Flex Column">
+      <div class="Flex Row Form Space">
+        <div class="Flex Form Button Large">
           <button (click)="increaseAmount(-1)" type="button"><</button>
         </div>
-        <div class="PurchaseText">
-          <span class="PurchaseSpan">Available: {{ available }} ({{projected.available}})</span>
-          <input type="number" value="0" formControlName="amount" max="0.5" class="PurchaseInput"
+        <div class="Flex Center Column">
+          <span id="purchase-span">Available: {{ available }} ({{projected.available}})</span>
+          <input type="number" value="0" formControlName="amount" max="0.5" class="Form Input Normal Flex"
             min="0" step="1" />
         </div>
-        <div class="PurchaseButton">
+        <div class="Flex Form Button Large">
           <button (click)="increaseAmount(1)" type="button">></button>
         </div>
       </div>
-      <div class="AddToCart">
+      <div class="Flex Row Form Submit">
         <button type="submit" style="font-size: 115%;"
           [disabled]="!purchaseForm.controls['amount'].value||purchaseForm.controls['amount'].value<-this.projected.user[this.user].own[this.comShort]||purchaseForm.controls['amount'].value>this.projected.available||purchaseForm.controls['amount'].value%1!==0">
           {{ buyOrSellButton }}
         </button>
       </div>
     </form>
-    <form [formGroup]="tradeOfferForm" (ngSubmit)="tradeOffer()" class="TradeOfferForm">
-      <div class="TradeOfferText">&#9888;TRADE OFFER&#9888;</div>
-      <div class="TradeDiv">
+    <form [formGroup]="tradeOfferForm" (ngSubmit)="tradeOffer()" class="TopBlack Flex Column">
+      <div class="Center Flex">&#9888;TRADE OFFER&#9888;</div>
+      <div class="Flex Row">
         <label for="r=tx-select">From:&nbsp;</label>
-        <select formControlName="tx" id="tx-select" class="TradeSelect">
+        <select formControlName="tx" id="tx-select" class="Form Select Flex">
           <ng-container *ngFor="let tx of this.state.users">
             <option [ngValue]="tx" *ngIf="tx === this.user"></option>
             <option [ngValue]="tx" *ngIf="tx !== this.user">
@@ -56,31 +57,31 @@
           </ng-container>
         </select>
       </div>
-      <div class="TradeDiv" style="justify-content: center;">
-        <div class="TradeOfferButton">
+      <div class="Flex Row Center" style="justify-content: center;">
+        <div class="Form Flex Button Normal">
           <button (click)="increaseTradeOfferAmount(-1)" type="button"><</button>
         </div>
-        <input class="TradeInput" type="number" value="0" formControlName="amount" id="amount-input"
+        <input class="Flex Form Input Small" type="number" value="0" formControlName="amount" id="amount-input"
           max="0.5" min="0" step="1" />
-        <div class="TradeOfferButton">
+        <div class="Flex Form Button Normal">
           <button (click)="increaseTradeOfferAmount(1)" type="button">></button>
         </div>
       </div>
-      <button type="submit" class="TradeButton"
+      <button type="submit" class="Flex Row Form Submit Large"
       [disabled]="!tradeOfferForm.controls['tx'].value||!tradeOfferForm.controls['amount'].value||tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.projected.user[tradeOfferForm.controls['tx'].value].own[this.comShort]||tradeOfferForm.controls['amount'].value%1!==0">
         Submit offer
       </button>
     </form>
   </div>
-  <div class="Users">
-    <span class="Title">Users</span>
-    <div *ngFor="let user of state.users" class="User">
-      <div class="Username">{{ user }}</div>
-      <div class="UserProps">
-        <div class="UserOwn">
+  <div id="user-list" class="Flex Column">
+    <span class="Title Small">Users</span>
+    <div *ngFor="let user of state.users" class="Flex Column TopBlack">
+      <div class="User Name Flex">{{ user }}</div>
+      <div class="Flex Row">
+        <div class="User Own Flex">
           Own: {{ state.user[user].own[comShort] }} ({{projected.user[user].own[comShort]}})
         </div>
-        <div class="UserMember">Tier: {{ state.user[user].member[comShort] }}</div>
+        <div class="Flex">Tier: {{ state.user[user].member[comShort] }}</div>
       </div>
     </div>
   </div>

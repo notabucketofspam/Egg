@@ -3,12 +3,10 @@
   border: solid black 1px;
   margin: 5px;
 }
-.BiggerTitle {
-  display: flex;
+.Title.Large {
   font-size: 200%;
 }
-.TitleBlock {
-  display: flex;
+.Title.Block {
   align-items: center;
   justify-content: center;
 }

@@ -29,23 +29,42 @@
 * {
   font-family: "ITC Legacy Sans Std Bold";
 }
-.FlexGrid {
+option {
+  font-family: "ITC Legacy Sans Std Medium";
+}
+.Ultra {
+  font-family: "ITC Legacy Sans Std Ultra";
+}
+.Flex {
   display: flex;
+}
+.Flex.Grid {
   flex-wrap: wrap;
   flex-direction: row;
   width: 1366px;
 }
 @media only screen and (max-width: 1365px) {
-  .FlexGrid {
+  .Flex.Grid {
     flex-direction: column;
     width: auto;
   }
 }
-.FlexGridAuto {
-  display: flex;
+.Flex.GridAuto {
   flex-wrap: wrap;
   flex-direction: row;
   width: auto;
+}
+.Flex.Row {
+  flex-direction: row;
+}
+.Flex.Column {
+  flex-direction: column;
+}
+.Flex.ColumnReverse {
+  flex-direction: column-reverse;
+}
+.Flex.Center {
+  justify-content: center;
 }
 .MenuButton {
   border-style: outset;

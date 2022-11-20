@@ -1,7 +1,7 @@
-<div class="TitleBlock">
-  <span class="BiggerTitle">{{ description }}</span>
+<div class="Title Block Flex">
+  <span class="Title Large Ultra Flex">{{ description }}</span>
 </div>
-<div class="FlexGridAuto">
+<div class="Flex GridAuto">
   <app-company *ngFor="let com of conglomerates[conglomerate]" [company]="com[0]" class="Com"
   [state]="state" [conglomerate]="conglomerate" [description]="com[1]" [user]="user"
   (cartActionEE)="cartBubbleEE.emit($event)" [cart]="cart" [cartSubject]="cartChildSubject"

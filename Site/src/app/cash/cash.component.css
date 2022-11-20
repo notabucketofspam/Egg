@@ -4,15 +4,6 @@
 #public-account-span {
   margin-left: 38%;
 }
-.Flex {
-  display: flex;
-}
-.Flex.Column {
-  flex-direction: column;
-}
-.Flex.Center {
-  justify-content: center;
-}
 .Ul {
   text-decoration-line: underline;
 }

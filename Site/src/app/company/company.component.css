@@ -1,172 +1,96 @@
-.FlexCom {
-  display: flex;
+.Flex.Com {
   width: auto;
-  flex-direction: row;
   height: auto;
 }
-.Title {
+.Title.Small {
   align-self: center;
   font-size: 125%;
 }
-.BigTitle {
+.Title.Normal {
   font-size: 150%;
 }
-.TitleBlock {
-  display: flex;
+.Title.Block {
   align-items: center;
-  justify-content: center;
 }
-.Users {
-  display: flex;
-  flex-direction: column;
+#user-list {
   flex-basis: 50%;
   border-width: 1px 0px 0px 1px;
   border-color: black;
   border-style: solid;
 }
-.User {
+.TopBlack {
   border-width: 1px 0px 0px 0px;
   border-color: black;
   border-style: solid;
-  display: flex;
-  flex-direction: column;
 }
-.Username {
-  display: flex;
+.User.Name {
   margin: 0% auto;
   font-weight: bold;
 }
-.UserProps {
-  display: flex;
-  flex-direction: row;
-}
-.UserOwn {
-  display: flex;
+.User.Own {
   flex-basis: 70%;
 }
-.UserMember {
-  display: flex;
-}
-.Stock {
-  display: flex;
-  flex-direction: column;
+#stock-div {
   flex-basis: 50%;
-  border-width: 1px 0px 0px 0px;
-  border-color: black;
-  border-style: solid;
 }
-.Price {
-  display: flex;
-  border-width: 1px 0px 0px 0px;
-  border-color: black;
-  border-style: solid;
+#price-div {
   font-size: 200%;
 }
-.Delta {
-  display: flex;
-  flex-direction: row;
+#delta-div {
   flex-wrap: wrap;
-  border-width: 1px 0px 0px 0px;
-  border-color: black;
-  border-style: solid;
 }
-.DeltaTitle {
-  display: flex;
-  flex-basis: 50%;
-}
-.DeltaNumbers {
-  display: flex;
-  flex-direction: column;
+#delta-numbers {
   flex-basis: 67%;
 }
 .DeltaNumber {
-  display: flex;
   flex: 1;
 }
-.DeltaGraph {
-  display: flex;
+#delta-graph {
   flex: 2;
   flex-basis: 33%;
   font-size: 200%;
 }
-.PurchaseForm {
-  border-width: 1px 0px 0px 0px;
-  border-color: black;
-  border-style: solid;
-  display: flex;
-  flex-direction: column;
-}
-.Purchase {
-  display: flex;
-  flex-direction: row;
+.Flex.Space {
   justify-content: space-between;
 }
-.PurchaseButton {
-  display: flex;
+.Form.Button.Large {
   font-size: 200%;
 }
-.PurchaseText {
-  display: flex;
-  flex-direction: column;
-}
-.PurchaseInput {
+.Form.Input.Normal {
   width: 90px;
   margin: auto;
 }
-.AddToCart {
-  display: flex;
-  flex-direction: row;
+.Form.Submit {
   margin: 0% auto;
 }
-.PurchaseSpan {
-  font-size: 90%;
+.Form.Submit.Large {
+  font-size: 115%;
+}
+#purchase-span {
+  font-size: 85%;
 }
 @media only screen and (min-width: 1366px) {
-  .PurchaseSpan {
+  #purchase-span {
     font-size: 75%;
   }
 }
-.TradeOfferForm {
-  border-width: 1px 0px 0px 0px;
-  border-color: black;
-  border-style: solid;
-  display: flex;
-  flex-direction: column;
-}
-.TradeOfferText {
-  display: flex;
-  justify-content: center;
-}
-.TradeSelect {
-  display: flex;
+.Form.Select {
   width: 100px;
 }
-.TradeDiv {
-  display: flex;
-  flex-direction: row;
-}
-.TradeInput {
-  display: flex;
+.Form.Input.Small {
   width: 70px;
 }
-.TradeButton {
-  display: flex;
-  flex-direction: row;
-  margin: 0% auto;
-  font-size: 115%;
-}
-.TradeOfferButton {
-  display: flex;
+.Form.Button.Normal {
   font-size: 150%;
 }
 #icon-span {
   font-size: 175%;
 }
 @media only screen and (min-width: 1366px) {
-  .Title {
+  .Title.Small {
     font-size: 115%;
   }
-  #icon-span {
-    font-size: 135%;
+  #icon-span, .Title.Normal {
+    font-size: 130%;
   }
 }

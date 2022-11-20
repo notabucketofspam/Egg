@@ -1,11 +1,11 @@
-<div class="TwoColumn">
-  <h1>Eggonomics</h1>
+<div class="Flex Row">
+  <h1 class="Ultra">Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
 </div>
 <hr />
 What's poppin', gamers?
 <br />
-<div id="home-div">
+<div class="Flex Column">
   <app-storage [messages]="messages" [onlineList]="onlineList" (onlineListEE)="listOnlineGames()"
   (showListEE)="showList($event)" [showLists]="showLists"></app-storage>
 </div>

@@ -6,7 +6,7 @@
 <app-round [round]="state.round" (readyEE)="ready($event)" [ready]="state.ready" [user]="this.user"
 [users]="state.users" [roundSubject]="stateSubjects['round']" [readySubject]="stateSubjects['ready']"></app-round>
 <div class="Flex Row">
-  <h1>Eggonomics</h1>
+  <h1 class="Ultra">Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
   <div class="Flex ColumnReverse">
     <b>Game: {{ game }}</b>
@@ -38,7 +38,7 @@
   </div>
 </ng-template>
 <ng-template #conglomeratesTemplate>
-  <div class="FlexGrid">
+  <div class="Flex Grid">
     <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con" [cart]="cart"
                       [state]="state" [description]="con[1]" [user]="user" (cartBubbleEE)="addCartItem($event)"
                       [cartSubject]="cartSubject"></app-conglomerate>
