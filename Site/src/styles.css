@@ -1,6 +1,30 @@
 @font-face {
+  font-family: "ITC Legacy Sans Std Bold Italic";
+  src: url("assets/ITC Legacy Sans Std Bold Italic.otf");
+}
+@font-face {
   font-family: "ITC Legacy Sans Std Bold";
   src: url("assets/ITC Legacy Sans Std Bold.otf");
+}
+@font-face {
+  font-family: "ITC Legacy Sans Std Book Italic";
+  src: url("assets/ITC Legacy Sans Std Book Italic.otf");
+}
+@font-face {
+  font-family: "ITC Legacy Sans Std Book";
+  src: url("assets/ITC Legacy Sans Std Book.otf");
+}
+@font-face {
+  font-family: "ITC Legacy Sans Std Medium Italic";
+  src: url("assets/ITC Legacy Sans Std Medium Italic.otf");
+}
+@font-face {
+  font-family: "ITC Legacy Sans Std Medium";
+  src: url("assets/ITC Legacy Sans Std Medium.otf");
+}
+@font-face {
+  font-family: "ITC Legacy Sans Std Ultra";
+  src: url("assets/ITC Legacy Sans Std Ultra.otf");
 }
 * {
   font-family: "ITC Legacy Sans Std Bold";
