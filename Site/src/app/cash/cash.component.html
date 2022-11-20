@@ -2,10 +2,15 @@
 <div class="Menu Top Right" [class]="menuClass" [ngStyle]="{'overscroll-behavior-y':'none'}">
   <span id="private-account-span">Private Account</span>
   <table>
+    <tr>
+      <th></th>
+      <th class="Ul">Available</th>
+      <th class="Ul">Projected</th>
+    </tr>
     <tr *ngFor="let username of state.users">
       <td>{{username}}</td>
       <td>{{state.cash[username] | currency}}</td>
-      <td>({{projected.cash[username] | currency}})</td>
+      <td>{{projected.cash[username] | currency}}</td>
     </tr>
   </table>
   <div class="Flex Column Center">
@@ -16,6 +21,7 @@
       <td>{{username}}</td>
       <td>{{state.pa[username] | currency}}</td>
       <td *ngIf="paTotal">({{state.pa[username]/paTotal | percent}})</td>
+      <td *ngIf="!paTotal">({{0 | percent}})</td>
     </tr>
   </table>
   <div class="Flex Column Center">
