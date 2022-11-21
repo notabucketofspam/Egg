@@ -1,4 +1,9 @@
 # Oracle
+
+Project-specific development tools:
+
+__Teal__: [0.14.1](https://github.com/teal-language/tl), with its [Visual Studio Code extension (0.8.3)](https://marketplace.visualstudio.com/items?itemName=pdesaulniers.vscode-teal)
+
 Server backend util, tested and working. All programs (except OS) and their dependencies are compiled from source.
 
 __OS__: [Oracle Linux 7.8](https://cloud.oracle.com/) (2020-04-17)
