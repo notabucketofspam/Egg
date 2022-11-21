@@ -1,7 +1,16 @@
 # Egg
 ## The latest in egg-based board game technology
-Important things:
-- Homepage: https://eggonomics.net/
-- Link to Google Drive: https://drive.google.com/drive/folders/1eCAoFoK5br8miwzLc536RDNOTCgVajAP?usp=sharing
-- Link to (old) test site: https://v86nf8.deta.dev/
-- Link to (older) testing site: https://sites.google.com/view/eggonomics
+
+__Homepage__: https://eggonomics.net/
+
+Project-wide development tools. All programs are the most recent version unless otherwise specified.
+
+__Visual Studio__: [Community 2022](https://visualstudio.microsoft.com/vs/)
+
+__Visual Studio Code__: [Insiders build](https://code.visualstudio.com/insiders/)
+
+__MSYS2__: [latest build](https://www.msys2.org/)
+
+__Node.js__: [v18.10.0](https://nodejs.org/)
+
+__Global npm packages__: [npm-check-updates](https://www.npmjs.com/package/npm-check-updates)
