@@ -40,7 +40,8 @@ export class GameComponent implements OnInit, OnDestroy {
   };
   /** Subjects for non-State properties */
   localSubjects: Record<string, Subject<void>> = {
-    cart: new Subject<void>()
+    "cart-add": new Subject<void>(),
+    "cart-remove": new Subject<void>()
   };
   constructor(private route: ActivatedRoute, private title: Title,
     private websocket: WebSocketService) { }
@@ -177,11 +178,12 @@ export class GameComponent implements OnInit, OnDestroy {
       if ($event.ct)
         this.cart.push($event);
     }
+    this.localSubjects["cart-add"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
     this.setCartTotal();
   }
   removeItem($event: string) {
-    this.localSubjects["cart"].next();
+    this.localSubjects["cart-remove"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
     this.setCartTotal();
   }

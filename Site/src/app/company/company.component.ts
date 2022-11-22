@@ -96,13 +96,13 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
         });
       }
       if (changes["state"].currentValue.users)
-        this.localSubjects["cart"].next();
+        this.localSubjects["cart-remove"].next();
       if (changes["state"].currentValue.pw)
         this.titleBlockClass = this.flavorClasses[this.state.pw[this.comShort]];
     }
   }
   ngOnInit(): void {
-    this.subscriptions["cart"] = this.localSubjects["cart"].subscribe(() => {
+    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => {
       if (this.state.users) {
         this.state.users.forEach(user => {
           this.withdraw.user[user].own[this.comShort] = 0;
@@ -127,8 +127,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     this.comShort = this.conglomerate + ':' + this.company;
   }
   ngOnDestroy(): void {
-    if (this.subscriptions["cart"])
-      this.subscriptions["cart"].unsubscribe();
+    if (this.subscriptions["cart-remove"])
+      this.subscriptions["cart-remove"].unsubscribe();
   }
   addToCart() {
     this.cartActionEE.emit({

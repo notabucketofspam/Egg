@@ -42,12 +42,26 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     });
+    this.subscriptions["cart-add"] = this.localSubjects["cart-add"].subscribe(() => this.resetProjectedCash());
+    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => this.resetProjectedCash());
+  }
+  resetProjectedCash() {
+    this.state.users.forEach(username => this.projected.cash[username] = this.state.cash[username]);
+    for (const item of this.cart) {
+      if (item.tx)
+        this.projected.cash[item.tx] += item.ct * this.state.price[item.con + ':' + item.com];
+      this.projected.cash[this.user] -= item.ct * this.state.price[item.con + ':' + item.com];
+    }
   }
   ngOnDestroy() {
     if (this.subscriptions["pa"])
       this.subscriptions["pa"].unsubscribe();
     if (this.subscriptions["cash"])
       this.subscriptions["cash"].unsubscribe();
+    if (this.subscriptions["cart-add"])
+      this.subscriptions["cart-add"].unsubscribe();
+    if (this.subscriptions["cart-remove"])
+      this.subscriptions["cart-remove"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
@@ -55,6 +69,11 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
         if (this.state.users) {
           for (const username of this.state.users) {
             this.projected.cash[username] = changes["state"].currentValue["cash"][username];
+          }
+          for (const item of this.cart) {
+            if (item.tx)
+              this.projected.cash[item.tx] += item.ct * this.state.price[item.con + ':' + item.com];
+            this.projected.cash[this.user] -= item.ct * this.state.price[item.con + ':' + item.com];
           }
         }
       }
