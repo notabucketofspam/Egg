@@ -202,5 +202,6 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   reportPledge($event: number) {
     console.log(`user ${this.user} pledge ${$event}`);
+    this.websocket.nextJ({ cmd: Cmd.Pledge, game: this.game, user: this.user, pledge: $event });
   }
 }
