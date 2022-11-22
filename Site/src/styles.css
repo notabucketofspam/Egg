@@ -29,7 +29,7 @@
 * {
   font-family: "ITC Legacy Sans Std Bold";
 }
-select, option {
+select, option, input {
   font-family: "ITC Legacy Sans Std Medium";
 }
 .Ultra, b {
