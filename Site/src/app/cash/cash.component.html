@@ -46,7 +46,7 @@
       </div>
       <div class="Flex Row Center">
         <button type="submit"
-        [disabled]="!reportForm.controls['amount'].value||reportForm.controls['amount'].value<0">
+        [disabled]="reportForm.controls['amount'].value===null||reportForm.controls['amount'].value<0">
           Submit
         </button>
       </div>
