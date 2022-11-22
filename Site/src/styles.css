@@ -32,7 +32,7 @@
 select, option {
   font-family: "ITC Legacy Sans Std Medium";
 }
-.Ultra {
+.Ultra, b {
   font-family: "ITC Legacy Sans Std Ultra";
 }
 .Flex {
