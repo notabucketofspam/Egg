@@ -2,7 +2,7 @@
 <div class="Menu Top Right" [class]="menuClass" [ngStyle]="{'overscroll-behavior-y':'none'}">
   <table class="FullWide">
     <tr>
-      <th colspan="3">Private Account</th>
+      <th colspan="3"><b>Private Account</b></th>
     </tr>
     <tr>
       <th></th>
@@ -15,7 +15,7 @@
       <td class="Right">{{projected.cash[username] | currency}}</td>
     </tr>
     <tr>
-      <th colspan="3">Public Account Contributions</th>
+      <th colspan="3" class="BorderTop"><b>Public Account Contributions</b></th>
     </tr>
     <tr *ngFor="let username of state.users">
       <td>{{username}}</td>
@@ -24,7 +24,7 @@
       <td class="Right" *ngIf="!paTotal">({{0 | percent}})</td>
     </tr>
     <tr>
-      <th colspan="3">Public Account Total</th>
+      <th colspan="3" class="BorderTop"><b>Public Account Total</b></th>
     </tr>
     <tr>
       <th colspan="3">{{paTotal | currency}} ({{1e5 - paTotal | currency}} to go)</th>

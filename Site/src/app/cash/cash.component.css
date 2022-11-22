@@ -13,3 +13,8 @@ table.FullWide {
 #report-input {
   width: 12ch;
 }
+th.BorderTop {
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: black;
+}
