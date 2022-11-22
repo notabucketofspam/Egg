@@ -46,6 +46,7 @@
     <Content Include="teal\new.tl" />
     <Content Include="teal\Oracle.d.tl" />
     <Content Include="old\StockPrice.tl" />
+    <Content Include="teal\pledge.tl" />
     <Content Include="teal\ready.tl" />
     <Content Include="teal\remove-user.tl" />
     <Content Include="tlconfig.lua" />
@@ -72,6 +73,7 @@
     <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="source\cmd\ls.ts" />
     <TypeScriptCompile Include="source\cmd\new.ts" />
+    <TypeScriptCompile Include="source\cmd\pledge.ts" />
     <TypeScriptCompile Include="source\cmd\ready.ts" />
     <TypeScriptCompile Include="source\cmd\remove-user.ts" />
     <TypeScriptCompile Include="source\ExtWSS.ts" />
