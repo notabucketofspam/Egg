@@ -1,4 +1,3 @@
-import { CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
@@ -6,8 +5,7 @@ import { Subject, Subscription } from 'rxjs';
 @Component({
   selector: 'app-cash',
   templateUrl: './cash.component.html',
-  styleUrls: ['./cash.component.css'],
-  providers: [CurrencyPipe]
+  styleUrls: ['./cash.component.css']
 })
 export class CashComponent implements OnInit, OnChanges, OnDestroy {
   menuOpen = false;
@@ -28,7 +26,7 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   @Input() stateSubjects!: Record<string, Subject<void>>;
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() state!: State;
-  constructor(private currencyPipe: CurrencyPipe) { }
+  constructor() { }
   ngOnInit(): void {
     this.subscriptions["cash"] = this.stateSubjects["cash"].subscribe(() => {
       console.log("stateSubjects[\"cash\"]");
