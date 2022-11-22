@@ -7,7 +7,7 @@
   <dl>
     <dt>
       Ready:
-      <span *ngFor="let username of ready; index as i"><span *ngIf="i>0">, </span>{{username}}</span>
+      <span *ngFor="let username of state.ready; index as i"><span *ngIf="i>0">, </span>{{username}}</span>
     </dt>
     <dt>
       Waiting on:
@@ -16,10 +16,10 @@
   </dl>
   <dl>
     <dt>
-      Round: <span *ngIf="round">{{round.round}}</span>
+      Round: <span *ngIf="state.round">{{state.round.round}}</span>
     </dt>
     <dt>
-      Phase: <span *ngIf="round">{{round.phase}}</span>
+      Phase: <span *ngIf="state.round">{{state.round.phase}}</span>
     </dt>
   </dl>
 </div>

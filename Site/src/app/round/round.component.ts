@@ -10,42 +10,45 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   menuOpen = false;
   menuButtonClass = "Closed";
   menuClass = "NoDisplay";
-  @Input() round: State["round"] = { round: 0, phase: 0 };
-  @Input() ready: string[] = [];
+  //@Input() round: State["round"] = { round: 0, phase: 0 };
+  //@Input() ready: string[] = [];
   readyState = false;
   @Output() readyEE = new EventEmitter<boolean>();
   readyIcon = "\u{26AA}";
   @Input() user!: string;
-  @Input() users!: string[];
+  //@Input() users!: string[];
   notReady: string[] = [];
-  @Input() roundSubject!: Subject<void>;
-  @Input() readySubject!: Subject<void>;
-  roundSubscription!: Subscription;
-  readySubscription!: Subscription;
+  //@Input() roundSubject!: Subject<void>;
+  //@Input() readySubject!: Subject<void>;
+  private subscriptions: Record<string, Subscription> = {};
+  @Input() state!: State;
+  @Input() stateSubjects!: Record<string, Subject<void>>;
   constructor() { }
   ngOnInit(): void {
-    this.roundSubscription = this.roundSubject.subscribe(value => {
+    this.subscriptions["round"] = this.stateSubjects["round"].subscribe(() => {
       this.readyState = false;
       this.readyIcon = "\u{26AA}";
     });
-    this.readySubscription = this.readySubject.subscribe(value => {
+    this.subscriptions["ready"] = this.stateSubjects["ready"].subscribe(() => {
       this.setNotReady();
     });
   }
   ngOnDestroy() {
-    if (this.roundSubscription)
-      this.roundSubscription.unsubscribe();
-    if (this.readySubscription)
-      this.readySubscription.unsubscribe();
+    if (this.subscriptions["round"])
+      this.subscriptions["round"].unsubscribe();
+    if (this.subscriptions["ready"])
+      this.subscriptions["ready"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
-    if (changes["ready"]) {
-      if (this.ready && this.ready.includes(this.user)) {
-        this.readyState = true;
-        this.readyIcon = "\u{1F534}";
+    if (changes["state"]) {
+      if (changes["state"].currentValue["ready"]) {
+        if (this.state.ready && this.state.ready.includes(this.user)) {
+          this.readyState = true;
+          this.readyIcon = "\u{1F534}";
+        }
+        if (changes["state"].currentValue["users"])
+          this.setNotReady();
       }
-      if (this.users)
-        this.setNotReady();
     }
   }
   toggleMenu() {
@@ -59,6 +62,6 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
     this.readyEE.emit(this.readyState);
   }
   setNotReady() {
-    this.notReady = this.users.filter(username => !this.ready.includes(username));
+    this.notReady = this.state.users.filter(username => !this.state.ready.includes(username));
   }
 }
