@@ -110,3 +110,23 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
     return JSON.stringify({ cmd, ok: true });
   }
 }
+/**
+ * Get a list of Redis keys for scripts to use, to stay within Redis scripting guidelines.
+ * @param {string} game The game key
+ * @param {string[]} fields Which fields of State are requested
+ * @param {string[]=} users The list of users in the game; needed for some fields
+ */
+export function toScriptKeys(game: string, fields: string[], users?: string[]): string[] {
+  const keys: string[] = [];
+  fields.forEach(field => {
+    if (field === "user" && users) {
+      users.forEach(user => {
+        keys.push(`game:${game}:user:${user}:last-own`, `game:${game}:user:${user}:member`,
+          `game:${game}:user:${user}:offers`, `game:${game}:user:${user}:own`);
+      });
+    } else {
+      keys.push(`game:${game}:${field}`);
+    }
+  });
+  return keys;
+}
