@@ -1,3 +1,4 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
@@ -5,7 +6,8 @@ import { Subject, Subscription } from 'rxjs';
 @Component({
   selector: 'app-cash',
   templateUrl: './cash.component.html',
-  styleUrls: ['./cash.component.css']
+  styleUrls: ['./cash.component.css'],
+  providers: [CurrencyPipe]
 })
 export class CashComponent implements OnInit, OnChanges, OnDestroy {
   menuOpen = false;
@@ -28,7 +30,7 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   @Input() stateSubjects!: Record<string, Subject<void>>;
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() state!: State;
-  constructor() { }
+  constructor(private currencyPipe: CurrencyPipe) { }
   ngOnInit(): void {
     this.subscriptions["cash"] = this.stateSubjects["cash"].subscribe(() => {
       console.log("stateSubjects[\"cash\"]");
@@ -76,8 +78,16 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   report() {
     if (this.reportForm.controls["amount"].value !== null) {
       this.reportEE.emit(this.reportForm.controls["amount"].value);
-      alert(`Cheers, mate! You have pledged \$${this.reportForm.controls["amount"].value} to the Public Account!`);
+      alert(`Cheers, mate! You have pledged \
+${this.currencyPipe.transform(this.reportForm.controls["amount"].value)} to the Public Account!`);
     }
     this.reportForm.reset({ amount: 0 });
+  }
+  addAmount(toAdd: number) {
+    if (this.reportForm.controls["amount"].value !== null)
+      if (this.reportForm.controls["amount"].value + toAdd >= 0)
+        this.reportForm.controls["amount"].setValue(this.reportForm.controls["amount"].value + toAdd);
+      else
+        this.reportForm.controls["amount"].setValue(0);
   }
 }

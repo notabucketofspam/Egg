@@ -1,9 +1,3 @@
-#private-account-span {
-  margin-left: 42%;
-}
-#public-account-span {
-  margin-left: 38%;
-}
 .Ul {
   text-decoration-line: underline;
 }
@@ -15,4 +9,7 @@ td.Right, th.Right {
 }
 table.FullWide {
   width: 100%;
+}
+#report-input {
+  width: 12ch;
 }

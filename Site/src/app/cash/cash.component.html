@@ -36,5 +36,20 @@
       <th colspan="3" *ngIf="state.pa&&user">{{state.pledge[user] | currency}}</th>
     </tr>
   </table>
-  <!-- TODO insert reportForm -->
+  <div class="Flex Column">
+    <span class="Ul Flex Row Center">Change pledge</span>
+    <form [formGroup]="reportForm" (submit)="report()">
+      <div class="Flex Row Center">
+        <button type="button" (click)="addAmount(-100)"><</button>
+        <input type="number" value="0" min="0" formControlName="amount" id="report-input" />
+        <button type="button" (click)="addAmount(100)">></button>
+      </div>
+      <div class="Flex Row Center">
+        <button type="submit"
+        [disabled]="!reportForm.controls['amount'].value||reportForm.controls['amount'].value<0">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
