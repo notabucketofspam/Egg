@@ -1,6 +1,6 @@
 <app-trade-offer [price]="state.price"></app-trade-offer>
 <app-public-work [pw]="state.pw" (raiseEE)="raisePublicWork($event)"></app-public-work>
-<app-cash (reportEE)="reportPledge($event)"[localSubjects]="localSubjects"
+<app-cash (reportEE)="reportPledge($event)" [localSubjects]="localSubjects"
 [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"></app-cash>
 <app-cart [cart]="cart" (cartEE)="removeItem($event)" [price]="state.price" [cartTotal]="cartTotal"></app-cart>
 <app-round [round]="state.round" (readyEE)="ready($event)" [ready]="state.ready" [user]="this.user"
@@ -41,7 +41,7 @@
   <div class="Flex Grid">
     <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con" [cart]="cart"
                       [state]="state" [description]="con[1]" [user]="user" (cartBubbleEE)="addCartItem($event)"
-                      [cartSubject]="cartSubject"></app-conglomerate>
+                      [localSubjects]="localSubjects"></app-conglomerate>
   </div>
 </ng-template>
 <br />

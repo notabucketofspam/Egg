@@ -27,7 +27,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     amount: new FormControl(0)
   });
   @Input() cart!: CartItem[];
-  @Input() cartSubject!: Subject<string>;
+  @Input() localSubjects!: Record<string, Subject<void>>;
   private subscriptions: Record<string, Subscription> = {};
   withdraw = {
     user: {} as State["user"],
@@ -96,13 +96,13 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
         });
       }
       if (changes["state"].currentValue.users)
-        this.cartSubject.next(this.time.gen());
+        this.localSubjects["cart"].next();
       if (changes["state"].currentValue.pw)
         this.titleBlockClass = this.flavorClasses[this.state.pw[this.comShort]];
     }
   }
   ngOnInit(): void {
-    this.subscriptions["cart"] = this.cartSubject.subscribe(value => {
+    this.subscriptions["cart"] = this.localSubjects["cart"].subscribe(() => {
       if (this.state.users) {
         this.state.users.forEach(user => {
           this.withdraw.user[user].own[this.comShort] = 0;

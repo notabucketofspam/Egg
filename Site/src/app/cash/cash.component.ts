@@ -22,10 +22,8 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
     cash: {} as State["cash"],
     paTotal: 0
   };
-  @Input() cartSubject!: Subject<string>;
   paTotal = 0;
   @Input() user!: string;
-  @Input() cashSubject!: Subject<void>;
   subscriptions: Record<string, Subscription> = {};
   @Input() stateSubjects!: Record<string, Subject<void>>;
   @Input() localSubjects!: Record<string, Subject<void>>;

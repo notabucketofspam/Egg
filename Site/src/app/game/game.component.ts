@@ -20,7 +20,6 @@ export class GameComponent implements OnInit, OnDestroy {
   conglomerates = [["Cathy", "Cash Back Cathy (Food)"], ["Terry", "One-Time Terry  (Real Estate)"],
     ["Gary", "Goodwill Gary (Tech)"], ["Doug", "Doug Dividends (Recreation)"]];
   cart: CartItem[] = [];
-  cartSubject = new Subject<string>();
   cartTotal = 0;
   /** One Subject for each field of State, to alert a component that a change has occurred */
   stateSubjects: Record<string, Subject<void>> = {
@@ -182,8 +181,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.setCartTotal();
   }
   removeItem($event: string) {
-    //console.log("cartEvent", $event);
-    this.cartSubject.next($event);
+    this.localSubjects["cart"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
     this.setCartTotal();
   }
