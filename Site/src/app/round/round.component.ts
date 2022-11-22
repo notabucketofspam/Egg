@@ -10,16 +10,11 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   menuOpen = false;
   menuButtonClass = "Closed";
   menuClass = "NoDisplay";
-  //@Input() round: State["round"] = { round: 0, phase: 0 };
-  //@Input() ready: string[] = [];
   readyState = false;
   @Output() readyEE = new EventEmitter<boolean>();
   readyIcon = "\u{26AA}";
   @Input() user!: string;
-  //@Input() users!: string[];
   notReady: string[] = [];
-  //@Input() roundSubject!: Subject<void>;
-  //@Input() readySubject!: Subject<void>;
   private subscriptions: Record<string, Subscription> = {};
   @Input() state!: State;
   @Input() stateSubjects!: Record<string, Subject<void>>;

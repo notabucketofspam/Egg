@@ -39,10 +39,9 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
     ["Doug:CANN", "CANN", "Doug's Dispenceries"], ["Doug:DOOD", "DOOD", "Doodles by Doug"],
     ["Doug:DUG", "DUG", "Doug-Outs"], ["Doug:CLUB", "CLUB", "Doug's Dance Club"]
   ];
-  @Input() pw!: Record<string, number>;
   @Output() raiseEE = new EventEmitter<[string, number]>();
-  @Input() game!: string;
   @Input() user!: string;
+  @Input() state!: State;
   constructor() { }
   ngOnDestroy(): void { }
   ngOnInit(): void { }

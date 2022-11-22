@@ -11,7 +11,7 @@
       <dt>
         <span class="Remove" (click)="removeItem(i)">X</span>
         <span class="ItemNo">Item {{item.key}}</span>
-        <span class="Price" *ngIf="price">{{item.ct*price[item.con+':'+item.com] | currency}}</span>
+        <span class="Price" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
       </dt>
       <dd>Conglomerate: {{item.con}}</dd>
       <dd>Company: {{item.com}}</dd>

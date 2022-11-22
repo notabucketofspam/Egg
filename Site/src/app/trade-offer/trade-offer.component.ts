@@ -9,7 +9,7 @@ export class TradeOfferComponent implements OnChanges {
   menuOpen = false;
   menuButtonClass = "Closed";
   menuClass = "NoDisplay";
-  @Input() price!: Record<string, number>;
+  @Input() state!: State;
   constructor() { }
   ngOnChanges() { }
   toggleMenu() {

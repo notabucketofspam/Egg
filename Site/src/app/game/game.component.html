@@ -1,9 +1,9 @@
-<app-trade-offer [price]="state.price"></app-trade-offer>
-<app-public-work [pw]="state.pw" (raiseEE)="raisePublicWork($event)"></app-public-work>
+<app-trade-offer [state]="state"></app-trade-offer>
+<app-public-work [state]="state" (raiseEE)="raisePublicWork($event)"></app-public-work>
 <app-cash (reportEE)="reportPledge($event)" [localSubjects]="localSubjects"
 [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"></app-cash>
-<app-cart [cart]="cart" (cartEE)="removeItem($event)" [price]="state.price" [cartTotal]="cartTotal"></app-cart>
-<app-round [state]="state" [stateSubjects]="stateSubjects"(readyEE)="ready($event)"[user]="this.user"></app-round>
+<app-cart [cart]="cart" (cartEE)="removeItem($event)" [state]="state" [cartTotal]="cartTotal"></app-cart>
+<app-round [state]="state" [stateSubjects]="stateSubjects" (readyEE)="ready($event)"[user]="this.user"></app-round>
 <div class="Flex Row">
   <h1 class="Ultra">Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">

@@ -3,10 +3,10 @@
   <b>Raise a Public Work</b>
   <form [formGroup]="raiseForm" (ngSubmit)="raise()">
     <label for="stock-select">Company:&nbsp;</label>
-    <select id="stock-select" formControlName="stock" [class]="raiseForm.controls['stock'].value&&pw&&pw[raiseForm.controls['stock'].value]===1?'MostExcellent':raiseForm.controls['stock'].value&&pw&&pw[raiseForm.controls['stock'].value]===2?'Good':raiseForm.controls['stock'].value&&pw&&pw[raiseForm.controls['stock'].value]===3?'Bad':raiseForm.controls['stock'].value&&pw&&pw[raiseForm.controls['stock'].value]===4?'DogWater':'TrueNeutral'">
+    <select id="stock-select" formControlName="stock" [class]="raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===1?'MostExcellent':raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===2?'Good':raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===3?'Bad':raiseForm.controls['stock'].value&&state.pw&&state.pw[raiseForm.controls['stock'].value]===4?'DogWater':'TrueNeutral'">
     <option [ngValue]="'---'" [class]="'TrueNeutral'">---</option>
       <ng-container *ngFor="let stock of stockTable">
-        <ng-container [ngSwitch]="pw&&pw[stock[0]]">
+        <ng-container [ngSwitch]="state.pw&&state.pw[stock[0]]">
           <option [ngValue]="stock[0]" *ngSwitchCase="0" class="TrueNeutral">{{flavorIcons[0]}}{{stock[1]+" > "+stock[2]}}</option>
           <option [ngValue]="stock[0]" *ngSwitchCase="1" class="MostExcellent">{{flavorIcons[1]}}{{stock[1]+" > "+stock[2]}}</option>
           <option [ngValue]="stock[0]" *ngSwitchCase="2" class="Good">{{flavorIcons[2]}}{{stock[1]+" > "+stock[2]}}</option>
@@ -29,6 +29,6 @@
       </ng-container>
     </select>
     <br />
-    <button type="submit" id="raise-button" [disabled]="!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||pw[raiseForm.controls['stock'].value]!==0">Raise</button>
+    <button type="submit" id="raise-button" [disabled]="!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0">Raise</button>
   </form>
 </div>
