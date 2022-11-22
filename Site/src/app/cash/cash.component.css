@@ -7,3 +7,12 @@
 .Ul {
   text-decoration-line: underline;
 }
+th[colspan="3"] {
+  text-align: center;
+}
+td.Right, th.Right {
+  text-align: right;
+}
+table.FullWide {
+  width: 100%;
+}
