@@ -69,7 +69,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
             this.withdraw.user[user] = {
               own: {},
               member: {},
-              offers: []
+              offers: [],
+              "last-own": {}
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)
@@ -80,7 +81,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
             this.projected.user[user] = {
               own: {},
               member: {},
-              offers: []
+              offers: [],
+              "last-own": {}
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)
