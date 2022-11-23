@@ -1,4 +1,5 @@
 <button class="MenuButton Bottom Left Closed">DEBUG</button>
 <div class="Menu Bottom Left NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
-
+  Version: {{(state && state.ver >= 0) ? state.ver : "N/A"}}
+  <button class="Action" (click)="updateVer()">Update version</button>
 </div>

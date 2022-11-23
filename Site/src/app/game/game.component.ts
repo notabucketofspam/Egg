@@ -37,6 +37,7 @@ export class GameComponent implements OnInit, OnDestroy {
     cash: new Subject<void>(),
     init: new Subject<void>(),
     "second-init": new Subject<void>(),
+    ver: new Subject<void>()
   };
   /** Subjects for non-State properties */
   localSubjects: Record<string, Subject<void>> = {
@@ -203,5 +204,11 @@ export class GameComponent implements OnInit, OnDestroy {
   reportPledge($event: number) {
     console.log(`user ${this.user} pledge ${$event}`);
     this.websocket.nextJ({ cmd: Cmd.Pledge, game: this.game, user: this.user, pledge: $event });
+  }
+  debug($event: PartialState) {
+    console.log("debug", $event);
+    $event["cmd"] = Cmd.Debug;
+    $event["game"] = this.game;
+    this.websocket.nextJ($event);
   }
 }

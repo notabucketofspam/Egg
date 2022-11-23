@@ -1,0 +1,8 @@
+button.Action {
+  border-style: outset;
+  border-width: 1px;
+  background-color: #edd;
+}
+button.Action:hover {
+  background-color: #dcc;
+}

@@ -8,7 +8,8 @@ declare const enum Cmd {
   RemoveUser = "remove-user",
   Disconnect = "disconnect",
   Ready = "ready",
-  Pledge = "pledge"
+  Pledge = "pledge",
+  Debug = "debug"
 }
 declare type Next = {
   cmd: Cmd,
@@ -45,7 +46,7 @@ declare interface State extends Next {
   cash: Record<string, number>;
   init: Record<string, number>;
   "second-init": Record<string, number>;
-  ver: string;
+  ver: number;
 }
 declare interface PartialState {
   [key: string | number]: string | number | PartialState;
