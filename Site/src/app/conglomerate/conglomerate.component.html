@@ -5,5 +5,5 @@
   <app-company *ngFor="let com of conglomerates[conglomerate]" [company]="com[0]" class="Com"
   [state]="state" [conglomerate]="conglomerate" [description]="com[1]" [user]="user"
   (cartActionEE)="cartBubbleEE.emit($event)" [cart]="cart" [localSubjects]="localSubjects"
-  ></app-company>
+  [stateSubjects]="stateSubjects"></app-company>
 </div>

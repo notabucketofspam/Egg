@@ -72,6 +72,15 @@
         Submit offer
       </button>
     </form>
+    <form [formGroup]="memberForm" (ngSubmit)="changeMember()" class="TopBlack Flex Column">
+      <span class="Flex Center">Upgrade Membership</span>
+      <div class="Flex Row">
+        <button type="submit" class="Flex Center Form Submit Large"
+        [disabled]="!state"
+        >Yes</button>
+      </div>
+      <span class="Flex Center">Cost: {{changeMemberPrice}}</span>
+    </form>
   </div>
   <div id="user-list" class="Flex Column">
     <span class="Title Small">Users</span>

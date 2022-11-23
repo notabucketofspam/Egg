@@ -53,6 +53,12 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     "\u{1F4A2}",
     "\u{1F52B}"
   ];
+  memberForm = new FormGroup({
+    tier: new FormControl(0)
+  });
+  @Input() stateSubjects!: Record<string, Subject<void>>;
+  changeMemberPrice = 0;
+  tierPrices = [0, 450, 550, 650, 800];
   constructor(private time: TimeService) { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
@@ -99,8 +105,10 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       }
       if (changes["state"].currentValue.users)
         this.localSubjects["cart-remove"].next();
-      if (changes["state"].currentValue.pw)
+      if (changes["state"].currentValue.pw) {
         this.titleBlockClass = this.flavorClasses[this.state.pw[this.comShort]];
+        this.resetChangeMemberPrice();
+      }
     }
   }
   ngOnInit(): void {
@@ -127,11 +135,24 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
     this.comShort = this.conglomerate + ':' + this.company;
+    this.subscriptions["pw"] = this.stateSubjects["pw"].subscribe(() => {
+      this.resetChangeMemberPrice();
+    });
   }
   ngOnDestroy(): void {
     if (this.subscriptions["cart-remove"])
       this.subscriptions["cart-remove"].unsubscribe();
+    if (this.subscriptions["pw"])
+      this.subscriptions["pw"].unsubscribe();
   }
+resetChangeMemberPrice() {
+  if (this.state.pw) {
+    this.changeMemberPrice = 0;
+    const conSiblings: string[] = Object.keys(this.state.pw)
+      .filter(value => this.conglomerate === value.split(":")[0]);
+    conSiblings.forEach(con => this.changeMemberPrice += this.tierPrices[this.state.pw[con]]);
+  }
+}
   addToCart() {
     this.cartActionEE.emit({
       key: this.time.gen(),
@@ -181,5 +202,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       <= this.projected.user[this.tradeOfferForm.controls['tx'].value].own[this.comShort]
       && this.tradeOfferForm.controls["amount"].value + increase >= 0)
         this.tradeOfferForm.controls["amount"].setValue(this.tradeOfferForm.controls["amount"].value + increase);
+  }
+  changeMember() {
+
   }
 }
