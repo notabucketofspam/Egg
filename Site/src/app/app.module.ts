@@ -17,6 +17,7 @@ import { PublicWorkComponent } from './public-work/public-work.component';
 import { TradeOfferComponent } from './trade-offer/trade-offer.component';
 import { RoundComponent } from './round/round.component';
 import { CashComponent } from './cash/cash.component';
+import { DebugMenuComponent } from './debug-menu/debug-menu.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { CashComponent } from './cash/cash.component';
     PublicWorkComponent,
     TradeOfferComponent,
     RoundComponent,
-    CashComponent
+    CashComponent,
+    DebugMenuComponent
   ],
   imports: [
     BrowserModule,
