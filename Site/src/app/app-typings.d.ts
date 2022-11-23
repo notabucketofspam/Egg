@@ -32,6 +32,7 @@ declare interface State extends Next {
   };
   user: {
     [user: string]: {
+      "last-own": Record<string, number>,
       own: Record<string, number>,
       member: Record<string, number>,
       offers: CartItem[]
@@ -44,6 +45,7 @@ declare interface State extends Next {
   cash: Record<string, number>;
   init: Record<string, number>;
   "second-init": Record<string, number>;
+  ver: string;
 }
 declare interface PartialState {
   [key: string | number]: string | number | PartialState;
