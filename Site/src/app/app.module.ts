@@ -18,6 +18,7 @@ import { TradeOfferComponent } from './trade-offer/trade-offer.component';
 import { RoundComponent } from './round/round.component';
 import { CashComponent } from './cash/cash.component';
 import { DebugMenuComponent } from './debug-menu/debug-menu.component';
+import { MenuDirective } from './menu.directive';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { DebugMenuComponent } from './debug-menu/debug-menu.component';
     TradeOfferComponent,
     RoundComponent,
     CashComponent,
-    DebugMenuComponent
+    DebugMenuComponent,
+    MenuDirective
   ],
   imports: [
     BrowserModule,
