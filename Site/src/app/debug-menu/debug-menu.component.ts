@@ -9,8 +9,6 @@ export class DebugMenuComponent {
   @Input() state!: State;
   @Output() debugEE = new EventEmitter<PartialState>();
   @Output() breakEE = new EventEmitter<void>();
+  @Output() patchEE = new EventEmitter<void>();
   constructor() { }
-  updateVer() {
-    this.debugEE.emit({ ver: this.state.ver ? this.state.ver : 0 });
-  }
 }

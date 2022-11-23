@@ -214,4 +214,7 @@ export class GameComponent implements OnInit, OnDestroy {
   breakStuff() {
     this.websocket.nextJ({ cmd: "patch", game: "0".repeat(14), ver: 0, users: this.state.users });
   }
+  patch() {
+    this.websocket.nextJ({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver, users: this.state.users });
+  }
 }
