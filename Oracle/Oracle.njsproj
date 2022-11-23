@@ -44,6 +44,7 @@
     <Content Include="teal\debug.tl" />
     <Content Include="teal\delete.tl" />
     <Content Include="teal\ls.tl" />
+    <Content Include="teal\member.tl" />
     <Content Include="teal\new.tl" />
     <Content Include="teal\Oracle.d.tl" />
     <Content Include="old\StockPrice.tl" />
@@ -75,6 +76,7 @@
     <TypeScriptCompile Include="source\cmd\delete.ts" />
     <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="source\cmd\ls.ts" />
+    <TypeScriptCompile Include="source\cmd\member.ts" />
     <TypeScriptCompile Include="source\cmd\new.ts" />
     <TypeScriptCompile Include="source\cmd\patch.ts" />
     <TypeScriptCompile Include="source\cmd\pledge.ts" />

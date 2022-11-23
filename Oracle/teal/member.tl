@@ -1,0 +1,73 @@
+-- Enable RESP3
+redis.setresp(3)
+-- Things to be returned from the script
+local send: {string: string} = {}
+-- List of conglomerates / stocks (products) and their initial prices / values
+-- Script params
+local usersKey = KEYS[1]
+local memberKey = KEYS[2]
+local cashKey = KEYS[3]
+local pwKey = KEYS[4]
+local userCount = tonumber(ARGV[1])
+local gameId = ARGV[2]
+local username = ARGV[3]
+local stockname = ARGV[4]
+-- Get conglomerate from stock name
+local function getCon(stock: string): string
+  return string.match(stock, "([^:]*)")
+end
+-- Check that game exists
+local games = redis.call("SMEMBERS", "games") as Set
+local gameExists = false
+for game in pairs(games.set) do
+  if game == gameId then
+    gameExists = true
+  end
+end
+if gameExists then
+  -- Check that user exists in game
+  local users = redis.call("SMEMBERS", usersKey) as Set
+  local userExists = false
+  for user in pairs(users.set) do
+    if user == username then
+      userExists = true
+    end
+  end
+  if userExists then
+    local conName = getCon(stockname)
+    -- Calculate price of membership upgrade
+    local tierPrices = {0, 450, 550, 650, 800}
+    local upgradePrice = 0
+    local pw = redis.call("HGETALL", pwKey) as Map
+    for pwStock, pwType in pairs(pw.map) do
+      if getCon(pwStock) == conName then
+        upgradePrice = upgradePrice + tierPrices[tonumber(pwType) as integer + 1]
+        -- redis.breakpoint()
+      end
+    end
+    -- Subtract upgrade price from user's cash
+    local newCash = redis.call("HINCRBY", cashKey, username, tostring(-upgradePrice)) as number
+    -- Increment user's membership tier
+    local newTier = redis.call("HINCRBY", memberKey, stockname, "1") as number
+    -- Reply with the new state params
+    local partialState = {
+      user: {string: {string: {string: number}}} = {},
+      cash: {string: number} = {},
+      cmd = "update"
+    }
+    partialState.user[username] = {
+      member = {}
+    }
+    partialState.user[username]["member"][stockname] = newTier
+    partialState.cash[username] = newCash
+    send["ok"] = cjson.encode(partialState)
+  else
+    -- No user in game
+    send = redis.error_reply("ENOUSER")
+  end
+else
+  -- No game in games set
+  send = redis.error_reply("ENOGAME")
+end
+-- Final reply
+return send
