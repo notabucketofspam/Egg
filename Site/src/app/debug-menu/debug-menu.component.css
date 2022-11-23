@@ -2,6 +2,7 @@ button.Action {
   border-style: outset;
   border-width: 1px;
   background-color: #edd;
+  border-color: #bbb;
 }
 button.Action:hover {
   background-color: #dcc;

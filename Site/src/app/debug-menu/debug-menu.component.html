@@ -2,7 +2,9 @@
 <div class="Menu Bottom Left NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
   Version: {{ state ? state.ver : "N/A"}}
   Latest: {{ state ? state["global-ver"] : "N/A" }}
-  <button class="Action" (click)="patchEE.emit()" [disabled]>Update version</button>
+  <button class="Action" (click)="patchEE.emit()" [disabled]="!state||state.ver===state['global-ver']">
+    Update version
+  </button>
   <br />
   <button class="Action" (click)="breakEE.emit()">Break all</button>
 </div>
