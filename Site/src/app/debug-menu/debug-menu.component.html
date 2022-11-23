@@ -2,4 +2,6 @@
 <div class="Menu Bottom Left NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
   Version: {{(state && state.ver >= 0) ? state.ver : "N/A"}}
   <button class="Action" (click)="updateVer()">Update version</button>
+  <br />
+  <button class="Action" (click)="breakEE.emit()">Break all</button>
 </div>

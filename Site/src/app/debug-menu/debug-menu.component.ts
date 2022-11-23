@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class DebugMenuComponent {
   @Input() state!: State;
   @Output() debugEE = new EventEmitter<PartialState>();
+  @Output() breakEE = new EventEmitter<void>();
   constructor() { }
   updateVer() {
     this.debugEE.emit({ ver: this.state.ver ? this.state.ver : 0 });
