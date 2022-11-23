@@ -53,7 +53,8 @@
   <div class="Flex Grid">
     <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con" [cart]="cart"
     [state]="state" [description]="con[1]" [user]="user" (cartBubbleEE)="addCartItem($event)"
-    [localSubjects]="localSubjects" [stateSubjects]="stateSubjects"></app-conglomerate>
+    [localSubjects]="localSubjects" [stateSubjects]="stateSubjects"
+    (memberBubbleEE)="changeMember($event)"></app-conglomerate>
   </div>
 </ng-template>
 <br />

@@ -25,6 +25,7 @@ export class ConglomerateComponent implements OnInit, OnDestroy {
   @Input() cart!: CartItem[];
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() stateSubjects!: Record<string, Subject<void>>;
+  @Output() memberBubbleEE = new EventEmitter<string>();
   constructor() { }
   ngOnDestroy(): void { }
   ngOnInit(): void { }

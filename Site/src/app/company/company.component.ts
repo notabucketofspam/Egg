@@ -53,12 +53,10 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     "\u{1F4A2}",
     "\u{1F52B}"
   ];
-  memberForm = new FormGroup({
-    tier: new FormControl(0)
-  });
   @Input() stateSubjects!: Record<string, Subject<void>>;
   changeMemberPrice = 0;
   tierPrices = [0, 450, 550, 650, 800];
+  @Output() memberEE = new EventEmitter<string>();
   constructor(private time: TimeService) { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
@@ -202,8 +200,5 @@ resetChangeMemberPrice() {
       <= this.projected.user[this.tradeOfferForm.controls['tx'].value].own[this.comShort]
       && this.tradeOfferForm.controls["amount"].value + increase >= 0)
         this.tradeOfferForm.controls["amount"].setValue(this.tradeOfferForm.controls["amount"].value + increase);
-  }
-  changeMember() {
-
   }
 }

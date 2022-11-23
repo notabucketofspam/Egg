@@ -10,7 +10,8 @@ declare const enum Cmd {
   Ready = "ready",
   Pledge = "pledge",
   Debug = "debug",
-  Patch = "patch"
+  Patch = "patch",
+  Member = "member"
 }
 declare type Next = {
   cmd: Cmd,
