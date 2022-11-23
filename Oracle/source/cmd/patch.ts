@@ -22,7 +22,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       }
     }
   } catch (err) {
-    client.send(fromScriptError("debug", err as Error));
+    client.send(fromScriptError("patch", err as Error));
   }
 }
 const patches: ((ioredis: Redis, scripts: Record<string, string>,
