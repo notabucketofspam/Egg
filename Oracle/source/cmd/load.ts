@@ -52,7 +52,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         .then(reply => send.init = fromZrange(reply)),
       ioredis.zrange(`game:${data.game}:second-init`, 0, 6, "WITHSCORES")
         .then(reply => send["second-init"] = fromZrange(reply)),
-      ioredis.get(`game:${data.game}:ver`).then(reply => send.ver = reply === null ? 0 : reply),
+      ioredis.get(`game:${data.game}:ver`).then(reply => send.ver = reply === null ? 0 : Number(reply)),
       ioredis.get("global-ver").then(reply => send["global-ver"] = reply === null ? 0 : Number(reply))
     ]);
   client.send(JSON.stringify(send));
