@@ -126,6 +126,9 @@ export class GameComponent implements OnInit, OnDestroy {
     this.setCartTotal();
     //console.log(this.cart);
   }
+  requestReload() {
+    this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
+  }
   /**
    * Walk through state and apply changes where applicable
    * @param {PartialState} partial One part of the frame update
