@@ -18,12 +18,13 @@ if gameExists then
   local users = redis.call("SMEMBERS", "game:"..gameKey..":users") as Set
   for user in pairs(users.set) do
     redis.call("DEL", "game:"..gameKey..":user:"..user..":own", "game:"..gameKey..":user:"..user..":member",
-      "game:"..gameKey..":user:"..user..":offers")
+      "game:"..gameKey..":user:"..user..":offers", "game:"..gameKey..":user:"..user..":last-own")
   end
   redis.call("DEL", "game:"..gameKey..":price", "game:"..gameKey..":delta", "game:"..gameKey..":pw",
     "game:"..gameKey..":round", "game:"..gameKey..":users", "game:"..gameKey..":ready",
     "game:"..gameKey..":pledge", "game:"..gameKey..":can-trade", "game:"..gameKey..":pa",
-    "game:"..gameKey..":cash", "game:"..gameKey..":init", "game:"..gameKey..":second-init")
+    "game:"..gameKey..":cash", "game:"..gameKey..":init", "game:"..gameKey..":second-init",
+    "game:"..gameKey.."ver")
   send = redis.status_reply("OK")
 else
   -- No game in games set

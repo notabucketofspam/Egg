@@ -24,6 +24,7 @@ redis.call("HSET", "game:"..gameKey..":price", unpack(hsetConglomeratesPrice))
 redis.call("HSET", "game:"..gameKey..":delta", unpack(hsetConglomerates))
 redis.call("HSET", "game:"..gameKey..":pw", unpack(hsetConglomerates))
 redis.call("HSET", "game:"..gameKey..":round", "round", "0", "phase", "0")
+redis.call("SET", "game:"..gameKey.."ver", "1")
 -- Final reply
 send = redis.status_reply("OK")
 return send
