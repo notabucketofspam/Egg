@@ -25,13 +25,13 @@
         <button (click)="addUser()">Add user</button>
       </div>
       <div *ngSwitchCase="'ENOCMD'">
-        <button (click)="requestReload()">Reload game</button>
+        <button routerLink="">Exit</button>
       </div>
       <div *ngSwitchCase="'ENOKEY'">
-        <button (click)="requestReload()">Reload game</button>
+        <button routerLink="">Exit</button>
       </div>
       <div *ngSwitchCase="'EPATCH'">
-        <button (click)="requestReload()">Reload game</button>
+        <button routerLink="">Exit</button>
       </div>
       <div *ngSwitchDefault>
         <b>GENERIC ERROR</b>
