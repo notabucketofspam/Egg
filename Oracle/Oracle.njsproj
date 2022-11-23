@@ -41,6 +41,7 @@
     <Content Include="rsync-exclude.txt" />
     <Content Include="rsync-include.txt" />
     <Content Include="teal\add-user.tl" />
+    <Content Include="teal\debug.tl" />
     <Content Include="teal\delete.tl" />
     <Content Include="teal\ls.tl" />
     <Content Include="teal\new.tl" />
@@ -69,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="source\cmd\add-user.ts" />
+    <TypeScriptCompile Include="source\cmd\debug.ts" />
     <TypeScriptCompile Include="source\cmd\delete.ts" />
     <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="source\cmd\ls.ts" />
