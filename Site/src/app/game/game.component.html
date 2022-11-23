@@ -2,6 +2,7 @@
 <app-public-work [state]="state" (raiseEE)="raisePublicWork($event)"></app-public-work>
 <app-cash (reportEE)="reportPledge($event)" [localSubjects]="localSubjects"
 [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"></app-cash>
+<app-debug-menu appMenu></app-debug-menu>
 <app-cart [cart]="cart" (cartEE)="removeItem($event)" [state]="state" [cartTotal]="cartTotal"></app-cart>
 <app-round [state]="state" [stateSubjects]="stateSubjects" (readyEE)="ready($event)"[user]="this.user"></app-round>
 <div class="Flex Row">
