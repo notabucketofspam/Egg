@@ -18,6 +18,14 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   private subscriptions: Record<string, Subscription> = {};
   @Input() state!: State;
   @Input() stateSubjects!: Record<string, Subject<void>>;
+  whichPhase: string[] = [
+    "Dividends",
+    "Pledging",
+    "Stock Trading",
+    "Second-Chance Stock Trading",
+    "Public Works & Membership Management",
+    "Contributions & Good Will"
+  ];
   constructor() { }
   ngOnInit(): void {
     this.subscriptions["round"] = this.stateSubjects["round"].subscribe(() => {

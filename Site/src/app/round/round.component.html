@@ -19,7 +19,7 @@
       Round: <span *ngIf="state.round">{{state.round.round}}</span>
     </dt>
     <dt>
-      Phase: <span *ngIf="state.round">{{state.round.phase}}</span>
+      Phase: <span *ngIf="state.round">{{whichPhase[state.round.phase]}}</span>
     </dt>
   </dl>
 </div>
