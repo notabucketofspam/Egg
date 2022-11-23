@@ -101,6 +101,14 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
         // Invalid or unexpected command
         return JSON.stringify({ cmd, err: err.message, why: "Invalid or unexpected command", proof });
       }
+      case "ENOKEY": {
+        // Key based on input does not exist
+        return JSON.stringify({ cmd, err: err.message, why: "Key based on input does not exist", proof });
+      }
+      case "EPATCH": {
+        // Error in patch script
+        return JSON.stringify({ cmd, err: err.message, why: "Error in patch script", proof });
+      }
       default: {
         // Unknown error
         return JSON.stringify({ cmd, err: err.message, why: "Unknown error", proof });
