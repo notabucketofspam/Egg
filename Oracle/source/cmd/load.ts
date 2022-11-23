@@ -36,7 +36,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
           ioredis.hgetall(`game:${data.game}:user:${user}:member`)
             .then(reply => send.user[user].member = fromHgetall(reply)),
           ioredis.smembers(`game:${data.game}:user:${user}:offers`)
-            .then(reply => send.user[user].offers = user === data.user ? reply.map(item => JSON.parse(item)) : [])
+            .then(reply => send.user[user].offers = user === data.user ? reply.map(item => JSON.parse(item)) : []),
+          ioredis.hgetall(`game:${data.game}:user:${user}:last-own`)
+            .then(reply => send.user[user].own = fromHgetall(reply))
         ])
       )),
       ioredis.smembers(`game:${data.game}:ready`).then(reply => send.ready = reply),
@@ -49,7 +51,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       ioredis.zrange(`game:${data.game}:init`, 0, 6, "WITHSCORES")
         .then(reply => send.init = fromZrange(reply)),
       ioredis.zrange(`game:${data.game}:second-init`, 0, 6, "WITHSCORES")
-        .then(reply => send["second-init"] = fromZrange(reply))
+        .then(reply => send["second-init"] = fromZrange(reply)),
+      ioredis.get(`game:${data.game}:ver`).then(reply => send.ver = reply === null ? 0 : reply),
+      ioredis.get("global-ver").then(reply => send["global-ver"] = reply === null ? 0 : reply)
     ]);
   client.send(JSON.stringify(send));
 }
