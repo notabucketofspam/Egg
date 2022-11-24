@@ -42,6 +42,15 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
   @Output() raiseEE = new EventEmitter<[string, number]>();
   @Input() user!: string;
   @Input() state!: State;
+  qualify = "\u{2714}";
+  noQualify = "\u{26D2}";
+  feeTable = [
+    0,
+    250,
+    350,
+    450,
+    600
+  ];
   constructor() { }
   ngOnDestroy(): void { }
   ngOnInit(): void { }

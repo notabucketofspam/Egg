@@ -31,4 +31,129 @@
     <br />
     <button type="submit" id="raise-button" [disabled]="!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0">Raise</button>
   </form>
+  <div *ngIf="raiseForm.controls['flavor'].value!=='---'">
+    <div [ngSwitch]="raiseForm.controls['flavor'].value">
+      <ng-container *ngSwitchCase="'Most Excellent'">
+        <b>Requirements</b>: Most Excellent
+      <table class="Wide">
+        <tr>
+          <td class="Qualify TopBlack">[]</td>
+          <td class="TopBlack">2 consecutive rounds as the Majority Stakeholder</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>stuff about qualify</td>
+        </tr>
+        <tr>
+          <td class="Qualify TopBlack">[]</td>
+          <td class="TopBlack">All Players are stakeholders in the company</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>stuff about qualify</td>
+        </tr>
+        <tr>
+          <td class="Qualify TopBlack">{{state.cash[user]>=feeTable[1]?qualify:noQualify}}</td>
+          <td class="TopBlack">$250 fee at time of raising</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>Your cash: {{state.cash[user] | currency}}</td>
+        </tr>
+      </table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'Good'">
+        <b>Requirements</b>: Good
+        <table class="Wide">
+          <tr>
+            <td class="Qualify TopBlack">[]</td>
+            <td class="TopBlack">1 round as the Majority Stakeholder</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>stuff about qualify</td>
+          </tr>
+          <tr>
+            <td class="Qualify TopBlack">[]</td>
+            <td class="TopBlack">3 Players in total are stakeholders in the company</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>stuff about qualify</td>
+          </tr>
+          <tr>
+            <td class="Qualify TopBlack">{{state.cash[user]>=feeTable[2]?qualify:noQualify}}</td>
+            <td class="TopBlack">$350 fee at time of raising</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>Your cash: {{state.cash[user] | currency}}</td>
+          </tr>
+        </table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'Bad'">
+        <b>Requirements</b>: Bad
+        <table class="Wide">
+          <tr>
+            <td class="Qualify TopBlack">[]</td>
+            <td class="TopBlack">1 round as the Majority Stakeholder</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>stuff about qualify</td>
+          </tr>
+          <tr>
+            <td class="Qualify TopBlack">[]</td>
+            <td class="TopBlack">Supermajority stakeholder (75%) at time of raising</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>stuff about qualify</td>
+          </tr>
+          <tr>
+            <td class="Qualify TopBlack">{{state.cash[user]>=feeTable[3]?qualify:noQualify}}</td>
+            <td class="TopBlack">$450 fee at time of raising</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>Your cash: {{state.cash[user] | currency}}</td>
+          </tr>
+        </table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'Dog Water'">
+        <b>Requirements</b>: Dog Water
+        <table class="Wide">
+          <tr>
+            <td class="Qualify TopBlack">{{noQualify}}</td>
+            <td class="TopBlack">2 consecutive rounds as the Majority Stakeholder</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>stuff about qualify</td>
+          </tr>
+          <tr>
+            <td class="Qualify TopBlack">[]</td>
+            <td class="TopBlack">Hold all stocks in the company</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>stuff about qualify</td>
+          </tr>
+          <tr>
+            <td class="Qualify TopBlack">{{state.cash[user]>=feeTable[4]?qualify:noQualify
+              }}
+            </td>
+            <td class="TopBlack">$600 fee at time of raising</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>Your cash: {{state.cash[user] | currency}}</td>
+          </tr>
+        </table>
+      </ng-container>
+      <div *ngSwitchDefault>
+        sorry nothing.
+      </div>
+    </div>
+  </div>
 </div>

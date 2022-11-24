@@ -190,6 +190,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   raisePublicWork($event: [string, number]) {
     console.log("stock", $event[0], "pw", $event[1]);
+    this.websocket.nextJ({ cmd: Cmd.Raise, game: this.game, user: this.user, stock: $event[0], pw: $event[1] });
   }
   setCartTotal() {
     this.cartTotal = 0;
