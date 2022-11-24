@@ -75,6 +75,20 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
     false, // stake
     false // cash
   ];
+  qualifyOwnTable = [
+    "---",
+    "2 consecutive rounds as the Majority Stakeholder",
+    "1 round as the Majority Stakeholder",
+    "1 round as the Majority Stakeholder",
+    "2 consecutive rounds as the Majority Stakeholder"
+  ];
+  qualifyStakeTable = [
+    "---",
+    "All Players are stakeholders in the company",
+    "3 Players in total are stakeholders in the company",
+    "Supermajority stakeholder (75%) at time of raising",
+    "Hold all stocks in the company"
+  ];
   constructor(private currencyPipe: CurrencyPipe) { }
   ngOnDestroy(): void { }
   ngOnInit(): void { }

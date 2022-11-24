@@ -31,207 +31,53 @@
     <br />
     <button type="submit" id="raise-button" [disabled]="!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0||!fullyQualify[0]||!fullyQualify[1]||!fullyQualify[2]">Raise</button>
   </form>
-  <div *ngIf="raiseForm.controls['flavor'].value!=='---'">
-    <div [ngSwitch]="raiseForm.controls['flavor'].value">
-      <ng-container *ngSwitchCase="'Most Excellent'">
-        <dl>
-          <dt><b>Dividend Rate</b>: 15%</dt>
-          <dd>
-            Projected payout:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[1]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
-            </span>
-          </dd>
-          <dt><b>Membership Upgrade Cost</b>: $450</dt>
-          <dd>
-            New cost:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{state.pw[raiseForm.controls['stock'].value]===0&&raiseForm.controls['stock'].value!=='---'?'$'+getUpgradeCost():'N/A'}}
-            </span>
-          </dd>
-        </dl>
-        <b>Requirements</b>: Most Excellent
-        <table class="Wide">
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyOwn()[0]]}}</td>
-            <td class="TopBlack">2 consecutive rounds as the Majority Stakeholder</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyOwn()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyStake()[0]]}}</td>
-            <td class="TopBlack">All Players are stakeholders in the company</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyStake()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
-            <td class="TopBlack">$250 fee at time of raising</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
-          </tr>
-        </table>
+  <div *ngIf="raiseForm.controls['flavor'].value!=='---'&&raiseForm.controls['flavor'].value!==null">
+    <dl>
+      <dt><b>Dividend Rate</b>: {{dividendTable[flavors.indexOf(raiseForm.controls['flavor'].value)] | percent}}</dt>
+      <dd>
+        Projected payout:
+        <span *ngIf="raiseForm.controls['stock'].value!==null">
+          {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[flavors.indexOf(raiseForm.controls['flavor'].value)]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
+        </span>
+      </dd>
+      <dt><b>Membership Upgrade Cost</b>: ${{upgradeTable[flavors.indexOf(raiseForm.controls['flavor'].value)]}}</dt>
+      <dd>
+        New cost:
+        <span *ngIf="raiseForm.controls['stock'].value!==null">
+          {{state.pw[raiseForm.controls['stock'].value]===0&&raiseForm.controls['stock'].value!=='---'?'$'+getUpgradeCost():'N/A'}}
+        </span>
+      </dd>
+    </dl>
+    <b>Requirements</b>: Most Excellent
+    <table class="Wide">
+      <tr>
+        <td class="Qualify TopBlack">{{qualifyIcons[getQualifyOwn()[0]]}}</td>
+        <td class="TopBlack">{{qualifyOwnTable[flavors.indexOf(raiseForm.controls['flavor'].value)]}}</td>
+      </tr>
+      <ng-container *ngFor="let item of getQualifyOwn()[1]">
+        <tr>
+          <td></td>
+          <td class="Item">{{item}}</td>
+        </tr>
       </ng-container>
-      <ng-container *ngSwitchCase="'Good'">
-        <dl>
-          <dt><b>Dividend Rate</b>: 25%</dt>
-          <dd>
-            Projected payout:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[2]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
-            </span>
-          </dd>
-          <dt><b>Membership Upgrade Cost</b>: $550</dt>
-          <dd>
-            New cost:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{state.pw[raiseForm.controls['stock'].value]===0&&raiseForm.controls['stock'].value!=='---'?'$'+getUpgradeCost():'N/A'}}
-            </span>
-          </dd>
-        </dl>
-        <b>Requirements</b>: Good
-        <table class="Wide">
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyOwn()[0]]}}</td>
-            <td class="TopBlack">1 round as the Majority Stakeholder</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyOwn()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyStake()[0]]}}</td>
-            <td class="TopBlack">3 Players in total are stakeholders in the company</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyStake()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
-            <td class="TopBlack">$350 fee at time of raising</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
-          </tr>
-        </table>
+      <tr>
+        <td class="Qualify TopBlack">{{qualifyIcons[getQualifyStake()[0]]}}</td>
+        <td class="TopBlack">{{qualifyStakeTable[flavors.indexOf(raiseForm.controls['flavor'].value)]}}</td>
+      </tr>
+      <ng-container *ngFor="let item of getQualifyStake()[1]">
+        <tr>
+          <td></td>
+          <td class="Item">{{item}}</td>
+        </tr>
       </ng-container>
-      <ng-container *ngSwitchCase="'Bad'">
-        <dl>
-          <dt><b>Dividend Rate</b>: 35%</dt>
-          <dd>
-            Projected payout:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[3]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
-            </span>
-          </dd>
-          <dt><b>Membership Upgrade Cost</b>: $650</dt>
-          <dd>
-            New cost:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{state.pw[raiseForm.controls['stock'].value]===0&&raiseForm.controls['stock'].value!=='---'?'$'+getUpgradeCost():'N/A'}}
-            </span>
-          </dd>
-        </dl>
-        <b>Requirements</b>: Bad
-        <table class="Wide">
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyOwn()[0]]}}</td>
-            <td class="TopBlack">1 round as the Majority Stakeholder</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyOwn()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyStake()[0]]}}</td>
-            <td class="TopBlack">Supermajority stakeholder (75%) at time of raising</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyStake()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
-            <td class="TopBlack">$450 fee at time of raising</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
-          </tr>
-        </table>
-      </ng-container>
-      <ng-container *ngSwitchCase="'Dog Water'">
-        <dl>
-          <dt><b>Dividend Rate</b>: 50%</dt>
-          <dd>
-            Projected payout:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[4]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
-            </span>
-          </dd>
-          <dt><b>Membership Upgrade Cost</b>: $800</dt>
-          <dd>
-            New cost:
-            <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{state.pw[raiseForm.controls['stock'].value]===0&&raiseForm.controls['stock'].value!=='---'?'$'+getUpgradeCost():'N/A'}}
-            </span>
-          </dd>
-        </dl>
-        <b>Requirements</b>: Dog Water
-        <table class="Wide">
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyOwn()[0]]}}</td>
-            <td class="TopBlack">2 consecutive rounds as the Majority Stakeholder</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyOwn()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{qualifyIcons[getQualifyStake()[0]]}}</td>
-            <td class="TopBlack">Hold all stocks in the company</td>
-          </tr>
-          <ng-container *ngFor="let item of getQualifyStake()[1]">
-            <tr>
-              <td></td>
-              <td class="Item">{{item}}</td>
-            </tr>
-          </ng-container>
-          <tr>
-            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
-            <td class="TopBlack">$600 fee at time of raising</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
-          </tr>
-        </table>
-      </ng-container>
-      <div *ngSwitchDefault>
-        sorry nothing.
-      </div>
-    </div>
+      <tr>
+        <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
+        <td class="TopBlack">${{feeTable[flavors.indexOf(raiseForm.controls['flavor'].value)]}} fee at time of raising</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
+      </tr>
+    </table>
   </div>
 </div>
