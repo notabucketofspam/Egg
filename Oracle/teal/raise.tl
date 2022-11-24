@@ -2,7 +2,6 @@
 redis.setresp(3)
 -- Things to be returned from the script
 local send: {string: string} = {}
--- List of conglomerates / stocks (products) and their initial prices / values
 -- Script params
 local usersKey = KEYS[1]
 local cashKey = KEYS[2]
