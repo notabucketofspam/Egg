@@ -42,14 +42,31 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
   @Output() raiseEE = new EventEmitter<[string, number]>();
   @Input() user!: string;
   @Input() state!: State;
-  qualify = "\u{2714}";
-  noQualify = "\u{26D2}";
+  qualifyIcons = [
+    "\u{26AC}", // don't care
+    "\u{2714}", // qualify
+    "\u{26D2}" // no qualify
+  ];
   feeTable = [
     0,
     250,
     350,
     450,
     600
+  ];
+  dividendTable = [
+    0,
+    0.15,
+    0.25,
+    0.35,
+    0.5
+  ];
+  upgradeTable = [
+    0,
+    450,
+    550,
+    650,
+    800
   ];
   constructor() { }
   ngOnDestroy(): void { }
@@ -69,5 +86,60 @@ public work in the company ${this.stockTable
           .find(value => value[0] === this.raiseForm.controls["stock"].value)![2]}!`);
     }
     this.raiseForm.reset({ stock: "---", flavor: "---"});
+  }
+  getUpgradeCost() {
+    return this.stockTable.filter(x => x[0].split(':')[0] === this.raiseForm.controls['stock'].value!.split(':')[0])
+      .map(x => this.state.pw[x[0]]).reduce((x, y) => x + this.upgradeTable[y], 0)
+      + this.upgradeTable[this.flavors.indexOf(this.raiseForm.controls["flavor"].value!)];
+  }
+  getQualifyOwn(): [number, string[]] {
+    if (this.raiseForm.controls["flavor"].value !== null
+      && this.raiseForm.controls['stock'].value !== null
+      && this.raiseForm.controls['stock'].value !== '---'
+      && this.state.pw[this.raiseForm.controls['stock'].value] == 0) {
+      // TODO finish own stuff
+      switch (this.raiseForm.controls["flavor"].value) {
+        case this.flavors[1]: {
+          return [0, ["+ME", "ooo"]];
+        }
+        case this.flavors[2]: {
+          return [0, ["+G"]];
+        }
+        case this.flavors[3]: {
+          return [0, ["+B"]];
+        }
+        case this.flavors[4]: {
+          return [0, ["+DW"]];
+        }
+        default: return [0, ["+TBD"]];
+      }
+    } else {
+      return [0, ["N/A"]];
+    }
+  }
+  getQualifyStake(): [number, string[]] {
+    if (this.raiseForm.controls["flavor"].value !== null
+      && this.raiseForm.controls['stock'].value !== null
+      && this.raiseForm.controls['stock'].value !== '---'
+      && this.state.pw[this.raiseForm.controls['stock'].value] == 0) {
+      // TODO finish stake stuff
+      switch (this.raiseForm.controls["flavor"].value) {
+        case this.flavors[1]: {
+          return [0, ["+ME"]];
+        }
+        case this.flavors[2]: {
+          return [0, ["+G"]];
+        }
+        case this.flavors[3]: {
+          return [0, ["+B"]];
+        }
+        case this.flavors[4]: {
+          return [0, ["+DW"]];
+        }
+        default: return [0, ["+TBD"]];
+      }
+    } else {
+      return [0, ["N/A"]];
+    }
   }
 }

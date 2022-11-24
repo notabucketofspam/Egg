@@ -12,7 +12,7 @@
   width: 250px;
 }
 #flavor-select {
-  width: 110px;
+  width: 130px;
 }
 /*
 .DogWater {
@@ -34,4 +34,18 @@ td.Qualify {
   border-width: 1px 0px 0px 0px;
   border-color: black;
   border-style: solid;
+}
+.BottomBlack {
+  border-width: 0px 0px 1px 0px;
+  border-color: black;
+  border-style: solid;
+}
+dl {
+  margin: 0px;
+}
+dd {
+  margin-left: 5%;
+}
+td.Item {
+  font-family: "ITC Legacy Sans Std Medium"
 }
