@@ -29,7 +29,7 @@
       </ng-container>
     </select>
     <br />
-    <button type="submit" id="raise-button" [disabled]="!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0">Raise</button>
+    <button type="submit" id="raise-button" [disabled]="!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0||!fullyQualify[0]||!fullyQualify[1]||!fullyQualify[2]">Raise</button>
   </form>
   <div *ngIf="raiseForm.controls['flavor'].value!=='---'">
     <div [ngSwitch]="raiseForm.controls['flavor'].value">
@@ -39,7 +39,7 @@
           <dd>
             Projected payout:
             <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'?(dividendTable[1]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
+              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[1]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
             </span>
           </dd>
           <dt><b>Membership Upgrade Cost</b>: $450</dt>
@@ -73,12 +73,12 @@
             </tr>
           </ng-container>
           <tr>
-            <td class="Qualify TopBlack">{{state.cash[user]>=feeTable[1]?qualifyIcons[1]:qualifyIcons[2]}}</td>
+            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
             <td class="TopBlack">$250 fee at time of raising</td>
           </tr>
           <tr>
             <td></td>
-            <td class="Item">Your cash: {{state.cash[user] | currency}}</td>
+            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
           </tr>
         </table>
       </ng-container>
@@ -88,7 +88,7 @@
           <dd>
             Projected payout:
             <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'?(dividendTable[2]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
+              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[2]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
             </span>
           </dd>
           <dt><b>Membership Upgrade Cost</b>: $550</dt>
@@ -122,12 +122,12 @@
             </tr>
           </ng-container>
           <tr>
-            <td class="Qualify TopBlack">{{state.cash[user]>=feeTable[2]?qualifyIcons[1]:qualifyIcons[2]}}</td>
+            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
             <td class="TopBlack">$350 fee at time of raising</td>
           </tr>
           <tr>
             <td></td>
-            <td class="Item">Your cash: {{state.cash[user] | currency}}</td>
+            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
           </tr>
         </table>
       </ng-container>
@@ -137,7 +137,7 @@
           <dd>
             Projected payout:
             <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'?(dividendTable[3]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
+              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[3]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
             </span>
           </dd>
           <dt><b>Membership Upgrade Cost</b>: $650</dt>
@@ -171,12 +171,12 @@
             </tr>
           </ng-container>
           <tr>
-            <td class="Qualify TopBlack">{{state.cash[user]>=feeTable[3]?qualifyIcons[1]:qualifyIcons[2]}}</td>
+            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
             <td class="TopBlack">$450 fee at time of raising</td>
           </tr>
           <tr>
             <td></td>
-            <td class="Item">Your cash: {{state.cash[user] | currency}}</td>
+            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
           </tr>
         </table>
       </ng-container>
@@ -186,7 +186,7 @@
           <dd>
             Projected payout:
             <span *ngIf="raiseForm.controls['stock'].value!==null">
-              {{raiseForm.controls['stock'].value!=='---'?(dividendTable[4]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
+              {{raiseForm.controls['stock'].value!=='---'&&(state.pw[raiseForm.controls['stock'].value!]===flavors.indexOf(raiseForm.controls['flavor'].value!)||state.pw[raiseForm.controls['stock'].value!]===0)?(dividendTable[4]*state.user[user].own[raiseForm.controls['stock'].value]*state.price[raiseForm.controls['stock'].value]|currency):'N/A'}}
             </span>
           </dd>
           <dt><b>Membership Upgrade Cost</b>: $800</dt>
@@ -220,14 +220,12 @@
             </tr>
           </ng-container>
           <tr>
-            <td class="Qualify TopBlack">
-              {{state.cash[user]>=feeTable[4]?qualifyIcons[1]:qualifyIcons[2]}}
-            </td>
+            <td class="Qualify TopBlack">{{getQualifyCash()[0]}}</td>
             <td class="TopBlack">$600 fee at time of raising</td>
           </tr>
           <tr>
             <td></td>
-            <td class="Item">Your cash: {{state.cash[user] | currency}}</td>
+            <td class="Item">Your cash: {{getQualifyCash()[1]}}</td>
           </tr>
         </table>
       </ng-container>

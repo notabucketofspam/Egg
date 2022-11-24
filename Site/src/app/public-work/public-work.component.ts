@@ -1,10 +1,12 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-public-work',
   templateUrl: './public-work.component.html',
-  styleUrls: ['./public-work.component.css']
+  styleUrls: ['./public-work.component.css'],
+  providers: [CurrencyPipe]
 })
 export class PublicWorkComponent implements OnInit, OnDestroy {
   menuOpen = false;
@@ -22,11 +24,11 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
     "Dog Water"
   ];
   flavorIcons = [
-    "\u{26AA}",
-    "\u{1F451}",
-    "\u{1F618}",
-    "\u{1F4A2}",
-    "\u{1F52B}"
+    "\u{26AA}", // ---
+    "\u{1F451}", // Most Excellent
+    "\u{1F618}", // Good
+    "\u{1F4A2}", // Bad
+    "\u{1F52B}" // Dog Water
   ];
   stockTable: string[][] = [
     ["---", "---", "---"],
@@ -68,7 +70,12 @@ export class PublicWorkComponent implements OnInit, OnDestroy {
     650,
     800
   ];
-  constructor() { }
+  fullyQualify = [
+    false, // own
+    false, // stake
+    false // cash
+  ];
+  constructor(private currencyPipe: CurrencyPipe) { }
   ngOnDestroy(): void { }
   ngOnInit(): void { }
   toggleMenu() {
@@ -97,21 +104,28 @@ public work in the company ${this.stockTable
       && this.raiseForm.controls['stock'].value !== null
       && this.raiseForm.controls['stock'].value !== '---'
       && this.state.pw[this.raiseForm.controls['stock'].value] == 0) {
-      // TODO finish own stuff
+      const lastOwn = this.state.user[this.user]["last-own"][this.raiseForm.controls['stock'].value];
+      const nowOwn = this.state.user[this.user].own[this.raiseForm.controls['stock'].value];
       switch (this.raiseForm.controls["flavor"].value) {
-        case this.flavors[1]: {
-          return [0, ["+ME", "ooo"]];
-        }
-        case this.flavors[2]: {
-          return [0, ["+G"]];
-        }
-        case this.flavors[3]: {
-          return [0, ["+B"]];
-        }
+        case this.flavors[1]:
         case this.flavors[4]: {
-          return [0, ["+DW"]];
+          // Two rounds as majority stakeholder
+          const ownStrings: string[] = [];
+          ownStrings.push(`Last round: ${lastOwn}`, `This round: ${nowOwn}`);
+          const ownIcon = lastOwn > 50 && nowOwn > 50 ? 1 : 2;
+          this.fullyQualify[0] = ownIcon === 1;
+          return [ownIcon, ownStrings];
         }
-        default: return [0, ["+TBD"]];
+        case this.flavors[2]:
+        case this.flavors[3]: {
+          // One round as majority stakeholder
+          const ownStrings: string[] = [];
+          ownStrings.push(`This round: ${nowOwn}`);
+          const ownIcon = nowOwn > 50 ? 1 : 2;
+          this.fullyQualify[0] = ownIcon === 1;
+          return [ownIcon, ownStrings];
+        }
+        default: return [0, ["N/A"]];
       }
     } else {
       return [0, ["N/A"]];
@@ -122,24 +136,70 @@ public work in the company ${this.stockTable
       && this.raiseForm.controls['stock'].value !== null
       && this.raiseForm.controls['stock'].value !== '---'
       && this.state.pw[this.raiseForm.controls['stock'].value] == 0) {
-      // TODO finish stake stuff
       switch (this.raiseForm.controls["flavor"].value) {
         case this.flavors[1]: {
-          return [0, ["+ME"]];
+          // All players are stakeholders
+          const stakeStrings: string[] = [];
+          let stakeCount = 0;
+          this.state.users.forEach(user => {
+            stakeStrings.push(`${user}: ${this.state.user[user].own[this.raiseForm.controls['stock'].value!]}`);
+            if (this.state.user[user].own[this.raiseForm.controls['stock'].value!] > 0)
+              ++stakeCount;
+          });
+          const stakeIcon = stakeCount === this.state.users.length ? 1 : 2;
+          this.fullyQualify[1] = stakeIcon === 1;
+          return [stakeIcon, stakeStrings];
         }
         case this.flavors[2]: {
-          return [0, ["+G"]];
+          // Three players are stakeholders
+          const stakeStrings: string[] = [];
+          let stakeCount = 0;
+          this.state.users.forEach(user => {
+            if (this.state.user[user].own[this.raiseForm.controls['stock'].value!] !== 0) {
+              stakeStrings.push(`${user}: ${this.state.user[user].own[this.raiseForm.controls['stock'].value!]}`);
+              ++stakeCount;
+            }
+          });
+          if (stakeCount === 0)
+            stakeStrings.push("No players are stakeholders");
+          const stakeIcon = stakeCount >= 3 ? 1 : 2;
+          this.fullyQualify[1] = stakeIcon === 1;
+          return [stakeIcon, stakeStrings];
         }
         case this.flavors[3]: {
-          return [0, ["+B"]];
+          // Supermajority stakeholder
+          const stakeStrings: string[] = [];
+          stakeStrings.push(`Your stake: ${this.state.user[this.user].own[this.raiseForm.controls['stock'].value!]}`);
+          const stakeIcon = this.state.user[this.user].own[this.raiseForm.controls['stock'].value!] >= 75 ? 1 : 2;
+          this.fullyQualify[1] = stakeIcon === 1;
+          return [stakeIcon, stakeStrings];
         }
         case this.flavors[4]: {
-          return [0, ["+DW"]];
+          // Complete stakeholder
+          const stakeStrings: string[] = [];
+          stakeStrings.push(`Your stake: ${this.state.user[this.user].own[this.raiseForm.controls['stock'].value!]}`);
+          const stakeIcon = this.state.user[this.user].own[this.raiseForm.controls['stock'].value!] === 100 ? 1 : 2;
+          this.fullyQualify[1] = stakeIcon === 1;
+          return [stakeIcon, stakeStrings];
         }
-        default: return [0, ["+TBD"]];
+        default: return [0, ["N/A"]];
       }
     } else {
       return [0, ["N/A"]];
+    }
+  }
+  getQualifyCash(): [string, string] {
+    if (this.raiseForm.controls['stock'].value !== null
+      && this.raiseForm.controls['stock'].value !== "---") {
+      const cashIcon = this.state.pw[this.raiseForm.controls['stock'].value] === 0
+        ? this.state.cash[this.user] >= this.feeTable[1]
+          ? this.qualifyIcons[1] : this.qualifyIcons[2] : this.qualifyIcons[0];
+      const cashString = this.state.pw[this.raiseForm.controls['stock'].value!] === 0
+        ? this.currencyPipe.transform(this.state.cash[this.user])! : 'N/A';
+      this.fullyQualify[2] = cashIcon === this.qualifyIcons[2];
+      return [cashIcon, cashString];
+    } else {
+      return [this.qualifyIcons[0], "N/A"];
     }
   }
 }
