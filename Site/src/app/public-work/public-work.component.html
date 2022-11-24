@@ -29,7 +29,7 @@
       </ng-container>
     </select>
     <br />
-    <button type="submit" id="raise-button" [disabled]="state.round.phase!==4||!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0||!fullyQualify[0]||!fullyQualify[1]||!fullyQualify[2]">Raise</button>
+    <button type="submit" id="raise-button" [disabled]="!state.round||state.round.phase!==4||!raiseForm.controls['stock'].value||!raiseForm.controls['flavor'].value||raiseForm.controls['stock'].value==='---'||raiseForm.controls['flavor'].value==='---'||state.pw[raiseForm.controls['stock'].value]!==0||!fullyQualify[0]||!fullyQualify[1]||!fullyQualify[2]">Raise</button>
   </form>
   <div *ngIf="raiseForm.controls['flavor'].value!=='---'&&raiseForm.controls['flavor'].value!==null">
     <dl>
