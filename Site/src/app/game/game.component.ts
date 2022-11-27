@@ -202,7 +202,7 @@ export class GameComponent implements OnInit, OnDestroy {
     console.log(`user ${this.user} ready: ${$event}`);
     this.websocket.nextJ({
       cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
-      users: this.state.users, phase: this.state.round.phase
+      phase: this.state.round.phase
     });
   }
   reportPledge($event: number) {
@@ -216,10 +216,10 @@ export class GameComponent implements OnInit, OnDestroy {
     this.websocket.nextJ($event);
   }
   breakStuff() {
-    this.websocket.nextJ({ cmd: "patch", game: "0".repeat(14), ver: 0, users: this.state.users });
+    this.websocket.nextJ({ cmd: "patch", game: "0".repeat(14), ver: 0 });
   }
   patch() {
-    this.websocket.nextJ({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver, users: this.state.users });
+    this.websocket.nextJ({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver });
   }
   changeMember($event: string) {
     console.log("user", this.user, "| stock", $event, "| newTier", this.state.user[this.user].member[$event] + 1);
