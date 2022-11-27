@@ -1,16 +1,21 @@
 -- Enable RESP3
 redis.setresp(3)
 -- Things to be returned from the script
-local send: Map = {}
-send.map = {}
+local send: {string: string}
+-- Script params
+-- KEYS is a list of Redis keys, ARGV is a list of gameId
+local partial = {
+  cmd = "update",
+  games: {string: {string}} = {}
+}
 -- Get list of games
-local games = redis.call("SMEMBERS", "games") as Set
-for game in pairs(games.set) do
-  send.map[game] = {}
-  local users = redis.call("SMEMBERS", "game:"..game..":users") as Set
+for i = 1, #KEYS do
+  partial.games[ARGV[i]] = {}
+  local users = redis.call("SMEMBERS", KEYS[i]) as Set
   for user in pairs(users.set) do
-    table.insert(send.map[game] as {string}, user)
+    table.insert(partial.games[ARGV[i]], user)
   end
 end
+send = redis.status_reply(cjson.encode(partial))
 -- Final reply
 return send

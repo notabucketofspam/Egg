@@ -9,39 +9,41 @@ local hsetConglomerates = {
   "Gary:CALC", "0", "Gary:GUI", "0", "Gary:GLIT", "0", "Gary:GPU", "0",
   "Doug:CANN", "0", "Doug:DOOD", "0", "Doug:DUG", "0", "Doug:CLUB", "0"
 }
-local gameKey = ARGV[1]
-local user = ARGV[2]
+-- Script params
+local usersKey = KEYS[1]
+local pledgeKey = KEYS[2]
+local canTradeKey = KEYS[3]
+local paKey = KEYS[4]
+local cashKey = KEYS[5]
+local initKey = KEYS[6]
+local secondInitKey = KEYS[7]
+local userCount = tonumber(ARGV[1])
+local gameId = ARGV[2]
+local username = ARGV[3]
 -- Check that game exists
 local games = redis.call("SMEMBERS", "games") as Set
 local gameExists = false
 for game in pairs(games.set) do
-  if game == gameKey then
+  if game == gameId then
     gameExists = true
   end
 end
-if not gameExists then
-  send = redis.error_reply("ENOGAME")
-  return send
-end
--- Check that user is provided
-if user ~= nil then
+if gameExists then
   -- Add new user data
-  redis.call("HSET", "game:"..gameKey..":user:"..user..":own", unpack(hsetConglomerates))
-  redis.call("HSET", "game:"..gameKey..":user:"..user..":member", unpack(hsetConglomerates))
-  redis.call("HSET", "game:"..gameKey..":user:"..user..":last-own", unpack(hsetConglomerates))
-  redis.call("HSET", "game:"..gameKey..":user:"..user..":last-member", unpack(hsetConglomerates))
-  redis.call("SADD", "game:"..gameKey..":users", user)
-  -- redis.call("SADD", "game:"..gameKey..":ready", user)
-  redis.call("HSET", "game:"..gameKey..":pledge", user, "0")
-  redis.call("SADD", "game:"..gameKey..":can-trade", user)
-  redis.call("HSET", "game:"..gameKey..":pa", user, "0")
-  redis.call("HSET", "game:"..gameKey..":cash", user, "3000")
-  redis.call("ZADD", "game:"..gameKey..":init", "0", user)
-  redis.call("ZADD", "game:"..gameKey..":second-init", "0", user)
+  redis.call("SADD", usersKey, username)
+  redis.call("HSET", pledgeKey, username, "0")
+  redis.call("SADD", canTradeKey, username)
+  redis.call("HSET", paKey, username, "0")
+  redis.call("HSET", cashKey, username, "3000")
+  redis.call("ZADD", initKey, "0", username)
+  redis.call("ZADD", secondInitKey, "0", username)
+  redis.call("HSET", KEYS[8], unpack(hsetConglomerates))
+  redis.call("HSET", KEYS[9], unpack(hsetConglomerates))
+  redis.call("HSET", KEYS[10], unpack(hsetConglomerates))
+  redis.call("HSET", KEYS[11], unpack(hsetConglomerates))
   send = redis.status_reply("OK")
 else
-  -- No user
-  send = redis.error_reply("ENOUSERPARAM")
+  send = redis.error_reply("ENOGAME")
 end
 -- Final reply
 return send

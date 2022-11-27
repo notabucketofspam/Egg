@@ -1,7 +1,7 @@
 -- Enable RESP3
 redis.setresp(3)
 -- Things to be returned from the script
-local send: {string: string} = {}
+local send: {string: string}
 -- Script params
 local key = KEYS[1]
 local userCount = tonumber(ARGV[1])

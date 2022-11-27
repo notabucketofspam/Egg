@@ -1,7 +1,7 @@
 -- Enable RESP3
 redis.setresp(3)
 -- Things to be returned from the script
-local send: {string: string} = {}
+local send: {string: string}
 -- Script params
 local usersKey = KEYS[1]
 local pledgeKey = KEYS[2]

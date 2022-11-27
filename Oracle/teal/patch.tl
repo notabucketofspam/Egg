@@ -1,7 +1,7 @@
 -- Enable RESP3
 redis.setresp(3)
 -- Things to be returned from the script
-local send: {string: string} = {}
+local send: {string: string}
 -- List of conglomerates / stocks (products) and their initial prices / values
 local hsetConglomerates = {
   "Cathy:CREAM", "0", "Cathy:BEER", "0", "Cathy:CRUNCH", "0", "Cathy:ROLL", "0",

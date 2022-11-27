@@ -1,13 +1,13 @@
 -- Enable RESP3
 redis.setresp(3)
 -- Things to be returned from the script
-local send: {string: string} = {}
+local send: {string: string}
 -- Script params
 local usersKey = KEYS[1]
 local cashKey = KEYS[2]
 local pwKey = KEYS[3]
 -- NOTE there is also the set of "user[name]..." keys;
--- the order is: "last-own", member, offers, own
+-- the order is (in this case): member, own
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 -- Check that game exists
@@ -45,7 +45,7 @@ if gameExists then
     local newCash = tonumber(cashTable[user])
     partialState.cash[user] = newCash
   end
-  send["ok"] = cjson.encode(partialState)
+  send = redis.status_reply(cjson.encode(partialState))
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")

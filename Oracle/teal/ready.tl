@@ -1,7 +1,7 @@
 -- Enable RESP3
 redis.setresp(3)
 -- Things to be returned from the script
-local send: {string: string} = {}
+local send: {string: string}
 -- Script params
 local usersKey = KEYS[1]
 local readyKey = KEYS[2]
@@ -68,7 +68,8 @@ if gameExists then
       partial.round["phase"] = tonumber(round["phase"])
     end
     local partialjson = cjson.encode(partial)
-    send["ok"] = string.gsub(partialjson, '"ready":{}', '"ready":[]')
+    local partialjsonString = string.gsub(partialjson, '"ready":{}', '"ready":[]')
+    send = redis.status_reply(partialjsonString)
   else
     -- No user in game
     send = redis.error_reply("ENOUSER")

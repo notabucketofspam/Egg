@@ -1,4 +1,4 @@
-import { fromScriptError, Util } from "../Util.js";
+import { fromScriptError, toScriptKeys, Util } from "../Util.js";
 // Command
 type Delete = {
   cmd: "delete",
@@ -7,7 +7,12 @@ type Delete = {
 export const cmd = "delete";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Delete) {
   try {
-    await ioredis.evalsha(scripts["delete"], 0, data.game);
+    const fields = ["index", "users", "pledge", "can-trade", "pa", "cash", "init", "second-init",
+      "price", "delta", "pw", "round", "ready", "ver"];
+    const users = await ioredis.smembers(`game:${data.game}:users`);
+    const userFields = ["last-member", "last-own", "member", "offers", "own"];
+    const keys = toScriptKeys(data.game, fields, users, userFields);
+    await ioredis.evalsha(scripts["delete"], keys.length, ...keys, users.length, data.game);
     for (const [aliveClient, clientMeta] of aliveClients) {
       if (clientMeta.game === data.game) {
         aliveClient.send(JSON.stringify({ cmd: "disconnect", reason: "Game deleted from games set" }));

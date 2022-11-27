@@ -1,7 +1,7 @@
 -- Enable RESP3
 redis.setresp(3)
 -- Things to be returned from the script
-local send: {string: string} = {}
+local send: {string: string}
 -- Script params
 local usersKey = KEYS[1]
 local cashKey = KEYS[2]
@@ -42,7 +42,7 @@ if gameExists then
     }
     partialState.cash[username] = newCash
     partialState.pw[stockname] = flavor
-    send["ok"] = cjson.encode(partialState)
+    send = redis.status_reply(cjson.encode(partialState))
   else
     -- No user in game
     send = redis.error_reply("ENOUSER")
