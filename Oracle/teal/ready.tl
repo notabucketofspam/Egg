@@ -57,6 +57,9 @@ if gameExists then
       for user in pairs(readySet.set) do
         table.insert(frame["ready"] as {string}, user)
       end
+      -- Send the current phase in reply
+      local roundMap = redis.call("HGETALL", "game:"..gameKey..":round") as Map
+      frame.round["phase"] = tonumber(roundMap.map["phase"])
     end
     local framejson = cjson.encode(frame)
     send["ok"] = string.gsub(framejson, '"ready":{}', '"ready":[]')

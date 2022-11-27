@@ -43,6 +43,7 @@
     <Content Include="teal\add-user.tl" />
     <Content Include="teal\debug.tl" />
     <Content Include="teal\delete.tl" />
+    <Content Include="teal\dividends.tl" />
     <Content Include="teal\ls.tl" />
     <Content Include="teal\member.tl" />
     <Content Include="teal\new.tl" />

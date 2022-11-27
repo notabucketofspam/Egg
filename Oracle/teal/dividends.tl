@@ -1,0 +1,54 @@
+-- Enable RESP3
+redis.setresp(3)
+-- Things to be returned from the script
+local send: {string: string} = {}
+-- Script params
+local usersKey = KEYS[1]
+local cashKey = KEYS[2]
+local pwKey = KEYS[3]
+-- NOTE there is also the set of "user[name]..." keys;
+-- the order is: "last-own", member, offers, own
+local userCount = tonumber(ARGV[1])
+local gameId = ARGV[2]
+-- Check that game exists
+local games = redis.call("SMEMBERS", "games") as Set
+local gameExists = false
+for game in pairs(games.set) do
+  if game == gameId then
+    gameExists = true
+  end
+end
+if gameExists then
+  -- Don't need to check if user exists in game,
+  -- since this applies to all users
+  --
+  -- Need "own" for dividends direct from stocks (which is KEYS[7 + 4*n]),
+  -- "member" for basically just Doug (which is KEYS[5 + 4*n]),
+  -- and "pw" for dividend %
+  --
+  -- Setup new state params
+  local partialState = {
+    cash: {string: number} = {},
+    cmd = "update"
+  }
+  -- Payout of stock based on which public work is built
+  local dividendsTable = {0, 0.15, 0.25, 0.35, 0.5}
+  -- Bonuses of Doug tiers
+  local dougTable = {0, 0.15, 0.2, 0.25}
+  -- Current cash of all users
+  local cashTable = (redis.call("HGETALL", cashKey) as Map).map
+  -- Which public works are built and where
+  local pwTable = (redis.call("HGETALL", pwKey) as Map).map
+  -- Math time
+  local users = redis.call("SMEMBERS", usersKey) as Set
+  for user in pairs(users.set) do
+    local newCash = tonumber(cashTable[user])
+    partialState.cash[user] = newCash
+  end
+  send["ok"] = cjson.encode(partialState)
+else
+  -- No game in games set
+  send = redis.error_reply("ENOGAME")
+end
+-- Final reply
+return send
