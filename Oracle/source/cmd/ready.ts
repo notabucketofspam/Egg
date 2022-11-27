@@ -11,9 +11,11 @@ export const cmd = "ready";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Ready) {
   try {
     // Do round update
-    const partialJson = await ioredis.evalsha(scripts["ready"], 0, data.game, data.user, String(data.ready)) as any;
+    const fields = ["users", "ready", "round"];
+    const keys = toScriptKeys(data.game, fields);
+    const partialJson = await ioredis.evalsha(scripts["ready"], keys.length, ...keys,
+      0, data.game, data.user, String(data.ready)) as string;
     const partialObj = JSON.parse(partialJson);
-    partialObj["cmd"] = "update";
     // Only trigger on phase change, not just any toggle
     if (partialObj["round"] === 0 && data.phase !== partialObj["round"]["phase"]) {
       // Do dividends update
