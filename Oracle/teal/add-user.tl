@@ -29,6 +29,7 @@ if user ~= nil then
   redis.call("HSET", "game:"..gameKey..":user:"..user..":own", unpack(hsetConglomerates))
   redis.call("HSET", "game:"..gameKey..":user:"..user..":member", unpack(hsetConglomerates))
   redis.call("HSET", "game:"..gameKey..":user:"..user..":last-own", unpack(hsetConglomerates))
+  redis.call("HSET", "game:"..gameKey..":user:"..user..":last-member", unpack(hsetConglomerates))
   redis.call("SADD", "game:"..gameKey..":users", user)
   -- redis.call("SADD", "game:"..gameKey..":ready", user)
   redis.call("HSET", "game:"..gameKey..":pledge", user, "0")
