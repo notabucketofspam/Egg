@@ -24,7 +24,7 @@ const commandRegisterObjectKeys = Object.keys(commandRegister);
 // Redis / KeyDB setup (...again)
 import IORedis from "ioredis";
 const ioredis = new IORedis();
-await ioredis.set("global-ver", 1);
+await ioredis.set("global-ver", 2);
 const scripts: Record<string, string> = {};
 do {
   const luaDir = fs.opendirSync(path.normalize(`${process.cwd()}/lua`), { encoding: "utf8" });

@@ -32,6 +32,14 @@ if gameExists then
     end
     -- increase version ###
     redis.call("SET", verKey, tostring(ver + 1))
+  elseif ver == 1 then
+    -- add "last-member" to each user
+    -- Ends up being the exact same as above
+    for i = 2, userCount do
+      redis.call("HSET", KEYS[i as integer], unpack(hsetConglomerates))
+    end
+    -- increase version ###
+    redis.call("SET", verKey, tostring(ver + 1))
   else
     -- already on the latest patch, so do nothing
   end

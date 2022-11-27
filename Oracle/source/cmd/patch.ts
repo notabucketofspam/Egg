@@ -27,16 +27,29 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
 const patches: ((ioredis: Redis, scripts: Record<string, string>,
   game: string, ver: number, users: string[]) => Promise<boolean>)[] = [
     async (ioredis, scripts, game, ver, users) => {
-    // ver 0 -> 1
-    // add "last-own" to all users
-    try {
-      const fields = ["ver"];
-      const userFields = ["last-own"];
-      const keys = toScriptKeys(game, fields, users, userFields);
-      await ioredis.evalsha(scripts["patch"], keys.length, ...keys, users.length, game, ver);
-      return false;
-    } catch (err) {
-      return true;
+      // ver 0 -> 1
+      // add "last-own" to all users
+      try {
+        const fields = ["ver"];
+        const userFields = ["last-own"];
+        const keys = toScriptKeys(game, fields, users, userFields);
+        await ioredis.evalsha(scripts["patch"], keys.length, ...keys, users.length, game, ver);
+        return false;
+      } catch (err) {
+        return true;
+      }
+    },
+    async (ioredis, scripts, game, ver, users) => {
+      try {
+        // ver 1 -> 2
+        // add "last-member" to all users
+        const fields = ["ver"];
+        const userFields = ["last-member"];
+        const keys = toScriptKeys(game, fields, users, userFields);
+        await ioredis.evalsha(scripts["patch"], keys.length, ...keys, users.length, game, ver);
+        return false;
+      } catch (err) {
+        return true;
+      }
     }
-  }
 ];
