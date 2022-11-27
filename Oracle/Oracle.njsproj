@@ -55,6 +55,7 @@
     <Content Include="teal\raise.tl" />
     <Content Include="teal\ready.tl" />
     <Content Include="teal\remove-user.tl" />
+    <Content Include="teal\roll-init.tl" />
     <Content Include="tlconfig.lua" />
     <Content Include="tsconfig.json" />
   </ItemGroup>

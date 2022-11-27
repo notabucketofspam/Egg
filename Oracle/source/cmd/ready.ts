@@ -17,7 +17,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       0, data.game, data.user, String(data.ready)) as string;
     const partialObj = JSON.parse(partialJson);
     // Only trigger on phase change, not just any toggle
-    if (partialObj["round"] === 0 && data.phase !== partialObj["round"]["phase"]) {
+    if (partialObj["round"]["phase"] === 0 && data.phase !== partialObj["round"]["phase"]) {
       // Do dividends update
       const fields: string[] = ["users", "cash", "pw"];
       const users = await ioredis.smembers(`game:${data.game}:users`);
@@ -27,7 +27,19 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         users.length, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["cash"] = morePartialObj["cash"];
-    } else if (partialObj["round"] === 5 && data.phase !== partialObj["round"]["phase"]) {
+    } else if ((partialObj["round"]["phase"] === 2 || partialObj["round"]["phase"] === 3)
+      && data.phase !== partialObj["round"]["phase"]) {
+      // Roll for initiative / second initiative
+      const fields = ["users", "init", "second-init"];
+      const keys = toScriptKeys(data.game, fields);
+      const morePartialJson = await ioredis.evalsha(scripts["roll-init"], keys.length, ...keys,
+        0, data.game, partialObj["round"]["phase"] - 1) as string;
+      const morePartialObj = JSON.parse(morePartialJson);
+      if (morePartialObj["init"])
+        partialObj["init"] = morePartialObj["init"];
+      else
+        partialObj["second-init"] = morePartialObj["second-init"];
+    } else if (partialObj["round"]["phase"] === 5 && data.phase !== partialObj["round"]["phase"]) {
       // Do good will update
       const fields: string[] = ["users", "cash", "pledge", "pa"];
       const users = await ioredis.smembers(`game:${data.game}:users`);
