@@ -22,8 +22,8 @@ if gameExists then
   -- Don't need to check if user exists in game,
   -- since this applies to all users
   --
-  -- Need "own" for dividends direct from stocks (which is KEYS[7 + 4*n]),
-  -- "member" for basically just Doug (which is KEYS[5 + 4*n]),
+  -- Need "own" for dividends direct from stocks (which is KEYS[5 + 2*n]),
+  -- "member" for basically just Doug (which is KEYS[4 + 2*n]),
   -- and "pw" for dividend %
   --
   -- Setup new state params

@@ -24,8 +24,9 @@ if gameExists then
   -- since this applies to all users
   --
   -- Need "member" for membership benefits of Cathy, Terry, and Gary
-  -- (which is KEYS[5 + 4*n]), "pledge" for good will,
-  -- and also "pa" for good will
+  -- (which is KEYS[6 + 2*n]), "pledge" for good will,
+  -- "pa" for good will, and "last-member" (which is KEYS[5 + 2*n]) 
+  -- to check if Terry changed
   --
   -- Setup new state params
   local partialState = {

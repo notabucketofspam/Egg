@@ -26,10 +26,8 @@ if gameExists then
   -- choose a patch; will need to externally iterate to apply more than one
   if ver == 0 then
     -- add "last-own" to each user
-    -- the order of keys for each user is: "last-own", member, offers, own
-    -- the offers key may be undefined, but that doesn't change the order,
-    -- because toScriptKeys() in Oracle does it as such
-    for i = 2, 4*userCount, 4 do
+    -- "last-own" is now the only field provided by the new toScriptKeys()
+    for i = 2, userCount do
       redis.call("HSET", KEYS[i as integer], unpack(hsetConglomerates))
     end
     -- increase version ###

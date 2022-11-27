@@ -123,18 +123,20 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
  * @param {string} game The game key
  * @param {string[]} fields Which fields of State are requested
  * @param {string[]=} users The list of users in the game; needed for some fields
+ * @param {string[]=} userFields which per-user fields are needed, as well
+ * @returns {string[]} An array of Redis keys
  */
-export function toScriptKeys(game: string, fields: string[], users?: string[]): string[] {
+export function toScriptKeys(game: string, fields: string[], users?: string[], userFields?: string[]): string[] {
   const keys: string[] = [];
   fields.forEach(field => {
-    if (field === "user" && users) {
-      users.forEach(user => {
-        keys.push(`game:${game}:user:${user}:last-own`, `game:${game}:user:${user}:member`,
-          `game:${game}:user:${user}:offers`, `game:${game}:user:${user}:own`);
-      });
-    } else {
-      keys.push(`game:${game}:${field}`);
-    }
+    keys.push(`game:${game}:${field}`);
   });
+  if (users && userFields) {
+    users.forEach(user => {
+      userFields.forEach(field => {
+        keys.push(`game:${game}:user:${user}:${field}`);
+      });
+    });
+  }
   return keys;
 }
