@@ -48,7 +48,7 @@
   [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"></app-cash>
   <app-debug-menu appMenu [state]="state" (debugEE)="debug($event)" (breakEE)="breakStuff()"
   (patchEE)="patch()"></app-debug-menu>
-  <app-cart [cart]="cart" (cartEE)="removeItem($event)" [state]="state" [cartTotal]="cartTotal"></app-cart>
+  <app-cart [cart]="cart" (cartEE)="removeItem($event)" [state]="state" [localSubjects]="localSubjects"></app-cart>
   <app-round [state]="state" [stateSubjects]="stateSubjects" (readyEE)="ready($event)"[user]="this.user"></app-round>
   <div class="Flex Grid">
     <app-conglomerate *ngFor="let con of conglomerates" [conglomerate]="con[0]" class="Con" [cart]="cart"

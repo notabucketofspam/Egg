@@ -1,20 +1,37 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css']
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnChanges, OnDestroy {
   menuOpen = false;
   menuButtonClass = "Closed";
   menuClass = "NoDisplay";
   @Input() cart!: CartItem[];
   @Output() cartEE = new EventEmitter<string>();
-  @Input() cartTotal = 0;
+  cartTotal = 0;
   @Input() state!: State;
+  subscriptions: Record<string, Subscription> = {};
+  @Input() localSubjects!: Record<string, Subject<void>>;
   constructor() { }
-  ngOnInit(): void { }
+  ngOnDestroy(): void {
+    if (this.subscriptions["cart-remove"])
+      this.subscriptions["cart-remove"].unsubscribe();
+    if (this.subscriptions["cart-remove"])
+      this.subscriptions["cart-remove"].unsubscribe();
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["cart"]) {
+      this.setCartTotal();
+    }
+  }
+  ngOnInit(): void {
+    this.subscriptions["cart-add"] = this.localSubjects["cart-add"].subscribe(() => this.setCartTotal());
+    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => this.setCartTotal());
+  }
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
     this.menuButtonClass = this.menuOpen ? "Open" : "Closed";
@@ -23,5 +40,13 @@ export class CartComponent implements OnInit {
   removeItem(index: number) {
     this.cart.splice(index, 1);
     this.cartEE.emit();
+  }
+  setCartTotal() {
+    if (this.state && this.state.price) {
+      this.cartTotal = 0;
+      this.cart.forEach(item => {
+        this.cartTotal += item.ct * this.state.price[item.con + ':' + item.com];
+      });
+    }
   }
 }

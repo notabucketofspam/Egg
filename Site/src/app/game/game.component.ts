@@ -20,7 +20,6 @@ export class GameComponent implements OnInit, OnDestroy {
   conglomerates = [["Cathy", "Cash Back Cathy (Food)"], ["Terry", "One-Time Terry  (Real Estate)"],
     ["Gary", "Goodwill Gary (Tech)"], ["Doug", "Doug Dividends (Recreation)"]];
   cart: CartItem[] = [];
-  cartTotal = 0;
   /** One Subject for each field of State, to alert a component that a change has occurred */
   stateSubjects: Record<string, Subject<void>> = {
     cmd: new Subject<void>(),
@@ -123,7 +122,6 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   load(state: State) {
     this.state = state as State;
-    this.setCartTotal();
     //console.log(this.cart);
   }
   /**
@@ -181,22 +179,14 @@ export class GameComponent implements OnInit, OnDestroy {
     }
     this.localSubjects["cart-add"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
-    this.setCartTotal();
   }
   removeItem($event: string) {
     this.localSubjects["cart-remove"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
-    this.setCartTotal();
   }
   raisePublicWork($event: [string, number]) {
     console.log("stock", $event[0], "pw", $event[1]);
     this.websocket.nextJ({ cmd: Cmd.Raise, game: this.game, user: this.user, stock: $event[0], flavor: $event[1] });
-  }
-  setCartTotal() {
-    this.cartTotal = 0;
-    this.cart.forEach(item => {
-      this.cartTotal += item.ct * this.state.price[item.con+':'+item.com];
-    });
   }
   ready($event: boolean) {
     console.log(`user ${this.user} ready: ${$event}`);
