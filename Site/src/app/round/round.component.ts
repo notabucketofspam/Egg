@@ -34,6 +34,7 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.subscriptions["ready"] = this.stateSubjects["ready"].subscribe(() => {
       this.setNotReady();
+      this.checkIfReady();
     });
   }
   ngOnDestroy() {
@@ -45,10 +46,7 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
       if (changes["state"].currentValue["ready"]) {
-        if (this.state.ready && this.state.ready.includes(this.user)) {
-          this.readyState = true;
-          this.readyIcon = "\u{1F534}";
-        }
+        this.checkIfReady();
         if (changes["state"].currentValue["users"])
           this.setNotReady();
       }
@@ -66,5 +64,16 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   }
   setNotReady() {
     this.notReady = this.state.users.filter(username => !this.state.ready.includes(username));
+  }
+  checkIfReady() {
+    if (this.state && this.state.ready) {
+      if (this.state.ready.includes(this.user)) {
+        this.readyState = true;
+        this.readyIcon = "\u{1F534}";
+      } else {
+        this.readyState = false;
+        this.readyIcon = "\u{26AA}";
+      }
+    }
   }
 }
