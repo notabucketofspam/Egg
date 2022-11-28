@@ -35,19 +35,16 @@ if gameExists then
       redis.call("SREM", readyKey, username)
     end
     -- Check what changes must be returned to the clients
-    local record partial
-      ready: {string}
-      round: {string: number}
-      cmd: string
-    end
-    partial.cmd = "update"
-    partial.ready = {}
+    local partial = {
+      ready: {string} = {},
+      round: {string: number} = {},
+      cmd = "update"
+    }
     local usersScard = redis.call("SCARD", usersKey) as number
     local readyScard = redis.call("SCARD", readyKey) as number
     if usersScard == readyScard then
       -- All users are ready for next phase
       redis.call("DEL", readyKey)
-      partial.round = {}
       local phaseNext = redis.call("HINCRBY", roundKey, "phase", "1") as number
       -- Check if round counter must be increased
       if phaseNext > 5 then
