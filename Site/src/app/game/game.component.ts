@@ -80,7 +80,7 @@ export class GameComponent implements OnInit, OnDestroy {
       case Cmd.Load: {
         // Set initial state of game
         console.log(value);
-        this.load(value as State);
+        this.state = value as State;
         break;
       }
       case Cmd.Update: {
@@ -100,7 +100,7 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       case Cmd.Disconnect: {
         console.log(value);
-        this.clear();
+        this.state = {} as State;
         this.messages.push(`cmd: ${value.cmd}`, (value as Disconnect).reason);
         this.connected = false;
         break;
@@ -117,13 +117,6 @@ export class GameComponent implements OnInit, OnDestroy {
   addUser() {
     this.websocket.nextJ({ cmd: Cmd.AddUser, game: this.game, user: this.user });
   }
-  clear() {
-    this.state = {} as State;
-  }
-  load(state: State) {
-    this.state = state as State;
-    //console.log(this.cart);
-  }
   /**
    * Walk through state and apply changes where applicable
    * @param {PartialState} partial One part of the frame update
@@ -131,11 +124,8 @@ export class GameComponent implements OnInit, OnDestroy {
    * @returns {boolean} Whether or not the parent object must be deleted (in case it's empty)
    */
   update(partial: PartialState, parent: any, depth: number) {
-    //console.log("depth", depth, "partial", partial, "parent", parent);
     if (typeof partial === "object" && Object.keys(partial).length === 0) {
       // partial is an empty object, so replace parent with it (regardless of type)
-      //parent = partial;
-      //console.log("empty partial", partial, "new parent", parent);
       return true;
     }
     for (const [key, value] of Object.entries(partial)) {
@@ -146,12 +136,10 @@ export class GameComponent implements OnInit, OnDestroy {
         // partial is a set, so replace all members
         parent.length = 0;
         parent.push(...(partial as any));
-        //console.log("set", "depth", depth, "key", key, "new parent", parent);
         break;
       } else if (typeof value === "string" || typeof value === "number") {
         // partial is a hash, so replace the specific fields
         parent[key] = value;
-        //console.log("hash", "depth", depth, "key", key, "parent after", parent);
       } else if (typeof value === "object") {
         // partial is an object (hash or set), so repeat
         const toDelete = this.update(value, parent[key], depth + 1);
@@ -164,7 +152,6 @@ export class GameComponent implements OnInit, OnDestroy {
     return false;
   }
   addCartItem($event: CartItem) {
-    //console.log($event);
     const sameItemIndex = this.cart
       .findIndex(item => item.tx === $event.tx && item.con === $event.con && item.com === $event.com);
     if (sameItemIndex < 0) {
@@ -180,7 +167,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.localSubjects["cart-add"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
   }
-  removeItem($event: string) {
+  removeItem() {
     this.localSubjects["cart-remove"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
   }
