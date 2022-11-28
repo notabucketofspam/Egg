@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { WebSocketService } from '../websocket.service';
 
@@ -43,18 +42,16 @@ export class GameComponent implements OnInit, OnDestroy {
     "cart-add": new Subject<void>(),
     "cart-remove": new Subject<void>()
   };
-  constructor(private route: ActivatedRoute, private title: Title,
-    private websocket: WebSocketService) { }
+  constructor(private title: Title, private websocket: WebSocketService) { }
   ngOnInit(): void {
-    this.subscriptions["route"] = this.route.params.subscribe(params => {
-      this.game = params['game'];
-      this.user = params["user"];
-      this.title.setTitle(`Game ${this.game} | Eggonomics`);
-      this.subscriptions["websocket"] = this.websocket.subscribe({
-        next: value => this.next(JSON.parse(value as string))
-      });
-      this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
+    // lastGame is guaranteed to be non-null, because it was set in storage immediately before routing here
+    const lastGame = localStorage.getItem("lastGame")!;
+    [this.game, this.user] = JSON.parse(lastGame);
+    this.title.setTitle(`Game ${this.game} | Eggonomics`);
+    this.subscriptions["websocket"] = this.websocket.subscribe({
+      next: value => this.next(JSON.parse(value as string))
     });
+    this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
     const cartStorage = localStorage.getItem(`game:${this.game}:user:${this.user}:cart`);
     if (cartStorage)
       this.cart = JSON.parse(cartStorage);
@@ -64,8 +61,6 @@ export class GameComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.subscriptions["websocket"])
       this.subscriptions["websocket"].unsubscribe();
-    if (this.subscriptions["route"])
-      this.subscriptions["route"].unsubscribe();
   }
   private next(value: Next) {
     this.value = value;

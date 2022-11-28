@@ -92,7 +92,7 @@ export class StorageComponent implements OnInit, OnDestroy {
       case Cmd.Load: {
         [this.lastGame, this.lastUser] = [this.game, this.user];
         this.setStorage();
-        this.router.navigate(['/game', this.game, 'user', this.user]);
+        this.router.navigate(["/game"]);
         break;
       }
       case Cmd.New: {
@@ -111,7 +111,7 @@ export class StorageComponent implements OnInit, OnDestroy {
                 this.game = (reply as NewGame).newGame;
                 [this.lastGame, this.lastUser] = [this.game, this.user];
                 this.setStorage();
-                this.router.navigate(['/game', this.game, 'user', this.user]);
+                this.router.navigate(["/game"]);
                 this.subscription!.unsubscribe();
                 break;
               }
