@@ -50,9 +50,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       ioredis.smembers(`game:${data.game}:can-trade`).then(reply => send["can-trade"] = reply),
       ioredis.hgetall(`game:${data.game}:pa`).then(reply => send.pa = fromHgetall(reply)),
       ioredis.hgetall(`game:${data.game}:cash`).then(reply => send.cash = fromHgetall(reply)),
-      ioredis.zrange(`game:${data.game}:init`, 0, 6, "WITHSCORES")
+      ioredis.zrange(`game:${data.game}:init`, 0, send.users.length, "WITHSCORES")
         .then(reply => send.init = fromZrange(reply)),
-      ioredis.zrange(`game:${data.game}:second-init`, 0, 6, "WITHSCORES")
+      ioredis.zrange(`game:${data.game}:second-init`, 0, send.users.length, "WITHSCORES")
         .then(reply => send["second-init"] = fromZrange(reply)),
       ioredis.get(`game:${data.game}:ver`).then(reply => send.ver = reply === null ? 0 : Number(reply)),
       ioredis.get("global-ver").then(reply => send["global-ver"] = reply === null ? 0 : Number(reply))
