@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Subject, Subscription } from 'rxjs';
+import { ConsoleService } from '../console.service';
 import { WebSocketService } from '../websocket.service';
 
 @Component({
@@ -42,7 +43,8 @@ export class GameComponent implements OnInit, OnDestroy {
     "cart-add": new Subject<void>(),
     "cart-remove": new Subject<void>()
   };
-  constructor(private title: Title, private websocket: WebSocketService) { }
+  constructor(private title: Title, private websocket: WebSocketService,
+    private console: ConsoleService) { }
   ngOnInit(): void {
     // lastGame is guaranteed to be non-null, because it was set in storage immediately before routing here
     const lastGame = localStorage.getItem("lastGame")!;
@@ -65,7 +67,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private next(value: Next) {
     this.value = value;
     if (value.err) {
-      console.log(value);
+      this.console.log(value);
       this.messages.push(`cmd: ${value.cmd}`, value.err, value.why!, JSON.stringify(value.proof));
       return;
     } else {
@@ -74,13 +76,13 @@ export class GameComponent implements OnInit, OnDestroy {
     switch (value.cmd) {
       case Cmd.Load: {
         // Set initial state of game
-        console.log(value);
+        this.console.log(value);
         this.state = value as State;
         break;
       }
       case Cmd.Update: {
         // Set changes to game state
-        console.log(value);
+        this.console.log(value);
         this.update(value as PartialState, this.state, 0);
         // Alert relevant components of the changes
         for (const key of Object.keys(value))
@@ -89,12 +91,12 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       case Cmd.RemoveUser:
       case Cmd.AddUser: {
-        console.log(value);
+        this.console.log(value);
         this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
         break;
       }
       case Cmd.Disconnect: {
-        console.log(value);
+        this.console.log(value);
         this.state = {} as State;
         this.messages.push(`cmd: ${value.cmd}`, (value as Disconnect).reason);
         this.connected = false;
@@ -102,7 +104,7 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       default: {
         const error = { cmd: value.cmd, err: "ENOCMD", why: "Invalid or unexpected command" };
-        console.log(error);
+        this.console.log(error);
         this.messages.length = 0;
         this.messages.push(`cmd: ${error.cmd}`, error.err, error.why);
         break;
@@ -167,22 +169,22 @@ export class GameComponent implements OnInit, OnDestroy {
     localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, JSON.stringify(this.cart));
   }
   raisePublicWork($event: [string, number]) {
-    console.log("stock", $event[0], "pw", $event[1]);
+    this.console.log("stock", $event[0], "pw", $event[1]);
     this.websocket.nextJ({ cmd: Cmd.Raise, game: this.game, user: this.user, stock: $event[0], flavor: $event[1] });
   }
   ready($event: boolean) {
-    console.log(`user ${this.user} ready: ${$event}`);
+    this.console.log(`user ${this.user} ready: ${$event}`);
     this.websocket.nextJ({
       cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
       phase: this.state.round.phase
     });
   }
   reportPledge($event: number) {
-    console.log(`user ${this.user} pledge ${$event}`);
+    this.console.log(`user ${this.user} pledge ${$event}`);
     this.websocket.nextJ({ cmd: Cmd.Pledge, game: this.game, user: this.user, pledge: $event });
   }
   debug($event: PartialState) {
-    console.log("debug", $event);
+    this.console.log("debug", $event);
     $event["cmd"] = Cmd.Debug;
     $event["game"] = this.game;
     this.websocket.nextJ($event);
@@ -194,7 +196,8 @@ export class GameComponent implements OnInit, OnDestroy {
     this.websocket.nextJ({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver });
   }
   changeMember($event: string) {
-    console.log("user", this.user, "| stock", $event, "| newTier", this.state.user[this.user].member[$event] + 1);
+    this.console.log("user", this.user, "| stock", $event, "| newTier",
+      this.state.user[this.user].member[$event] + 1);
     this.websocket.nextJ({ cmd: Cmd.Member, game: this.game, user: this.user, stock: $event });
   }
 }

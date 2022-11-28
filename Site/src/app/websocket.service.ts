@@ -2,14 +2,14 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { filter, MonoTypeOperatorFunction, PartialObserver } from 'rxjs';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 import { webSocket } from "rxjs/webSocket";
-
 import { environment } from "../environments/environment";
+import { ConsoleService } from './console.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService implements OnDestroy {
-  constructor() { }
+  constructor(private console: ConsoleService) { }
   private pingFrame = Uint8Array.from([0x9]);
   private pongFrame = Uint8Array.from([0xA]);
   private pingTimeout!: NodeJS.Timer;
@@ -28,8 +28,7 @@ export class WebSocketService implements OnDestroy {
         if (bufferUint8.length === 1 && bufferUint8[0] === ws.pingFrame[0]) {
           ws.subject.next(ws.pongFrame);
           ws.isAlive();
-          if (!environment.production)
-            console.log("Ping!");
+          this.console.log("Ping!");
         }
       });
       return false;
