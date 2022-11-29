@@ -10,11 +10,7 @@
     <button routerLink="">Exit</button>
   </div>
 </div>
-<div *ngIf="!connected; else connectedTemplate">
-  <div *ngFor="let message of messages">{{ message }}<br /></div>
-  <button routerLink="">Exit</button>
-</div>
-<ng-template #connectedTemplate>
+<ng-container>
   <div *ngIf="value.err; else conglomeratesTemplate">
     <div *ngFor="let message of messages">{{ message }}<br /></div>
     <div [ngSwitch]="value.err">
@@ -40,7 +36,7 @@
       </div>
     </div>
   </div>
-</ng-template>
+</ng-container>
 <ng-template #conglomeratesTemplate>
   <app-trade-offer [state]="state"></app-trade-offer>
   <app-public-work [state]="state" (raiseEE)="raisePublicWork($event)" [user]="user"></app-public-work>

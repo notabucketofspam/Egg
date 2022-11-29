@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { filter, MonoTypeOperatorFunction, PartialObserver } from 'rxjs';
-import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
+import { filter, MonoTypeOperatorFunction, PartialObserver, Subject } from 'rxjs';
+import { WebSocketMessage, WebSocketSubjectConfig } from 'rxjs/internal/observable/dom/WebSocketSubject';
 import { webSocket } from "rxjs/webSocket";
 import { environment } from "../environments/environment";
 import { ConsoleService } from './console.service';
@@ -9,25 +9,35 @@ import { ConsoleService } from './console.service';
   providedIn: 'root'
 })
 export class WebSocketService implements OnDestroy {
-  constructor(private console: ConsoleService) { }
   private pingFrame = Uint8Array.from([0x9]);
   private pongFrame = Uint8Array.from([0xA]);
   private pingTimeout!: NodeJS.Timer;
-  private subject = webSocket<WebSocketMessage>({
+  private subjectConfig: WebSocketSubjectConfig<WebSocketMessage> = {
     url: environment.webSocketUrl,
     binaryType: "blob",
-    deserializer: event => event.data as WebSocketMessage,
-    serializer: value => value
-  });
-  private filter: MonoTypeOperatorFunction<WebSocketMessage> = filter(function (value, index) {
+    deserializer: (event: any) => event.data as WebSocketMessage,
+    serializer: (value: any) => value,
+    openObserver: {
+      next: ($event: Event) => {
+        this.aliveSubject.next(true);
+      }
+    },
+    closeObserver: {
+      next: ($event: CloseEvent) => {
+        if (!$event.wasClean)
+          this.aliveSubject.next(false);
+      }
+    }
+  }
+  private subject = webSocket<WebSocketMessage>(this.subjectConfig);
+  private filter: MonoTypeOperatorFunction<WebSocketMessage> = filter((value, index) => {
     if (value instanceof Blob) {
       // Is a ping frame
-      const ws = this;
-      value.arrayBuffer().then(function (buffer) {
+      value.arrayBuffer().then(buffer => {
         const bufferUint8 = new Uint8Array(buffer);
-        if (bufferUint8.length === 1 && bufferUint8[0] === ws.pingFrame[0]) {
-          ws.subject.next(ws.pongFrame);
-          ws.isAlive();
+        if (bufferUint8.length === 1 && bufferUint8[0] === this.pingFrame[0]) {
+          this.subject.next(this.pongFrame);
+          this.isAlive();
           this.console.log("Ping!");
         }
       });
@@ -36,12 +46,14 @@ export class WebSocketService implements OnDestroy {
       // Not a ping frame
       return true;
     }
-  }, this);
+  });
+  aliveSubject = new Subject<boolean>();
+  constructor(private console: ConsoleService) { }
   private isAlive() {
     clearTimeout(this.pingTimeout);
-    this.pingTimeout = setTimeout(function (ws) {
-      ws.subject.complete();
-    }, 31000, this);
+    this.pingTimeout = setTimeout(() => {
+      this.subject.complete();
+    }, 36000);
   }
   subscribe(observer?: PartialObserver<WebSocketMessage>) {
     return this.subject.pipe(this.filter).subscribe(observer);

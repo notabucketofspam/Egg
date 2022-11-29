@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Subject, Subscription } from 'rxjs';
+import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 import { ConsoleService } from '../console.service';
 import { WebSocketService } from '../websocket.service';
 
@@ -16,7 +17,6 @@ export class GameComponent implements OnInit, OnDestroy {
   messages: string[] = [];
   state = {} as State;
   value = {} as Next;
-  connected = true;
   conglomerates = [["Cathy", "Cash Back Cathy (Food)"], ["Terry", "One-Time Terry  (Real Estate)"],
     ["Gary", "Goodwill Gary (Tech)"], ["Doug", "Doug Dividends (Recreation)"]];
   cart: CartItem[] = [];
@@ -43,6 +43,7 @@ export class GameComponent implements OnInit, OnDestroy {
     "cart-add": new Subject<void>(),
     "cart-remove": new Subject<void>()
   };
+  timers: Record<string, NodeJS.Timer> = {};
   constructor(private title: Title, private websocket: WebSocketService,
     private console: ConsoleService) { }
   ngOnInit(): void {
@@ -50,19 +51,32 @@ export class GameComponent implements OnInit, OnDestroy {
     const lastGame = localStorage.getItem("lastGame")!;
     [this.game, this.user] = JSON.parse(lastGame);
     this.title.setTitle(`Game ${this.game} | Eggonomics`);
-    this.subscriptions["websocket"] = this.websocket.subscribe({
-      next: value => this.next(JSON.parse(value as string))
-    });
-    this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
+    const next = (value: WebSocketMessage) => this.next(JSON.parse(value as string));
+    this.subscriptions["websocket"] = this.websocket.subscribe({next});
     const cartStorage = localStorage.getItem(`game:${this.game}:user:${this.user}:cart`);
     if (cartStorage)
       this.cart = JSON.parse(cartStorage);
     else
       localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, "[]");
+    this.subscriptions["alive"] = this.websocket.aliveSubject.subscribe(alive => {
+      if (alive) {
+        if (this.timers["alive"])
+          clearInterval(this.timers["alive"]);
+        this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
+      } else {
+        this.timers["alive"] = setInterval(() => {
+          if (this.subscriptions["websocket"])
+            this.subscriptions["websocket"].unsubscribe();
+          this.subscriptions["websocket"] = this.websocket.subscribe({next});
+        }, 6000);
+      }
+    });
   }
   ngOnDestroy() {
     if (this.subscriptions["websocket"])
       this.subscriptions["websocket"].unsubscribe();
+    if (this.subscriptions["alive"])
+      this.subscriptions["alive"].unsubscribe();
   }
   private next(value: Next) {
     this.value = value;
@@ -99,7 +113,6 @@ export class GameComponent implements OnInit, OnDestroy {
         this.console.log(value);
         this.state = {} as State;
         this.messages.push(`cmd: ${value.cmd}`, (value as Disconnect).reason);
-        this.connected = false;
         break;
       }
       default: {
