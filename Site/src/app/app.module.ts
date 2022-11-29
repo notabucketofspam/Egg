@@ -13,7 +13,7 @@ import { ConglomerateComponent } from './conglomerate/conglomerate.component';
 import { CompanyComponent } from './company/company.component';
 import { CartComponent } from './cart/cart.component';
 import { TimeService } from './time.service';
-import { PublicWorkComponent } from './public-work/public-work.component';
+//import { PublicWorkComponent } from './public-work/public-work.component';
 import { TradeOfferComponent } from './trade-offer/trade-offer.component';
 import { RoundComponent } from './round/round.component';
 import { CashComponent } from './cash/cash.component';
@@ -30,7 +30,7 @@ import { MenuDirective } from './menu.directive';
     ConglomerateComponent,
     CompanyComponent,
     CartComponent,
-    PublicWorkComponent,
+    //PublicWorkComponent,
     TradeOfferComponent,
     RoundComponent,
     CashComponent,

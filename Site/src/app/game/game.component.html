@@ -39,7 +39,7 @@
 </ng-container>
 <ng-template #conglomeratesTemplate>
   <app-trade-offer [state]="state"></app-trade-offer>
-  <app-public-work [state]="state" (raiseEE)="raisePublicWork($event)" [user]="user"></app-public-work>
+  <!--<app-public-work [state]="state" (raiseEE)="raisePublicWork($event)" [user]="user"></app-public-work>-->
   <app-cash (reportEE)="reportPledge($event)" [localSubjects]="localSubjects"
   [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"></app-cash>
   <app-debug-menu appMenu [state]="state" (debugEE)="debug($event)" (breakEE)="breakStuff()"
