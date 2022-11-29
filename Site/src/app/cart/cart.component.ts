@@ -7,9 +7,6 @@ import { Subject, Subscription } from 'rxjs';
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit, OnChanges, OnDestroy {
-  menuOpen = false;
-  menuButtonClass = "Closed";
-  menuClass = "NoDisplay";
   @Input() cart!: CartItem[];
   @Output() cartEE = new EventEmitter<string>();
   cartTotal = 0;
@@ -31,11 +28,6 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     this.subscriptions["cart-add"] = this.localSubjects["cart-add"].subscribe(() => this.setCartTotal());
     this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => this.setCartTotal());
-  }
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-    this.menuButtonClass = this.menuOpen ? "Open" : "Closed";
-    this.menuClass = this.menuOpen ? "Display" : "NoDisplay";
   }
   removeItem(index: number) {
     this.cart.splice(index, 1);

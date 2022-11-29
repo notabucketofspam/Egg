@@ -7,9 +7,6 @@ import { Subject, Subscription } from 'rxjs';
   styleUrls: ['./round.component.css']
 })
 export class RoundComponent implements OnInit, OnChanges, OnDestroy {
-  menuOpen = false;
-  menuButtonClass = "Closed";
-  menuClass = "NoDisplay";
   readyState = false;
   @Output() readyEE = new EventEmitter<boolean>();
   readyIcon = "\u{26AA}";
@@ -51,11 +48,6 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
           this.setNotReady();
       }
     }
-  }
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-    this.menuButtonClass = this.menuOpen ? "Open" : "Closed";
-    this.menuClass = this.menuOpen ? "Display" : "NoDisplay";
   }
   toggleReady() {
     this.readyState = !this.readyState;

@@ -10,9 +10,6 @@ import { Subject, Subscription } from 'rxjs';
   providers: [CurrencyPipe]
 })
 export class CashComponent implements OnInit, OnChanges, OnDestroy {
-  menuOpen = false;
-  menuButtonClass = "Closed";
-  menuClass = "NoDisplay";
   @Output() reportEE = new EventEmitter<number>();
   reportForm = new FormGroup({
     amount: new FormControl(0)
@@ -96,11 +93,6 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
-  }
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-    this.menuButtonClass = this.menuOpen ? "Open" : "Closed";
-    this.menuClass = this.menuOpen ? "Display" : "NoDisplay";
   }
   report() {
     if (this.reportForm.controls["amount"].value !== null) {

@@ -1,5 +1,5 @@
-<button class="MenuButton Bottom Center" [class]="menuButtonClass" (click)="toggleMenu()">ROUND</button>
-<div class="Menu Bottom Center" [class]="menuClass" [ngStyle]="{'overscroll-behavior-y':'none'}">
+<button class="MenuButton Bottom Center Closed">ROUND</button>
+<div class="Menu Bottom Center NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
   <div class="Flex Center">
     <span id="ready-icon-span">{{readyIcon}}&nbsp;</span>
     <button id="ready-button" (click)="toggleReady()" [class.True]="readyState">Ready!</button>
