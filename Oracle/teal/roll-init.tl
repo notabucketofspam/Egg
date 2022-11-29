@@ -10,7 +10,7 @@ local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local initPhase = tonumber(ARGV[3])
 -- Generate a unique sequence
-local function sequence(users: Set, card: integer): {string: number}
+local function sequence(users: Set, card: integer, whichKey: string): {string: number}
   local usersTable: {string} = {}
   for user in pairs(users.set) do
     table.insert(usersTable, user)
@@ -21,11 +21,12 @@ local function sequence(users: Set, card: integer): {string: number}
     local newInit = math.random(card)
     local hasInit = false
     for user, init in pairs(initTable) do
-       if init == newInit then
+      if init == newInit then
         hasInit = true
-       end
+      end
     end
     if not hasInit then
+      redis.call("ZADD", whichKey, tostring(newInit), usersTable[index])
       initTable[usersTable[index]] = newInit
       index = index + 1
     end
@@ -54,10 +55,10 @@ if gameExists then
   -- Check which initiative phase this is
   if initPhase == 1 then
     -- "Stock Trading"
-    partial.init = sequence(users, card)
+    partial.init = sequence(users, card, initKey)
   elseif initPhase == 2 then
     -- "Second-Chance Stock Trading"
-    partial["second-init"] = sequence(users, card)
+    partial["second-init"] = sequence(users, card, secondInitKey)
   else
     -- Not the right phase for initiative / second initiative
     send = redis.error_reply("EBADPHASE")
