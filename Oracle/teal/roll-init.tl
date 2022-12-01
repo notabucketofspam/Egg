@@ -66,8 +66,8 @@ if gameExists then
   end
   send = redis.status_reply(cjson.encode(partial))
 else
--- No game in games set
-send = redis.error_reply("ENOGAME")
+  -- No game in games set
+  send = redis.error_reply("ENOGAME")
 end
 -- Final reply
 return send
