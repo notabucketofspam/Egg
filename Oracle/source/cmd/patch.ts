@@ -51,5 +51,18 @@ const patches: ((ioredis: Redis, scripts: Record<string, string>,
       } catch (err) {
         return true;
       }
+    },
+    async (ioredis, scripts, game, ver, users) => {
+      try {
+        // ver 2 -> 3
+        // remove "last-own" for all users (ironic)
+        const fields = ["ver"];
+        const userFields = ["last-own"];
+        const keys = toScriptKeys(game, fields, users, userFields);
+        await ioredis.evalsha(scripts["patch"], keys.length, ...keys, users.length, game, ver);
+        return false;
+      } catch (err) {
+        return true;
+      }
     }
 ];

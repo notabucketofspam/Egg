@@ -24,7 +24,7 @@ const commandRegisterObjectKeys = Object.keys(commandRegister);
 // Redis / KeyDB setup (...again)
 import IORedis from "ioredis";
 const ioredis = new IORedis();
-await ioredis.set("global-ver", 2);
+await ioredis.set("global-ver", 3);
 await Promise.all<void>([
   new Promise<void>(resolve => ioredis.set("global-ver", 2, () => resolve())),
   new Promise<void>(resolve => ioredis.script("FLUSH", () => resolve()))

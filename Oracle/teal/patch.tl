@@ -40,6 +40,11 @@ if gameExists then
     end
     -- increase version ###
     redis.call("SET", verKey, tostring(ver + 1))
+  elseif ver == 3 then
+    -- remove "last-own" from all users
+    redis.call("DEL", unpack(KEYS, 2))
+    -- increase version ###
+    redis.call("SET", verKey, tostring(ver + 1))
   else
     -- already on the latest patch, so do nothing
   end
