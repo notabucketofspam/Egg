@@ -206,6 +206,7 @@ export class StorageComponent implements OnInit, OnDestroy {
     localStorage.setItem("games", "[]");
     this.messages.length = 0;
     this.messages.push("Local games cache cleared");
+    this.storage.length = 0;
     this.showListEE.emit("messages");
   }
   private emptyStringValidator(control: AbstractControl<string, string>): ValidationErrors | null {
