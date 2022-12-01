@@ -33,6 +33,7 @@ if gameExists then
     end
   end
   if userExists then
+    local newTiers: {string: number} = {}
     local conName = getCon(stockname)
     -- Calculate price of membership upgrade
     local tierPrices = {0, 450, 550, 650, 800}
@@ -41,13 +42,12 @@ if gameExists then
     for pwStock, pwType in pairs(pw.map) do
       if getCon(pwStock) == conName then
         upgradePrice = upgradePrice + tierPrices[tonumber(pwType) as integer + 1]
-        -- redis.breakpoint()
+        -- Increment user's membership tier
+        newTiers[pwStock] = redis.call("HINCRBY", memberKey, pwStock, "1") as number
       end
     end
     -- Subtract upgrade price from user's cash
     local newCash = redis.call("HINCRBY", cashKey, username, tostring(-upgradePrice)) as number
-    -- Increment user's membership tier
-    local newTier = redis.call("HINCRBY", memberKey, stockname, "1") as number
     -- Reply with the new state params
     local partialState = {
       user: {string: {string: {string: number}}} = {},
@@ -55,9 +55,8 @@ if gameExists then
       cmd = "update"
     }
     partialState.user[username] = {
-      member = {}
+      member = newTiers
     }
-    partialState.user[username]["member"][stockname] = newTier
     partialState.cash[username] = newCash
     send = redis.status_reply(cjson.encode(partialState))
   else
