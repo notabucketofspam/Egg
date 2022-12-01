@@ -5,7 +5,7 @@ local send: {string: string}
 -- Script params
 -- KEYS is a list of Redis keys, ARGV is a list of gameId
 local partial = {
-  cmd = "update",
+  cmd = "ls",
   games: {string: {string}} = {}
 }
 -- Get list of games
