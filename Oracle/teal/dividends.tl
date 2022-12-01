@@ -7,7 +7,11 @@ local usersKey = KEYS[1]
 local cashKey = KEYS[2]
 local pwKey = KEYS[3]
 -- NOTE there is also the set of "user[name]..." keys;
--- the order is (in this case): member, own
+-- the order is (in this case): last-member, member, own
+-- The formula is effectively KEYS[(x + n*(i - 1)) as integer], where
+-- x is start of user keys, n is number of user keys, and i is loop index
+-- (up to userCount), which can be simplified through arithmetic
+-- order-of-operations to KEYS[(x - n + n*i) as integer]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 -- Check that game exists
@@ -22,8 +26,20 @@ if gameExists then
   -- Don't need to check if user exists in game,
   -- since this applies to all users
   --
-  -- Need "own" for dividends direct from stocks (which is KEYS[5 + 2*n]),
-  -- "member" for basically just Doug (which is KEYS[4 + 2*n]),
+  -- set "last-member" equal to "member"
+  for i = 1, userCount do
+    local lastMemberTable = (redis.call("HGETALL", KEYS[(4 + 3*i) as integer]) as Map).map
+    local memberTable = (redis.call("HGETALL", KEYS[(5 + 3*i) as integer]) as Map).map
+    for stock in pairs(lastMemberTable) do
+      if lastMemberTable[stock] ~= memberTable[stock] then
+        local newTier = tostring(memberTable[stock])
+        local lastMemberKey = KEYS[(1 + 3*i) as integer]
+        redis.call("HSET", lastMemberKey, stock, newTier)
+      end
+    end
+  end
+  -- Need "member" for basically just Doug (which is KEYS[2 + 3*i]),
+  -- "own" for dividends direct from stocks (which is KEYS[3 + 3*i]),
   -- and "pw" for dividend %
   --
   -- Setup new state params

@@ -21,7 +21,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       // Do dividends update
       const fields: string[] = ["users", "cash", "pw"];
       const users = await ioredis.smembers(`game:${data.game}:users`);
-      const userFields = ["member", "own"];
+      const userFields = ["last-member", "member", "own"];
       const keys = toScriptKeys(data.game, fields, users, userFields);
       const morePartialJson = await ioredis.evalsha(scripts["dividends"], keys.length, ...keys,
         users.length, data.game) as string;
