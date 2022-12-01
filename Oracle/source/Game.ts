@@ -25,6 +25,10 @@ const commandRegisterObjectKeys = Object.keys(commandRegister);
 import IORedis from "ioredis";
 const ioredis = new IORedis();
 await ioredis.set("global-ver", 2);
+await Promise.all<void>([
+  new Promise<void>(resolve => ioredis.set("global-ver", 2, () => resolve())),
+  new Promise<void>(resolve => ioredis.script("FLUSH", () => resolve()))
+]);
 const scripts: Record<string, string> = {};
 do {
   const luaDir = fs.opendirSync(path.normalize(`${process.cwd()}/lua`), { encoding: "utf8" });
@@ -56,7 +60,7 @@ export async function terminate() {
   wss.terminate();
   await Promise.all<void>([
     new Promise<void>(resolve => void server.close(() => resolve())),
-    new Promise<void>(resolve => ioredis.script("FLUSH", () => ioredis.quit(() => resolve())))
+    new Promise<void>(resolve => ioredis.quit(() => resolve()))
   ]).catch<void>(() => void (code = 1));
   return code;
 }
