@@ -26,6 +26,7 @@ if gameExists then
   -- Don't need to check if user exists in game,
   -- since this applies to all users
   --
+  --
   -- Set "last-member" equal to "member" for all
   for i = 1, userCount do
     local lastMemberTable = (redis.call("HGETALL", KEYS[(4 + 3*i) as integer]) as Map).map
