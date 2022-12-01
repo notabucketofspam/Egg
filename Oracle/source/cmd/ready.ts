@@ -50,9 +50,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["cash"] = morePartialObj["cash"];
     }
-  for (const [aliveClient, clientMeta] of aliveClients)
-    if (clientMeta.game === data.game)
-      aliveClient.send(JSON.stringify(partialObj));
+    for (const [aliveClient, clientMeta] of aliveClients)
+      if (clientMeta.game === data.game)
+        aliveClient.send(JSON.stringify(partialObj));
   } catch (err) {
     client.send(fromScriptError("update", err as Error));
   }
