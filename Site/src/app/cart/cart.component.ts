@@ -15,8 +15,8 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() localSubjects!: Record<string, Subject<void>>;
   constructor() { }
   ngOnDestroy(): void {
-    if (this.subscriptions["cart-remove"])
-      this.subscriptions["cart-remove"].unsubscribe();
+    if (this.subscriptions["cart-add"])
+      this.subscriptions["cart-add"].unsubscribe();
     if (this.subscriptions["cart-remove"])
       this.subscriptions["cart-remove"].unsubscribe();
   }
