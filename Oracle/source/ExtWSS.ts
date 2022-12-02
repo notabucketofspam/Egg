@@ -12,33 +12,31 @@ export default class ExtWSS extends WebSocketServer {
   constructor(options?: ServerOptions, callback?: () => void) {
     super(options, callback);
     this.aliveClients = new Map();
-    this.pingTimer = setInterval(function (server) {
-      for (const [client, clientMeta] of server.aliveClients.entries()) {
+    this.pingTimer = setInterval(() => {
+      for (const [client, clientMeta] of this.aliveClients.entries()) {
         if (!clientMeta.isAlive) {
           client.off("message", () => void 0);
           client.off("close", () => void 0);
           client.terminate();
-          server.aliveClients.delete(client);
+          this.aliveClients.delete(client);
           continue;
         }
-        server.aliveClients.get(client)!.isAlive = false;
-        client.send(server.pingFrame);
+        this.aliveClients.get(client)!.isAlive = false;
+        client.send(this.pingFrame);
       }
-    }, 30000, this);
-    const server = this;
-    this.on("connection", function (client, request) {
-      server.aliveClients.set(client, { isAlive: true });
-      client.on("message", function (data, isBinary) {
-        if (isBinary && (data as Buffer).length === 1 && (data as Buffer)[0] === server.pongFrame[0]) {
-          //console.log("Pong!");
-          server.aliveClients.get(client)!.isAlive = true;
+    }, 30000);
+    this.on("connection", (client, request) => {
+      this.aliveClients.set(client, { isAlive: true });
+      client.on("message", (data, isBinary) => {
+        if (isBinary && (data as Buffer).length === 1 && (data as Buffer)[0] === this.pongFrame[0]) {
+          this.aliveClients.get(client)!.isAlive = true;
         } else {
-          server.emit("message", client, data, isBinary);
+          this.emit("message", client, data, isBinary);
         }
       });
-      client.once("close", function () {
+      client.once("close", () => {
         client.off("message", () => void 0);
-        server.aliveClients.delete(this);
+        this.aliveClients.delete(client);
       });
     });
   }
