@@ -143,14 +143,14 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     if (this.subscriptions["pw"])
       this.subscriptions["pw"].unsubscribe();
   }
-resetChangeMemberPrice() {
-  if (this.state.pw) {
-    this.changeMemberPrice = 0;
-    const conSiblings: string[] = Object.keys(this.state.pw)
-      .filter(value => this.conglomerate === value.split(":")[0]);
-    conSiblings.forEach(con => this.changeMemberPrice += this.tierPrices[this.state.pw[con]]);
+  resetChangeMemberPrice() {
+    if (this.state.pw) {
+      this.changeMemberPrice = 0;
+      const conSiblings: string[] = Object.keys(this.state.pw)
+        .filter(value => this.conglomerate === value.split(":")[0]);
+      conSiblings.forEach(con => this.changeMemberPrice += this.tierPrices[this.state.pw[con]]);
+    }
   }
-}
   addToCart() {
     this.cartActionEE.emit({
       key: this.time.gen(),
