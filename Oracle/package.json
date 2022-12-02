@@ -13,26 +13,16 @@
     "clean": "tsc --build --clean && RD /Q /S lua",
     "update-dependencies": "ncu -u && npm i",
     "reload-dependencies": "rm -rf node_modules && npm install --production",
-    "server-restart": "curl -s localhost:39000/admin/restart",
     "start": "tmux send-keys -t 0 \"node .\" Enter",
-    "stop": "node -e \"process.kill(Number(require('node:fs').readFileSync(require('node:path').normalize(process.cwd()+'/log/process.pid'),{encoding:'utf8'})),'SIGINT');\"",
-    "test": "node -e \"let n=process.argv[1];require('node:http').get('http://localhost:39000/test_'+String(n?n:0),r=>r.setEncoding('utf8').on('readable',()=>{let d=r.read();process.stdout.write(d?d:'');}));\""
+    "stop": "node -e \"process.kill(Number(require('node:fs').readFileSync(require('node:path').normalize(process.cwd()+'/log/process.pid'),{encoding:'utf8'})),'SIGINT');\""
   },
   "dependencies": {
-    "bunyan": "^1.8.15",
-    "cors": "^2.8.5",
-    "express": "^5.0.0-beta.1",
     "ioredis": "^5.2.4",
-    "uuid": "^9.0.0",
     "ws": "^8.11.0"
   },
   "devDependencies": {
-    "@types/bunyan": "^1.8.8",
-    "@types/cors": "^2.8.12",
-    "@types/express": "^4.17.14",
     "@types/ioredis": "^4.28.10",
     "@types/node": "^18.11.9",
-    "@types/uuid": "^8.3.4",
     "@types/ws": "^8.5.3",
     "typescript": "^4.9.3"
   }
