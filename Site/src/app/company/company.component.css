@@ -94,3 +94,12 @@
     font-size: 130%;
   }
 }
+#available-div {
+  font-size: 80%;
+}
+#available-span {
+  font-family: "ITC Legacy Sans Std Medium";
+}
+#the-market-option {
+  background-color: gold;
+}

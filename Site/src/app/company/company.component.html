@@ -23,7 +23,7 @@
         {{ deltaEmoji }}
       </div>
     </div>
-    <form [formGroup]="purchaseForm" (ngSubmit)="addToCart()" class="TopBlack Flex Column">
+    <!--<form [formGroup]="purchaseForm" (ngSubmit)="addToCart()" class="TopBlack Flex Column">
       <div class="Flex Row Form Space">
         <div class="Flex Form Button Large">
           <button (click)="increaseAmount(-1)" type="button"><</button>
@@ -43,17 +43,19 @@
           {{ buyOrSellButton }}
         </button>
       </div>
-    </form>
+    </form>-->
     <form [formGroup]="tradeOfferForm" (ngSubmit)="tradeOffer()" class="TopBlack Flex Column">
       <div class="Center Flex">&#9888;TRADE OFFER&#9888;</div>
+      <div class="Flex Center" id="available-div">
+        <span id="available-span">On The Market:&nbsp;</span>{{ available }} ({{projected.available}})
+      </div>
       <div class="Flex Row">
         <label for="r=tx-select">From:&nbsp;</label>
         <select formControlName="tx" id="tx-select" class="Form Select Flex">
+          <option [ngValue]="null" id="the-market-option">The Market</option>
           <ng-container *ngFor="let tx of this.state.users">
-            <option [ngValue]="tx" *ngIf="tx === this.user"></option>
-            <option [ngValue]="tx" *ngIf="tx !== this.user">
-              {{ tx }}
-            </option>
+            <option [ngValue]="tx" *ngIf="tx===this.user">---</option>
+            <option [ngValue]="tx" *ngIf="tx!==this.user">{{ tx }}</option>
           </ng-container>
         </select>
       </div>
@@ -68,8 +70,8 @@
         </div>
       </div>
       <button type="submit" class="Flex Row Form Submit Large"
-      [disabled]="!tradeOfferForm.controls['tx'].value||!tradeOfferForm.controls['amount'].value||tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.projected.user[tradeOfferForm.controls['tx'].value].own[this.comShort]||tradeOfferForm.controls['amount'].value%1!==0">
-        Submit offer
+              [disabled]="tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null&&(tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.projected.user[tradeOfferForm.controls['tx'].value].own[this.comShort]||tradeOfferForm.controls['amount'].value%1!==0)||tradeOfferForm.controls['tx'].value===null&&(tradeOfferForm.controls['amount'].value===0||tradeOfferForm.controls['amount'].value%1!==0||tradeOfferForm.controls['amount'].value>this.projected.available)">
+        {{(tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null)?"Submit offer":tradeOfferForm.controls['amount'].value>=0?"Add to cart":"Sell off stocks"}}
       </button>
     </form>
     <div class="TopBlack Flex Column">

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
+import { ConsoleService } from '../console.service';
 import { TimeService } from '../time.service';
 
 @Component({
@@ -57,7 +58,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   changeMemberPrice = 0;
   tierPrices = [0, 400, 550, 650, 800];
   @Output() memberEE = new EventEmitter<string>();
-  constructor(private time: TimeService) { }
+  constructor(private time: TimeService, private console: ConsoleService) { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
       if (changes["state"].currentValue.delta) {
@@ -193,12 +194,22 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   increaseTradeOfferAmount(increase: number) {
-    if (this.tradeOfferForm.controls['amount'].value !== null
-      && this.tradeOfferForm.controls['tx'].value !== null
-      && this.tradeOfferForm.controls['tx'].value !== this.user
-      && this.tradeOfferForm.controls["amount"].value + increase
-      <= this.projected.user[this.tradeOfferForm.controls['tx'].value].own[this.comShort]
-      && this.tradeOfferForm.controls["amount"].value + increase >= 0)
-        this.tradeOfferForm.controls["amount"].setValue(this.tradeOfferForm.controls["amount"].value + increase);
+    const amount = this.tradeOfferForm.controls["amount"].value;
+    const tx = this.tradeOfferForm.controls['tx'].value;
+    if (amount !== null && tx !== this.user) {
+      // Non-self user selected and amount exists
+      if (tx === null) {
+        // User has selected "The Market"
+        if (amount + increase <= this.projected.available
+          && amount + increase >= -this.projected.user[this.user].own[this.comShort]) {
+          this.tradeOfferForm.controls["amount"].setValue(amount + increase);
+        }
+      } else {
+        // User has selected another user
+        if (amount + increase <= this.projected.user[tx].own[this.comShort] && amount + increase >= 0) {
+          this.tradeOfferForm.controls["amount"].setValue(amount + increase);
+        }
+      }
+    }
   }
 }
