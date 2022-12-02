@@ -1,13 +1,14 @@
 #!/bin/sh
 _domain="eggonomics.net"
-_options="hlrs"
+_options="hlrst"
 _print_help() {
   echo "Push local project to remote"
   echo "Options:"
   echo "  -h    print this message"
   echo "  -l    reload dependencies on remote"
   echo "  -r    restart full application on remote"
-  echo "  -s    restart only HTTP server on remote"
+  echo "  -s    start application on remote"
+  echo "  -t    terminate application on remote"
 }
 _push() {
   npm run build --silent
@@ -30,7 +31,9 @@ while getopts "$_options" _flag; do
     r)ssh -i "./httpd-private-key" httpd@$_domain \
 "cd /httpd/egg && npm restart --silent";;
     s)ssh -i "./httpd-private-key" httpd@$_domain \
-"cd /httpd/egg && npm run server-restart --silent"
+"cd /httpd/egg && npm start --silent";;
+    t)ssh -i "./httpd-private-key" httpd@$_domain \
+"cd /httpd/egg && npm stop --silent"
       echo;;
   esac
 done
