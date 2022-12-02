@@ -118,7 +118,8 @@ public work in the company ${this.stockTable
       && this.raiseForm.controls['stock'].value !== null
       && this.raiseForm.controls['stock'].value !== '---'
       && this.state.pw[this.raiseForm.controls['stock'].value] == 0) {
-      const lastOwn = this.state.user[this.user]["last-own"][this.raiseForm.controls['stock'].value];
+      //const lastOwn = this.state.user[this.user]["last-own"][this.raiseForm.controls['stock'].value];
+      const lastOwn = 0;
       const nowOwn = this.state.user[this.user].own[this.raiseForm.controls['stock'].value];
       switch (this.raiseForm.controls["flavor"].value) {
         case this.flavors[1]:
