@@ -55,7 +55,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   ];
   @Input() stateSubjects!: Record<string, Subject<void>>;
   changeMemberPrice = 0;
-  tierPrices = [0, 450, 550, 650, 800];
+  tierPrices = [0, 400, 550, 650, 800];
   @Output() memberEE = new EventEmitter<string>();
   constructor(private time: TimeService) { }
   ngOnChanges(changes: SimpleChanges) {
@@ -145,7 +145,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   }
   resetChangeMemberPrice() {
     if (this.state.pw) {
-      this.changeMemberPrice = 0;
+    this.changeMemberPrice = 0;
       const conSiblings: string[] = Object.keys(this.state.pw)
         .filter(value => this.conglomerate === value.split(":")[0]);
       conSiblings.forEach(con => this.changeMemberPrice += this.tierPrices[this.state.pw[con]]);
