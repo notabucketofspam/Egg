@@ -74,7 +74,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
               own: {},
               member: {},
               offers: [],
-              "last-own": {}
+              "last-member": {}
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)
@@ -86,7 +86,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
               own: {},
               member: {},
               offers: [],
-              "last-own": {}
+              "last-member": {}
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)

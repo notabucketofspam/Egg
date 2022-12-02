@@ -36,7 +36,7 @@ declare interface State extends Next {
   };
   user: {
     [user: string]: {
-      "last-own": Record<string, number>,
+      "last-member": Record<string, number>,
       own: Record<string, number>,
       member: Record<string, number>,
       offers: CartItem[]
