@@ -2,12 +2,11 @@
   <h1 class="Ultra">Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
   <div class="Flex ColumnReverse">
-    <b>Game: {{ game }}</b>
+    <div class="Flex Row">
+      <b>Game: {{ game }}</b>
+      <button id="exit-button" routerLink="">Exit</button>
+    </div>
     <b>User: {{ user }}</b>
-  </div>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <div class="Flex ColumnReverse">
-    <button routerLink="">Exit</button>
   </div>
 </div>
 <ng-container>
