@@ -64,6 +64,11 @@ export class GameComponent implements OnInit, OnDestroy {
         this.next({ cmd: Cmd.Disconnect, err: "ENOWSS", why: "WebSocket connection closed; reload page to reopen." });
       }
     });
+    this.value = {
+      cmd: Cmd.Load,
+      err: "EOK"
+    };
+    this.messages.push("Waiting on WebSocket connection...");
     this.subscriptions["websocket"] = this.websocket.subscribe({ next });
   }
   ngOnDestroy() {
@@ -73,24 +78,22 @@ export class GameComponent implements OnInit, OnDestroy {
       this.subscriptions["alive"].unsubscribe();
   }
   private next(value: Next) {
+    this.console.log(value);
+    this.messages.length = 0;
     this.value = value;
     if (value.err) {
-      this.console.log(value);
+      // Display error message to user
       this.messages.push(`cmd: ${value.cmd}`, value.err, value.why!, JSON.stringify(value.proof));
       return;
-    } else {
-      this.messages.length = 0;
     }
     switch (value.cmd) {
       case Cmd.Load: {
         // Set initial state of game
-        this.console.log(value);
         this.state = value as State;
         break;
       }
       case Cmd.Update: {
         // Set changes to game state
-        this.console.log(value);
         this.update(value as PartialState, this.state, 0);
         // Alert relevant components of the changes
         for (const key of Object.keys(value))
@@ -99,21 +102,18 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       case Cmd.RemoveUser:
       case Cmd.AddUser: {
-        this.console.log(value);
+        // Reload page on user added / removed
         this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
         break;
       }
       case Cmd.Disconnect: {
-        this.console.log(value);
-        this.state = {} as State;
-        this.messages.push(`cmd: ${value.cmd}`, (value as Disconnect).reason);
+        // Alert user of disconnect
+        this.next({ cmd: Cmd.Disconnect, err: "EDC", why: (value as Disconnect).reason });
         break;
       }
       default: {
-        const error = { cmd: value.cmd, err: "ENOCMD", why: "Invalid or unexpected command" };
-        this.console.log(error);
-        this.messages.length = 0;
-        this.messages.push(`cmd: ${error.cmd}`, error.err, error.why);
+        // Error on unknown command
+        this.next({ cmd: value.cmd, err: "ENOCMD", why: "Invalid or unexpected command" });
         break;
       }
     }
