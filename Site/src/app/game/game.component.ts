@@ -64,11 +64,6 @@ export class GameComponent implements OnInit, OnDestroy {
         this.next({ cmd: Cmd.Disconnect, err: "ENOWSS", why: "WebSocket connection closed; reload page to reopen." });
       }
     });
-    this.value = {
-      cmd: Cmd.Load,
-      err: "EOK"
-    };
-    this.messages.push("Waiting on WebSocket connection...");
     this.subscriptions["websocket"] = this.websocket.subscribe({ next });
   }
   ngOnDestroy() {
@@ -81,9 +76,11 @@ export class GameComponent implements OnInit, OnDestroy {
     this.console.log(value);
     this.messages.length = 0;
     this.value = value;
-    if (value.err) {
+    if (value.err && value.why) {
       // Display error message to user
-      this.messages.push(`cmd: ${value.cmd}`, value.err, value.why!, JSON.stringify(value.proof));
+      this.messages.push(`cmd: ${value.cmd}`, value.err, value.why);
+      if (value.proof)
+        this.messages.push(JSON.stringify(value.proof));
       return;
     }
     switch (value.cmd) {
