@@ -52,7 +52,6 @@ export class GameComponent implements OnInit, OnDestroy {
     [this.game, this.user] = JSON.parse(lastGame);
     this.title.setTitle(`Game ${this.game} | Eggonomics`);
     const next = (value: WebSocketMessage) => this.next(JSON.parse(value as string));
-    this.subscriptions["websocket"] = this.websocket.subscribe({next});
     const cartStorage = localStorage.getItem(`game:${this.game}:user:${this.user}:cart`);
     if (cartStorage)
       this.cart = JSON.parse(cartStorage);
@@ -60,17 +59,12 @@ export class GameComponent implements OnInit, OnDestroy {
       localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, "[]");
     this.subscriptions["alive"] = this.websocket.aliveSubject.subscribe(alive => {
       if (alive) {
-        if (this.timers["alive"])
-          clearInterval(this.timers["alive"]);
         this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
       } else {
-        this.timers["alive"] = setInterval(() => {
-          if (this.subscriptions["websocket"])
-            this.subscriptions["websocket"].unsubscribe();
-          this.subscriptions["websocket"] = this.websocket.subscribe({next});
-        }, 6000);
+        this.next({ cmd: Cmd.Disconnect, err: "ENOWSS", why: "WebSocket connection closed; reload page to reopen." });
       }
     });
+    this.subscriptions["websocket"] = this.websocket.subscribe({ next });
   }
   ngOnDestroy() {
     if (this.subscriptions["websocket"])
@@ -123,6 +117,9 @@ export class GameComponent implements OnInit, OnDestroy {
         break;
       }
     }
+  }
+  reloadPage() {
+    window.location.reload();
   }
   addUser() {
     this.websocket.nextJ({ cmd: Cmd.AddUser, game: this.game, user: this.user });

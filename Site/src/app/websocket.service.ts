@@ -50,9 +50,10 @@ export class WebSocketService implements OnDestroy {
   aliveSubject = new Subject<boolean>();
   constructor(private console: ConsoleService) { }
   private isAlive() {
-    clearTimeout(this.pingTimeout);
+    if (this.pingTimeout)
+      clearTimeout(this.pingTimeout);
     this.pingTimeout = setTimeout(() => {
-      this.subject.complete();
+      this.subject.unsubscribe();
     }, 36000);
   }
   subscribe(observer?: PartialObserver<WebSocketMessage>) {
@@ -71,7 +72,8 @@ export class WebSocketService implements OnDestroy {
     this.subject.complete();
   }
   ngOnDestroy() {
-    clearTimeout(this.pingTimeout);
+    if (this.pingTimeout)
+      clearTimeout(this.pingTimeout);
     this.subject.unsubscribe();
   }
 }

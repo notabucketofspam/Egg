@@ -17,6 +17,9 @@
       <div *ngSwitchCase="'ENOUSER'">
         <button (click)="addUser()">Add user</button>
       </div>
+      <div *ngSwitchCase="'ENOWSS'">
+        <button (click)="reloadPage()">Reload page</button>
+      </div>
       <div *ngSwitchDefault>
         <button routerLink="">Exit</button>
       </div>
