@@ -137,6 +137,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions["pw"] = this.stateSubjects["pw"].subscribe(() => {
       this.resetChangeMemberPrice();
     });
+    this.tradeOfferForm.controls["tx"].setValue(this.user);
   }
   ngOnDestroy(): void {
     if (this.subscriptions["cart-remove"])

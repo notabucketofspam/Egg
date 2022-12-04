@@ -51,11 +51,11 @@
       </div>
       <div class="Flex Row">
         <label for="r=tx-select">From:&nbsp;</label>
-        <select formControlName="tx" id="tx-select" class="Form Select Flex">
+        <select formControlName="tx" id="tx-select" class="Form Select Flex" [class]="tradeOfferForm.controls['tx'].value===null?'Market':'User'">
+          <option [ngValue]="user" class="User">---</option>
           <option [ngValue]="null" id="the-market-option">The Market</option>
           <ng-container *ngFor="let tx of this.state.users">
-            <option [ngValue]="tx" *ngIf="tx===this.user">---</option>
-            <option [ngValue]="tx" *ngIf="tx!==this.user">{{ tx }}</option>
+            <option [ngValue]="tx" *ngIf="tx!==this.user" class="User">{{ tx }}</option>
           </ng-container>
         </select>
       </div>

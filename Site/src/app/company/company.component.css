@@ -100,6 +100,12 @@
 #available-span {
   font-family: "ITC Legacy Sans Std Medium";
 }
-#the-market-option {
+select.Market {
   background-color: gold;
+}
+#the-market-option {
+  background-color: gold !important;
+}
+option.User, select.User {
+  background-color: white;
 }
