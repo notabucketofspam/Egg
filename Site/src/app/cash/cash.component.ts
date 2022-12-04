@@ -28,16 +28,10 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private currencyPipe: CurrencyPipe) { }
   ngOnInit(): void {
     this.subscriptions["cash"] = this.stateSubjects["cash"].subscribe(() => {
-      //console.log("stateSubjects[\"cash\"]");
       this.resetProjectedCash();
     });
     this.subscriptions["pa"] = this.stateSubjects["pa"].subscribe(() => {
-      //console.log("stateSubjects[\"pa\"]");
       if (this.state.users && this.state.pa) {
-        //this.paTotal = 0;
-        //for (const username of this.state.users) {
-        //  this.paTotal += this.state.pa[username];
-        //}
         this.resetPaTotal();
       }
     });
@@ -72,23 +66,11 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
     if (changes["state"]) {
       if (changes["state"].currentValue["cash"]) {
         if (this.state.users) {
-          //for (const username of this.state.users) {
-          //  this.projected.cash[username] = changes["state"].currentValue["cash"][username];
-          //}
-          //for (const item of this.cart) {
-          //  if (item.tx)
-          //    this.projected.cash[item.tx] += item.ct * this.state.price[item.con + ':' + item.com];
-          //  this.projected.cash[this.user] -= item.ct * this.state.price[item.con + ':' + item.com];
-          //}
           this.resetProjectedCash();
         }
       }
       if (changes["state"].currentValue["pa"]) {
         if (this.state.users) {
-          //this.paTotal = 0;
-          //for (const username of this.state.users) {
-          //  this.paTotal += changes["state"].currentValue["pa"][username];
-          //}
           this.resetPaTotal();
         }
       }
