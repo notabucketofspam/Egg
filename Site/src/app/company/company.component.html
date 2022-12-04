@@ -78,7 +78,7 @@
       <span class="Flex Center">Upgrade Membership</span>
       <div class="Flex Row">
         <button (click)="memberEE.emit(comShort)" class="Flex Center Form Submit Large"
-        [disabled]="!changeMemberPrice||!state.user||state.user[user].member[comShort]===3||!state.round||state.round.phase!==4">
+        [disabled]="!changeMemberPrice||!state.user||state.user[user].member[comShort]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
           Yes
         </button>
       </div>
