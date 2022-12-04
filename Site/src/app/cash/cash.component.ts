@@ -37,6 +37,9 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.subscriptions["cart-add"] = this.localSubjects["cart-add"].subscribe(() => this.resetProjectedCash());
     this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => this.resetProjectedCash());
+    this.subscriptions["pledge"] = this.stateSubjects["pledge"].subscribe(() => {
+      this.resetProjectedCash();
+    });
   }
   resetPaTotal() {
     this.paTotal = 0;
@@ -51,6 +54,7 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
         this.projected.cash[item.tx] += item.ct * this.state.price[item.con + ':' + item.com];
       this.projected.cash[this.user] -= item.ct * this.state.price[item.con + ':' + item.com];
     }
+     this.projected.cash[this.user] -= this.state.pledge[this.user];
   }
   ngOnDestroy() {
     if (this.subscriptions["pa"])
@@ -61,6 +65,8 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
       this.subscriptions["cart-add"].unsubscribe();
     if (this.subscriptions["cart-remove"])
       this.subscriptions["cart-remove"].unsubscribe();
+    if (this.subscriptions["pledge"])
+      this.subscriptions["pledge"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
