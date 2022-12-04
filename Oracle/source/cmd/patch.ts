@@ -18,9 +18,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   }
   for (const [aliveClient, clientMeta] of aliveClients) {
     if (clientMeta.game === data.game) {
-      // Cheating a little bit here: using "add-user" to force the client to
-      // send a "load" command back to the server
-      aliveClient.send(JSON.stringify({ cmd: "add-user" }));
+      // Force all clients to reload the page upon patch;
+      // this avoids any breaking discrepancies between model / view in Angular
+      aliveClient.send(JSON.stringify({ cmd: "reload" }));
     }
   }
 }

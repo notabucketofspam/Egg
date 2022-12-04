@@ -16,7 +16,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       1, data.game, data.user);
     for (const [aliveClient, clientMeta] of aliveClients) {
       if (clientMeta.game === data.game) {
-        aliveClient.send(fromScriptError("add-user"));
+        aliveClient.send(fromScriptError("reload"));
       }
     }
   } catch (err) {

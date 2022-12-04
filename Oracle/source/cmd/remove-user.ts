@@ -22,7 +22,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
           aliveClient.terminate();
           aliveClients.delete(aliveClient);
         } else {
-          aliveClient.send(fromScriptError("remove-user"));
+          aliveClient.send(fromScriptError("reload"));
         }
       }
     }
