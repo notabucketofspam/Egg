@@ -97,10 +97,9 @@ export class GameComponent implements OnInit, OnDestroy {
           this.stateSubjects[key].next();
         break;
       }
-      case Cmd.RemoveUser:
-      case Cmd.AddUser: {
-        // Reload page on user added / removed
-        this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
+      case Cmd.Reload: {
+        // Reload the page
+        this.reloadPage();
         break;
       }
       case Cmd.Disconnect: {
