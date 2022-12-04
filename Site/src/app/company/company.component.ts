@@ -155,7 +155,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   }
   addToCart() {
     this.cartActionEE.emit({
-      key: this.time.gen(),
+      id: this.time.gen(),
       rx: this.user,
       con: this.conglomerate,
       com: this.company,
@@ -173,7 +173,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     const amount = this.tradeOfferForm.controls["amount"].value;
     if (amount !== null) {
       const item: CartItem = {
-        key: this.time.gen(),
+        id: this.time.gen(),
         rx: this.user,
         con: this.conglomerate,
         com: this.company,
