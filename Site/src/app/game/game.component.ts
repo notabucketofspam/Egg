@@ -87,6 +87,13 @@ export class GameComponent implements OnInit, OnDestroy {
       case Cmd.Load: {
         // Set initial state of game
         this.state = value as State;
+        // Parse offers JSON into actual offer objects
+        this.state.users.forEach(user => {
+          this.state.user[user].offers = [];
+          this.state.user[user]["offers-json"].forEach(offer => {
+            this.state.user[user].offers.push(JSON.parse(offer));
+          });
+        });
         break;
       }
       case Cmd.Update: {

@@ -40,9 +40,10 @@ declare interface State extends Next {
       "last-member": Record<string, number>,
       own: Record<string, number>,
       member: Record<string, number>,
-      offers: CartItem[]
+      offers: CartItem[],
+      "offers-json": string[]
     }
-  };
+  }
   ready: string[];
   pledge: Record<string, number>;
   "can-trade": string[];
