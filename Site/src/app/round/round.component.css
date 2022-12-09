@@ -7,7 +7,7 @@
   display: flex;
 }
 #ready-button:hover, #ready-button.True {
-  background-color: mediumturquoise;
+  background-color: mediumturquoise !important;
 }
 * {
   font-family: "ITC Legacy Sans Std Bold";
