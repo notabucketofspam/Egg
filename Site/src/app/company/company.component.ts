@@ -62,9 +62,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
       if (changes["state"].currentValue.delta) {
-        this.deltaPercent = this.state.delta[this.comShort]
-          / this.state.price[this.comShort];
-        this.deltaEmoji = this.state.delta[this.comShort] < 0 ? "\u{1F4C9}" : "\u{1F4C8}";
+        this.resetDelta();
       }
       if (changes["state"].currentValue.user) {
         this.available = 100;
@@ -140,6 +138,9 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       this.resetChangeMemberPrice();
     });
     this.tradeOfferForm.controls["tx"].setValue(this.user);
+    this.subscriptions["delta"] = this.stateSubjects["delta"].subscribe(() => {
+      this.resetDelta();
+    });
   }
   ngOnDestroy(): void {
     if (this.subscriptions["cart-remove"])
@@ -154,6 +155,11 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
         .filter(value => this.conglomerate === value.split(":")[0]);
       conSiblings.forEach(con => this.changeMemberPrice += this.tierPrices[this.state.pw[con]]);
     }
+  }
+  resetDelta() {
+    this.deltaPercent = this.state.delta[this.comShort]
+      / this.state.price[this.comShort];
+    this.deltaEmoji = this.state.delta[this.comShort] < 0 ? "\u{1F4C9}" : "\u{1F4C8}";
   }
   addToCart() {
     this.cartActionEE.emit({
