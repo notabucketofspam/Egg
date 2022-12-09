@@ -114,36 +114,36 @@ select, option, input {
   bottom: 34px;
 }
 .MenuButton.Left {
-  left: 295px;
+  left: calc(1*1366px/4);
 }
 .MenuButton.Center {
-  left: 630px;
+  left: calc(2*1366px/4);
 }
 .MenuButton.Right {
-  left: 960px;
+  left: calc(3*1366px/4);
 }
 .Menu.Left {
-  left: 135px;
+  left: calc(1*1366px/4 - 150px);
 }
 .Menu.Center {
-  left: 465px;
+  left: calc(2*1366px/4 - 150px);
 }
 .Menu.Right {
-  left: 810px;
+  left: calc(3*1366px/4 - 150px);
 }
 @media only screen and (max-width: 1365px) {
   .MenuButton.Left {
-    left: 19%;
+    left: calc(25% - 36px);
   }
 }
 @media only screen and (max-width: 1365px) {
   .MenuButton.Center {
-    left: 43%;
+    left: calc(50% - 36px);
   }
 }
 @media only screen and (max-width: 1365px) {
   .MenuButton.Right {
-    left: 68%;
+    left: calc(75% - 36px);
   }
 }
 @media only screen and (max-width: 1365px) {
@@ -153,12 +153,12 @@ select, option, input {
 }
 @media only screen and (max-width: 1365px) {
   .Menu.Center {
-    left: 23%;
+    left: 25.5%;
   }
 }
 @media only screen and (max-width: 1365px) {
   .Menu.Right {
-    left: 46%;
+    left: 50.5%;
   }
 }
 button:hover, .MenuButton:hover, .MenuButton.Open {
