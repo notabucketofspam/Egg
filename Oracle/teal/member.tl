@@ -36,7 +36,7 @@ if gameExists then
     local newTiers: {string: number} = {}
     local conName = getCon(stockname)
     -- Calculate price of membership upgrade
-    local tierPrices = {0, 450, 550, 650, 800}
+    local tierPrices = {0, 400, 550, 650, 800}
     local upgradePrice = 0
     local pw = redis.call("HGETALL", pwKey) as Map
     for pwStock, pwType in pairs(pw.map) do
