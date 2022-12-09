@@ -3,7 +3,7 @@
 </div>
 <div class="Flex GridAuto">
   <app-company *ngFor="let com of conglomerates[conglomerate]" [company]="com[0]" class="Com"
-  [state]="state" [conglomerate]="conglomerate" [description]="com[1]" [user]="user"
+  [state]="state" [conglomerate]="conglomerate" [description]="com[1]" [user]="user" [class]="conglomerate"
   (cartActionEE)="cartBubbleEE.emit($event)" [cart]="cart" [localSubjects]="localSubjects"
   [stateSubjects]="stateSubjects" (memberEE)="memberBubbleEE.emit($event)"></app-company>
 </div>

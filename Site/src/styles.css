@@ -66,6 +66,17 @@ select, option, input {
 .Flex.Center {
   justify-content: center;
 }
+button, select, option, input {
+  border-style: outset;
+  border-width: 1px;
+  border-color: #bbbbbb;
+}
+button {
+  background-color: #eeeeee;
+}
+select, option, input {
+  background-color: white;
+}
 .MenuButton {
   border-style: outset;
   border-width: 2px;
@@ -150,7 +161,7 @@ select, option, input {
     left: 46%;
   }
 }
-.MenuButton:hover, .MenuButton.Open {
+button:hover, .MenuButton:hover, .MenuButton.Open {
   background-color: #dddddd !important;
 }
 .MenuButton.Closed {
@@ -185,3 +196,28 @@ select, option, input {
   font-weight: 900;
 }
 */
+.Con.Cathy {
+  background-color: #F7941D;
+}
+.Com.Cathy {
+  background-color: #FFDC93;
+}
+.Con.Terry {
+  background-color: #39B54A;
+}
+.Com.Terry {
+  background-color: #FFFAC4;
+}
+.Con.Gary {
+  background-color: #D37CB3;
+}
+.Com.Gary {
+  background-color: #FDE9F1;
+}
+.Con.Doug {
+  background-color: #39B7E4;
+}
+.Com.Doug {
+  background-color: #EFF9FE;
+}
+

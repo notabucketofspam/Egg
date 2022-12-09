@@ -1,6 +1,8 @@
 .Com {
-  flex-basis: 48%;
-  border: solid black 1px;
+  flex-basis: 47%;
+  border-style: outset;
+  border-width: 2px;
+  border-color: #333;
   margin: 5px;
 }
 .Title.Large {
