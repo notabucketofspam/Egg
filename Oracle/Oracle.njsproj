@@ -52,6 +52,7 @@
     <Content Include="old\StockPrice.tl" />
     <Content Include="teal\patch.tl" />
     <Content Include="teal\pledge.tl" />
+    <Content Include="teal\raise-pw.tl" />
     <Content Include="teal\raise.tl" />
     <Content Include="teal\ready.tl" />
     <Content Include="teal\remove-user.tl" />

@@ -39,6 +39,17 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         partialObj["init"] = morePartialObj["init"];
       else
         partialObj["second-init"] = morePartialObj["second-init"];
+    } else if (partialObj["round"]["phase"] === 4 && data.phase !== partialObj["round"]["phase"]) {
+      // Do public works update, i.e. raise them automatically
+      const fields = ["pw"];
+      const users = await ioredis.smembers(`game:${data.game}:users`);
+      const userFields = ["own"];
+      const keys = toScriptKeys(data.game, fields, users, userFields);
+      // Script note: only PWs that have changed in flavor will be returned
+      const morePartialJson = await ioredis.evalsha(scripts["raise-pw"], keys.length, ...keys,
+        users.length, data.game) as string;
+      const morePartialObj = JSON.parse(morePartialJson);
+      partialObj["pw"] = morePartialObj["pw"];
     } else if (partialObj["round"]["phase"] === 5 && data.phase !== partialObj["round"]["phase"]) {
       // Do good will update
       const fields: string[] = ["users", "cash", "pledge", "pa"];
