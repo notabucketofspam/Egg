@@ -50,7 +50,7 @@
         <span id="available-span">On The Market:&nbsp;</span>{{ available }} ({{projected.available}})
       </div>
       <div class="Flex Row">
-        <label for="r=tx-select">From:&nbsp;</label>
+        <label for="tx-select">From:&nbsp;</label>
         <select formControlName="tx" id="tx-select" class="Form Select Flex" [class]="tradeOfferForm.controls['tx'].value===null?'Market':'User'">
           <option [ngValue]="user" class="User">---</option>
           <option [ngValue]="null" id="the-market-option">The Market</option>
