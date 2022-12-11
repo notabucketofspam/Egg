@@ -61,7 +61,7 @@ if gameExists then
         table.insert(partial.ready, user)
       end
       -- Send the current phase in reply
-      local round = (redis.call("HGETALL", roundKey) as Map).map
+      local round = (redis.call("HGETALL", roundKey) as Hash).map
       partial.round["phase"] = tonumber(round["phase"])
     end
     local partialjson = cjson.encode(partial)

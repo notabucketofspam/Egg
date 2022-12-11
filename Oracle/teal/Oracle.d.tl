@@ -22,8 +22,8 @@ global KEYS: {string}
 global record Set
   set: {string: boolean}
 end
-global record Map
-  map: {string: Reply}
+global record Hash
+  map: {string: string}
 end
 global record Status
   ok: string
@@ -31,7 +31,6 @@ end
 global record Error
   err: string
 end
-global type Reply = string | number | boolean | nil | {Reply}
 -- External libraries
 global record cjson
   decode: function(x: string): any

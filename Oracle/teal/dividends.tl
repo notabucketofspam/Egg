@@ -29,8 +29,8 @@ if gameExists then
   --
   -- Set "last-member" equal to "member" for all
   for i = 1, userCount do
-    local lastMemberTable = (redis.call("HGETALL", KEYS[(4 + 3*i) as integer]) as Map).map
-    local memberTable = (redis.call("HGETALL", KEYS[(5 + 3*i) as integer]) as Map).map
+    local lastMemberTable = (redis.call("HGETALL", KEYS[(4 + 3*i) as integer]) as Hash).map
+    local memberTable = (redis.call("HGETALL", KEYS[(5 + 3*i) as integer]) as Hash).map
     for stock in pairs(lastMemberTable) do
       if lastMemberTable[stock] ~= memberTable[stock] then
         local newTier = tostring(memberTable[stock])
@@ -53,9 +53,9 @@ if gameExists then
   -- Bonuses of Doug tiers
   local dougTable = {0, 0.15, 0.2, 0.25}
   -- Current cash of all users
-  local cashTable = (redis.call("HGETALL", cashKey) as Map).map
+  local cashTable = (redis.call("HGETALL", cashKey) as Hash).map
   -- Which public works are built and where
-  local pwTable = (redis.call("HGETALL", pwKey) as Map).map
+  local pwTable = (redis.call("HGETALL", pwKey) as Hash).map
   -- Math time
   local users = redis.call("SMEMBERS", usersKey) as Set
   for user in pairs(users.set) do

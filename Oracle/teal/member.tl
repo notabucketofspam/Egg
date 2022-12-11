@@ -38,7 +38,7 @@ if gameExists then
     -- Calculate price of membership upgrade
     local tierPrices = {0, 400, 550, 650, 800}
     local upgradePrice = 0
-    local pw = redis.call("HGETALL", pwKey) as Map
+    local pw = redis.call("HGETALL", pwKey) as Hash
     for pwStock, pwType in pairs(pw.map) do
       if getCon(pwStock) == conName then
         upgradePrice = upgradePrice + tierPrices[tonumber(pwType) as integer + 1]

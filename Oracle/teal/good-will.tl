@@ -42,11 +42,11 @@ if gameExists then
   local TerryTable = {0, 0.05, 0.1, 0.2}
   local garyTable = {0, 0.15, 0.2, 0.3}
   -- Current cash of all users
-  local cashTable = (redis.call("HGETALL", cashKey) as Map).map
+  local cashTable = (redis.call("HGETALL", cashKey) as Hash).map
   -- Current pledges
-  local pledgeTable = (redis.call("HGETALL", pledgeKey) as Map).map
+  local pledgeTable = (redis.call("HGETALL", pledgeKey) as Hash).map
   -- Current public account total
-  local paTable = (redis.call("HGETALL", paKey) as Map).map
+  local paTable = (redis.call("HGETALL", paKey) as Hash).map
   -- Math time
   local users = redis.call("SMEMBERS", usersKey) as Set
   for user in pairs(users.set) do

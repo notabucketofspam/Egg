@@ -19,7 +19,7 @@ if gameExists then
   local partial = {
     pw: {string: number} = {}
   }
-  local pwTable = (redis.call("HGETALL", pwKey) as Map).map as {string: string}
+  local pwTable = (redis.call("HGETALL", pwKey) as Hash).map as {string: string}
   -- "repeat until true" with "do break end" is a jank way of implementing
   -- "continue" in a Lua for loop 
   for stock, flavor in pairs(pwTable) do repeat
@@ -28,7 +28,7 @@ if gameExists then
       -- Change to Dog Water
       local meetsRequirement = false
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Map).map as {string: string}
+        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
         if tonumber(userOwn[stock]) >= 80 then
           meetsRequirement = true
         end
@@ -43,7 +43,7 @@ if gameExists then
       -- Basically copy-paste from above
       local meetsRequirement = false
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Map).map as {string: string}
+        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
         if tonumber(userOwn[stock]) >= 50 then
           meetsRequirement = true
         end
@@ -59,7 +59,7 @@ if gameExists then
       local totalOwn = 0
       local owningUsersCount = 0
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Map).map as {string: string}
+        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
         totalOwn = totalOwn + tonumber(userOwn[stock]) as integer
         if tonumber(userOwn[stock]) > 0 then
           owningUsersCount = owningUsersCount + 1
@@ -75,7 +75,7 @@ if gameExists then
       -- One last copy-paste, for good measure
       local owningUsersCount = 0
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Map).map as {string: string}
+        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
         if tonumber(userOwn[stock]) > 0 then
           owningUsersCount = owningUsersCount + 1
         end
