@@ -31,7 +31,7 @@ if gameExists then
       redis.call("HSET", KEYS[i as integer], unpack(hsetConglomerates))
     end
     -- increase version ###
-    redis.call("SET", verKey, tostring(ver + 1))
+    redis.call("INCR", verKey)
   elseif ver == 1 then
     -- add "last-member" to each user
     -- Ends up being the exact same as above
@@ -39,12 +39,12 @@ if gameExists then
       redis.call("HSET", KEYS[i as integer], unpack(hsetConglomerates))
     end
     -- increase version ###
-    redis.call("SET", verKey, tostring(ver + 1))
-  elseif ver == 3 then
+    redis.call("INCR", verKey)
+  elseif ver == 2 then
     -- remove "last-own" from all users
     redis.call("DEL", unpack(KEYS, 2))
     -- increase version ###
-    redis.call("SET", verKey, tostring(ver + 1))
+    redis.call("INCR", verKey)
   else
     -- already on the latest patch, so do nothing
   end
