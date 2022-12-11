@@ -59,6 +59,9 @@ export class WebSocketService implements OnDestroy {
   subscribe(observer?: PartialObserver<WebSocketMessage>) {
     return this.subject.pipe(this.filter).subscribe(observer);
   }
+  unsubscribe() {
+    this.subject.unsubscribe();
+  }
   next(value: WebSocketMessage) {
     this.subject.next(value);
   }

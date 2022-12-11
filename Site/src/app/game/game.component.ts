@@ -105,6 +105,8 @@ export class GameComponent implements OnInit, OnDestroy {
         break;
       }
       case Cmd.Reload: {
+        this.ngOnDestroy();
+        this.websocket.unsubscribe();
         // Reload the page
         this.reloadPage();
         break;
