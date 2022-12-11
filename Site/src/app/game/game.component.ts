@@ -94,6 +94,11 @@ export class GameComponent implements OnInit, OnDestroy {
             this.state.user[user].offers.push(JSON.parse(offer));
           });
         });
+        // Error on old version
+        if (this.state.ver < this.state["global-ver"])
+          this.next({ cmd: Cmd.Load, err: "EOLDVER", why: "Old game version requires patch" });
+        else if (this.state.ver > this.state["global-ver"])
+          this.next({ cmd: Cmd.Load, err: "ENEWVER", why: "Game version newer than global version (somehow)" });
         break;
       }
       case Cmd.Update: {

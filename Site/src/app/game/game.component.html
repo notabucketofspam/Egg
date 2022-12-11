@@ -19,6 +19,9 @@
       <div *ngSwitchCase="'ENOWSS'">
         <button (click)="reloadPage()">Reload page</button>
       </div>
+      <div *ngSwitchCase="'EOLDVER'">
+        <button (click)="patch()">Apply patch</button>
+      </div>
       <div *ngSwitchDefault>
         <button routerLink="">Exit</button>
       </div>
