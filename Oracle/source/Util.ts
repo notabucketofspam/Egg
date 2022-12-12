@@ -93,21 +93,39 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
         // No user in users set of game
         return JSON.stringify({ cmd, err: err.message, why: "No user in users set of game", proof });
       }
-      case "ENOUSERPARAM": {
-        // No user provided as parameter
-        return JSON.stringify({ cmd, err: err.message, why: "No user provided as parameter", proof });
-      }
       case "ENOCMD": {
         // Invalid or unexpected command
         return JSON.stringify({ cmd, err: err.message, why: "Invalid or unexpected command", proof });
       }
       case "ENOKEY": {
-        // Key based on input does not exist
-        return JSON.stringify({ cmd, err: err.message, why: "Key based on input does not exist", proof });
+        // Key does not exist (probably a bad field)
+        return JSON.stringify({
+          cmd, err: err.message,
+          why: `Key does not exist; maybe check property "field" in request`, proof
+        });
       }
       case "EPATCH": {
         // Error in patch script
         return JSON.stringify({ cmd, err: err.message, why: "Error in patch script", proof });
+      }
+      case "EBADVALUE": {
+        // Property "value" is malformed (usually from the debug command when modifying a set)
+        return JSON.stringify({
+          cmd, err: err.message,
+          why: `Property "value" is malformed`, proof });
+      }
+      case "EBADTYPE": {
+        // Key is not a valid type (only accepts: hash, set, zset, string)
+        return JSON.stringify({
+          cmd, err: err.message,
+          why: "Key is not a valid type (hash, set, zset, string)", proof
+        });
+      }
+      case "EBADPHASE": {
+        // Not the right phase for initiative / second initiative (only phase 2 & 3)
+        return JSON.stringify({
+          cmd, err: err.message,
+          why: "Not the right phase for initiative / second initiative", proof });
       }
       default: {
         // Unknown error
