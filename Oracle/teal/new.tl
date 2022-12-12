@@ -9,6 +9,7 @@ local deltaKey = KEYS[3]
 local pwKey = KEYS[4]
 local roundKey = KEYS[5]
 local verKey = KEYS[6]
+local nextPriceKey = KEYS[7]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local indexPrefix = ARGV[3]
@@ -32,7 +33,8 @@ redis.call("HSET", priceKey, unpack(hsetConglomeratesPrice))
 redis.call("HSET", deltaKey, unpack(hsetConglomerates))
 redis.call("HSET", pwKey, unpack(hsetConglomerates))
 redis.call("HSET", roundKey, "round", "0", "phase", "0")
-redis.call("SET", verKey, "3")
+redis.call("SET", verKey, "4")
+redis.call("HSET", nextPriceKey, unpack(hsetConglomeratesPrice))
 -- Final reply
 send = redis.status_reply("OK")
 return send

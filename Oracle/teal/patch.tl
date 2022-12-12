@@ -9,6 +9,12 @@ local hsetConglomerates = {
   "Gary:CALC", "0", "Gary:GUI", "0", "Gary:GLIT", "0", "Gary:GPU", "0",
   "Doug:CANN", "0", "Doug:DOOD", "0", "Doug:DUG", "0", "Doug:CLUB", "0"
 }
+local hsetConglomeratesPrice = {
+  "Cathy:CREAM", "135", "Cathy:BEER", "135", "Cathy:CRUNCH", "135", "Cathy:ROLL", "135",
+  "Terry:TOWER", "135", "Terry:TAP", "135", "Terry:TIME", "135", "Terry:TENT", "135",
+  "Gary:CALC", "135", "Gary:GUI", "135", "Gary:GLIT", "135", "Gary:GPU", "135",
+  "Doug:CANN", "135", "Doug:DOOD", "135", "Doug:DUG", "135", "Doug:CLUB", "135"
+}
 -- Script params
 local verKey = KEYS[1]
 local userCount = tonumber(ARGV[1])
@@ -43,6 +49,11 @@ if gameExists then
   elseif ver == 2 then
     -- remove "last-own" from all users
     redis.call("DEL", unpack(KEYS, 2))
+    -- increase version ###
+    redis.call("INCR", verKey)
+  elseif ver == 3 then
+    -- add "next-price" to game
+    redis.call("HSET", KEYS[2], unpack(hsetConglomeratesPrice))
     -- increase version ###
     redis.call("INCR", verKey)
   else
