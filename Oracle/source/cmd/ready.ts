@@ -50,6 +50,19 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         users.length, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["pw"] = morePartialObj["pw"];
+      // Process stock transactions; order-of-operations TBD
+      // Disable until such decisions are made
+      if (false) {
+        fields.push("price", "delta");
+        userFields.push("offers-json");
+        const moreKeys = toScriptKeys(data.game, fields, users, userFields);
+        const evenMorePartialJson = await ioredis.evalsha(scripts["trade"], moreKeys.length, ...moreKeys,
+          users.length, data.game) as string;
+        const evenMorePartialObject = JSON.parse(evenMorePartialJson);
+        // Might need to put user[user].own in here as well
+        partialObj["price"] = evenMorePartialObject["price"];
+        partialObj["delta"] = evenMorePartialObject["delta"];
+      }
     } else if (partialObj["round"]["phase"] === 5 && data.phase !== partialObj["round"]["phase"]) {
       // Do good will update
       const fields: string[] = ["users", "cash", "pledge", "pa"];
