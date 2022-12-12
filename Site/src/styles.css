@@ -35,6 +35,9 @@ select, option, input {
 .Ultra, b {
   font-family: "ITC Legacy Sans Std Ultra";
 }
+i {
+  font-family: "ITC Legacy Sans Std Bold Italic";
+}
 .Flex {
   display: flex;
 }
@@ -220,4 +223,3 @@ button:hover, .MenuButton:hover, .MenuButton.Open {
 .Com.Doug {
   background-color: #EFF9FE;
 }
-
