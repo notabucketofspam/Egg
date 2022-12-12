@@ -40,7 +40,6 @@ if gameExists then
   redis.call("HSET", KEYS[8], unpack(hsetConglomerates))
   redis.call("HSET", KEYS[9], unpack(hsetConglomerates))
   redis.call("HSET", KEYS[10], unpack(hsetConglomerates))
-  redis.call("HSET", KEYS[11], unpack(hsetConglomerates))
   send = redis.status_reply("OK")
 else
   send = redis.error_reply("ENOGAME")
