@@ -193,7 +193,7 @@
               Available: {{stockAvailability[debugForm.controls['prop'].value]}}
             </span>
             <br />
-            <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['user'].value===null||debugForm.controls['userField'].value===null||Number(debugForm.controls['value'].value)>stockAvailability[debugForm.controls['prop'].value]||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)%1!==0">Submit</button>
+            <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['user'].value===null||debugForm.controls['userField'].value===null||Number(debugForm.controls['value'].value)>stockAvailability[debugForm.controls['prop'].value]+state.user[debugForm.controls['user'].value].own[debugForm.controls['prop'].value]||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)%1!==0">Submit</button>
           </ng-container>
           <ng-container *ngSwitchCase="debugForm.controls['userField'].value==='offers'||debugForm.controls['userField'].value==='offers-json'?debugForm.controls['userField'].value:''">
             You cannot modify this field.
