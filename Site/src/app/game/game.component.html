@@ -33,8 +33,8 @@
   <!--<app-public-work [state]="state" (raiseEE)="raisePublicWork($event)" [user]="user"></app-public-work>-->
   <app-cash appMenu (reportEE)="reportPledge($event)" [localSubjects]="localSubjects"
   [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"></app-cash>
-  <app-debug-menu appMenu [state]="state" (debugEE)="debug($event)" (breakEE)="breakStuff()"
-  (patchEE)="patch()"></app-debug-menu>
+  <app-debug-menu appMenu [state]="state" (debugEE)="debug($event)" [game]="game"
+  [stateSubjects]="stateSubjects"></app-debug-menu>
   <app-cart appMenu [cart]="cart" (cartEE)="removeItem()" [state]="state" [localSubjects]="localSubjects"></app-cart>
   <app-round appMenu [state]="state" [stateSubjects]="stateSubjects" (readyEE)="ready($event)"[user]="this.user"></app-round>
   <div class="Flex Grid">

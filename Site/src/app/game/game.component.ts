@@ -87,13 +87,8 @@ export class GameComponent implements OnInit, OnDestroy {
       case Cmd.Load: {
         // Set initial state of game
         this.state = value as State;
-        // Parse offers JSON into actual offer objects
-        this.state.users.forEach(user => {
-          this.state.user[user].offers = [];
-          this.state.user[user]["offers-json"].forEach(offer => {
-            this.state.user[user].offers.push(JSON.parse(offer));
-          });
-        });
+        // Parse offers JSON into actual trade offer objects
+        this.parseOffers();
         // Error on old version
         if (this.state.ver < this.state["global-ver"])
           this.next({ cmd: Cmd.Load, err: "EOLDVER", why: "Old game version requires patch" });
@@ -107,6 +102,9 @@ export class GameComponent implements OnInit, OnDestroy {
         // Alert relevant components of the changes
         for (const key of Object.keys(value))
           this.stateSubjects[key].next();
+        // Re-parse trade offers
+        if ((value as PartialState)["user"])
+          this.parseOffers();
         break;
       }
       case Cmd.Reload: {
@@ -127,6 +125,14 @@ export class GameComponent implements OnInit, OnDestroy {
         break;
       }
     }
+  }
+  parseOffers() {
+    this.state.users.forEach(user => {
+      this.state.user[user].offers = [];
+      this.state.user[user]["offers-json"].forEach(offer => {
+        this.state.user[user].offers.push(JSON.parse(offer));
+      });
+    });
   }
   reloadPage() {
     window.location.reload();
@@ -203,14 +209,9 @@ export class GameComponent implements OnInit, OnDestroy {
     this.console.log(`user ${this.user} pledge ${$event}`);
     this.websocket.nextJ({ cmd: Cmd.Pledge, game: this.game, user: this.user, pledge: $event });
   }
-  debug($event: PartialState) {
+  debug($event: DebugForm) {
     this.console.log("debug", $event);
-    $event["cmd"] = Cmd.Debug;
-    $event["game"] = this.game;
-    this.websocket.nextJ($event);
-  }
-  breakStuff() {
-    this.websocket.nextJ({ cmd: "patch", game: "0".repeat(14), ver: 0 });
+    //this.websocket.nextJ($event);
   }
   patch() {
     this.websocket.nextJ({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver });

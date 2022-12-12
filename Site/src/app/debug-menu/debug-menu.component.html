@@ -1,10 +1,348 @@
 <button class="MenuButton Bottom Right Closed">DEBUG</button>
 <div class="Menu Bottom Right NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
-  Version: {{ state ? state.ver : "N/A"}}
-  Latest: {{ state ? state["global-ver"] : "N/A" }}
-  <button class="Action" (click)="patchEE.emit()" [disabled]="!state||state.ver===state['global-ver']">
-    Update version
-  </button>
+<b>Debug options</b>
+<form [formGroup]="debugForm" (ngSubmit)="submit()">
+  Field:
+  <select formControlName="field" id="field-select" (focus)="debugForm.reset()">
+    <option [ngValue]="null">---</option>
+    <option [ngValue]="'users'">users</option>
+    <option [ngValue]="'price'">price</option>
+    <option [ngValue]="'delta'">delta</option>
+    <option [ngValue]="'pw'">pw</option>
+    <option [ngValue]="'round'">round</option>
+    <option [ngValue]="'user'">user</option>
+    <option [ngValue]="'ready'">ready</option>
+    <option [ngValue]="'pledge'">pledge</option>
+    <option [ngValue]="'can-trade'">can-trade</option>
+    <option [ngValue]="'pa'">pa</option>
+    <option [ngValue]="'cash'">cash</option>
+    <option [ngValue]="'init'">init</option>
+    <option [ngValue]="'second-init'">second-init</option>
+    <option [ngValue]="'ver'">ver</option>
+    <option [ngValue]="'global-ver'">global-ver</option>
+  </select>
   <br />
-  <button class="Action" (click)="breakEE.emit()">Break all</button>
+  <ng-container [ngSwitch]="debugForm.controls['field'].value">
+    <ng-container *ngSwitchCase="'users'">
+      Action:
+      <select formControlName="value" (focus)="debugForm.reset({field:'users'})">
+        <option [ngValue]="null">---</option>
+        <option [ngValue]="'sadd'">sadd</option>
+        <option [ngValue]="'srem'">srem</option>
+        <option [ngValue]="'del'">del</option>
+      </select>
+      <br />
+      <ng-container [ngSwitch]="debugForm.controls['value'].value">
+        <ng-container *ngSwitchCase="'sadd'">
+          You cannot modify this field. If a new user is required, exit game,
+          enter this gameId and new username on homepage, click "Continue last game,"
+          and click "Add user" when prompted.
+        </ng-container>
+        <ng-container *ngSwitchCase="'srem'">
+          You cannot modify this field. If a user is required to be removed, exit game,
+          enter the gameId and relevant username on homepage, and click "Remove that user."
+        </ng-container>
+        <ng-container *ngSwitchCase="'del'">
+          You cannot modify this field. To delete the "users" field, either the
+          entire game must be deleted or each user must be individually removed.
+        </ng-container>
+        <ng-container *ngSwitchDefault></ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'price'">
+      Stock:
+      <select formControlName="prop">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let stock of stockList">
+          <option [ngValue]="stock">{{stock}}</option>
+        </ng-container>
+      </select>
+      <br />
+      Price:
+      <input type="number" formControlName="value" placeholder="135" min="0" step="100" />
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'delta'">
+      Stock:
+      <select formControlName="prop">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let stock of stockList">
+          <option [ngValue]="stock">{{stock}}</option>
+        </ng-container>
+      </select>
+      <br />
+      Price delta:
+      <input type="number" formControlName="value" placeholder="0" step="100" />
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'pw'">
+      Stock:
+      <select formControlName="prop">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let stock of stockList">
+          <option [ngValue]="stock">{{stock}}</option>
+        </ng-container>
+      </select>
+      <ng-container *ngIf="debugForm.controls['prop'].value!==null">
+        Current flavor:
+        <ng-container [ngSwitch]="state.pw[debugForm.controls['prop'].value]">
+          <span *ngSwitchCase="1">Most Excellent</span>
+          <span *ngSwitchCase="2">Good</span>
+          <span *ngSwitchCase="3">Bad</span>
+          <span *ngSwitchCase="4">Dog Water</span>
+          <span *ngSwitchDefault>N/A</span>
+        </ng-container>
+      </ng-container>
+      <br />
+      Flavor:
+      <input type="number" formControlName="value" placeholder="0" min="0" step="1" max="4" />
+      <ng-container [ngSwitch]="debugForm.controls['value'].value">
+        <span *ngSwitchCase="1">Most Excellent</span>
+        <span *ngSwitchCase="2">Good</span>
+        <span *ngSwitchCase="3">Bad</span>
+        <span *ngSwitchCase="4">Dog Water</span>
+        <span *ngSwitchDefault></span>
+      </ng-container>
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)%1!==0||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)>4">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'round'">
+      Which:
+      <select formControlName="prop" (focus)="debugForm.reset({field:'round'})">
+        <option [ngValue]="null">---</option>
+        <option [ngValue]="'round'">round</option>
+        <option [ngValue]="'phase'">phase</option>
+      </select>
+      <br />
+      <ng-container [ngSwitch]="debugForm.controls['prop'].value">
+        <ng-container *ngSwitchCase="'round'">
+          Round #:
+          <input type="number" formControlName="value" placeholder="0" min="0" step="1" />
+          <br />
+          <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)%1!==0">Submit</button>
+        </ng-container>
+        <ng-container *ngSwitchCase="'phase'">
+          Phase #:
+          <input type="number" formControlName="value" placeholder="0" min="0" step="1" max="5" />
+          <ng-container [ngSwitch]="debugForm.controls['value'].value">
+            <span *ngSwitchCase="0">Dividends</span>
+            <span *ngSwitchCase="1">Pledging</span>
+            <span *ngSwitchCase="2">Stock Trading</span>
+            <span *ngSwitchCase="3">Second-Chance Stock Trading</span>
+            <span *ngSwitchCase="4" style="font-size: 97%;">Public Works & Membership Management</span>
+            <span *ngSwitchCase="5">Contributions & Good Will</span>
+            <span *ngSwitchDefault></span>
+          </ng-container>
+          <br />
+          <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)>5||Number(debugForm.controls['value'].value)%1!==0">Submit</button>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'user'">
+      User:
+      <select formControlName="user" (focus)="debugForm.reset({field:'user'})">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let user of state.users">
+          <option [ngValue]="user">{{user}}</option>
+        </ng-container>
+      </select>
+      <br />
+      <ng-container *ngIf="debugForm.controls['user'].value!==null">
+        User field:
+        <select formControlName="userField" (focus)="debugForm.reset({field:'user',user:debugForm.controls['user'].value})">
+          <option [ngValue]="null">---</option>
+          <option [ngValue]="'last-member'">last-member</option>
+          <option [ngValue]="'own'">own</option>
+          <option [ngValue]="'member'">member</option>
+          <option [ngValue]="'offers'">offers</option>
+          <option [ngValue]="'offers-json'">offers-json</option>
+        </select>
+        <br />
+        <ng-container [ngSwitch]="debugForm.controls['userField'].value">
+          <ng-container *ngSwitchCase="debugForm.controls['userField'].value==='last-member'||debugForm.controls['userField'].value==='member'?debugForm.controls['userField'].value:''">
+            Stock:
+            <select formControlName="prop">
+              <option [ngValue]="null">---</option>
+              <ng-container *ngFor="let stock of stockList">
+                <option [ngValue]="stock">{{stock}}</option>
+              </ng-container>
+            </select>
+            <br />
+            Tier:
+            <input type="number" formControlName="value" placeholder="0" step="1" min="0" max="3" />
+            <span *ngIf="debugForm.controls['prop'].value!==null">
+              Current tier: {{state.user[debugForm.controls['user'].value].member[debugForm.controls['prop'].value]}}
+            </span>
+            <br />
+            <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['user'].value===null||debugForm.controls['userField'].value===null||Number(debugForm.controls['value'].value)>3||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)%1!==0">Submit</button>
+          </ng-container>
+          <ng-container *ngSwitchCase="'own'">
+            Stock:
+            <select formControlName="prop">
+              <option [ngValue]="null">---</option>
+              <ng-container *ngFor="let stock of stockList">
+                <option [ngValue]="stock">{{stock}}</option>
+              </ng-container>
+            </select>
+            <br />
+            Count:
+            <input type="number" formControlName="value" placeholder="0" step="1" min="0" max="100" />
+            <span *ngIf="debugForm.controls['prop'].value!==null">
+              Available: {{stockAvailability[debugForm.controls['prop'].value]}}
+            </span>
+            <br />
+            <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['user'].value===null||debugForm.controls['userField'].value===null||Number(debugForm.controls['value'].value)>stockAvailability[debugForm.controls['prop'].value]||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)%1!==0">Submit</button>
+          </ng-container>
+          <ng-container *ngSwitchCase="debugForm.controls['userField'].value==='offers'||debugForm.controls['userField'].value==='offers-json'?debugForm.controls['userField'].value:''">
+            You cannot modify this field.
+          </ng-container>
+          <ng-container *ngSwitchDefault></ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'ready'">
+      Action:
+      <select formControlName="value" (focus)="debugForm.reset({field:'ready'})">
+        <option [ngValue]="null">---</option>
+        <option [ngValue]="'sadd'">sadd</option>
+        <option [ngValue]="'srem'">srem</option>
+        <option [ngValue]="'del'">del</option>
+      </select>
+      <br />
+      <ng-container [ngSwitch]="debugForm.controls['value'].value">
+        <ng-container *ngSwitchCase="'sadd'">
+          User:
+          <select formControlName="prop">
+            <option [ngValue]="null">---</option>
+            <ng-container *ngFor="let user of notReady">
+              <option [ngValue]="user">{{user}}</option>
+            </ng-container>
+          </select>
+          <br />
+        </ng-container>
+        <ng-container *ngSwitchCase="'srem'">
+          User:
+          <select formControlName="prop">
+            <option [ngValue]="null">---</option>
+            <ng-container *ngFor="let user of state.ready">
+              <option [ngValue]="user">{{user}}</option>
+            </ng-container>
+          </select>
+          <br />
+        </ng-container>
+        <ng-container *ngSwitchCase="'del'">
+          Yes:
+          <input type="checkbox" formControlName="prop" />
+          <span *ngIf="String(debugForm.controls['prop'].value)==='true'&&!state.ready.length">
+            You cannot delete this field while it is empty. 
+          </span>
+          <br />
+        </ng-container>
+        <ng-container *ngSwitchDefault></ng-container>
+      </ng-container>
+      <button type="submit" *ngIf="debugForm.controls['value'].value!==null" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['value'].value==='del'&&!state.ready.length">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'pledge'">
+      User:
+      <select formControlName="prop">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let user of state.users">
+          <option [ngValue]="user">{{user}}</option>
+        </ng-container>
+      </select>
+      <br />
+      Amount:
+      <input type="number" formControlName="value" placeholder="100" min="0" step="100" />
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'can-trade'">
+      Action:
+      <select formControlName="value" (focus)="debugForm.reset({field:'can-trade'})">
+        <option [ngValue]="null">---</option>
+        <option [ngValue]="'sadd'">sadd</option>
+        <option [ngValue]="'srem'">srem</option>
+        <option [ngValue]="'del'">del</option>
+      </select>
+      <br />
+      <ng-container [ngSwitch]="debugForm.controls['value'].value">
+        <ng-container *ngSwitchCase="'sadd'">
+          User:
+          <select formControlName="prop">
+            <option [ngValue]="null">---</option>
+            <ng-container *ngFor="let user of canNotTrade">
+              <option [ngValue]="user">{{user}}</option>
+            </ng-container>
+          </select>
+          <br />
+        </ng-container>
+        <ng-container *ngSwitchCase="'srem'">
+          User:
+          <select formControlName="prop">
+            <option [ngValue]="null">---</option>
+            <ng-container *ngFor="let user of state['can-trade']">
+              <option [ngValue]="user">{{user}}</option>
+            </ng-container>
+          </select>
+          <br />
+        </ng-container>
+        <ng-container *ngSwitchCase="'del'">
+          Yes:
+          <input type="checkbox" formControlName="prop" />
+          <span *ngIf="String(debugForm.controls['prop'].value)==='true'&&!state['can-trade'].length">
+            You cannot delete this field while it is empty.
+          </span>
+          <br />
+        </ng-container>
+        <ng-container *ngSwitchDefault></ng-container>
+      </ng-container>
+      <button type="submit" *ngIf="debugForm.controls['value'].value!==null" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['value'].value==='del'&&!state['can-trade'].length">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'pa'">
+      User:
+      <select formControlName="prop">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let user of state.users">
+          <option [ngValue]="user">{{user}}</option>
+        </ng-container>
+      </select>
+      <br />
+      Amount:
+      <input type="number" formControlName="value" placeholder="0" min="0" step="100" />
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'cash'">
+      User:
+      <select formControlName="prop">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let user of state.users">
+          <option [ngValue]="user">{{user}}</option>
+        </ng-container>
+      </select>
+      <br />
+      Amount:
+      <input type="number" formControlName="value" placeholder="3000" min="0" step="100" />
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'init'">
+      <!-- need to fix debug.tl to handle zset -->
+      Not implemented.
+    </ng-container>
+    <ng-container *ngSwitchCase="'second-init'">
+      <!-- same as above -->
+      Not implemented.
+    </ng-container>
+    <ng-container *ngSwitchCase="'ver'">
+      You cannot modify this field.
+    </ng-container>
+    <ng-container *ngSwitchCase="'global-ver'">
+      You cannot modify this field.
+    </ng-container>
+    <ng-container *ngSwitchDefault></ng-container>
+  </ng-container>
+</form>
 </div>

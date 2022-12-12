@@ -74,3 +74,12 @@ declare interface CartItem {
   ct: number;
   nix?: number;
 }
+declare interface DebugForm {
+  cmd: Cmd.Debug,
+  game: string,
+  field: string,
+  user?: string,
+  userField?: string,
+  prop: string,
+  value: string
+}
