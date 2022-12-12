@@ -23,6 +23,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       client.send(fromScriptError("new", err as Error));
     }
   } catch (err) {
-    client.send(fromScriptError("new", new Error("EUNKNOWN")));
+    // Theoretically, there should be no way for new.tl to fail,
+    // but on the 0.01% chance that it does, fail silently and let the
+    // user try again
+    //client.send(fromScriptError("new", new Error("EUNKNOWN")));
   }
 }
