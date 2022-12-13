@@ -141,12 +141,27 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions["delta"] = this.stateSubjects["delta"].subscribe(() => {
       this.resetDelta();
     });
+    this.subscriptions["user"] = this.stateSubjects["user"].subscribe(() => {
+      this.resetAvailable();
+    });
   }
   ngOnDestroy(): void {
     if (this.subscriptions["cart-remove"])
       this.subscriptions["cart-remove"].unsubscribe();
     if (this.subscriptions["pw"])
       this.subscriptions["pw"].unsubscribe();
+    if (this.subscriptions["delta"])
+      this.subscriptions["delta"].unsubscribe();
+    if (this.subscriptions["user"])
+      this.subscriptions["user"].unsubscribe();
+  }
+  resetAvailable() {
+    if (this.state.users && this.state.user) {
+      this.available = 100;
+      this.state.users.forEach(user => {
+        this.available -= this.state.user[user].own[this.comShort];
+      });
+    }
   }
   resetChangeMemberPrice() {
     if (this.state.pw) {
