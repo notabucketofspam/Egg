@@ -97,11 +97,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
             });
           }
         });
-        this.projected.available = this.available - this.withdraw.available;
-        this.state.users.forEach(user => {
-          this.projected.user[user].own[this.comShort] = this.state.user[user].own[this.comShort]
-            - this.withdraw.user[user].own[this.comShort];
-        });
+        this.resetProjected();
       }
       if (changes["state"].currentValue.users)
         this.localSubjects["cart-remove"].next();
@@ -128,11 +124,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
             this.withdraw.user[this.user].own[this.comShort] -= item.ct;
           }
         });
-        this.projected.available = this.available - this.withdraw.available;
-        this.state.users.forEach(user => {
-          this.projected.user[user].own[this.comShort] = this.state.user[user].own[this.comShort]
-            - this.withdraw.user[user].own[this.comShort];
-        });
+        this.resetProjected();
       }
     });
     this.comShort = this.conglomerate + ':' + this.company;
@@ -144,8 +136,19 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       this.resetDelta();
     });
     this.subscriptions["user"] = this.stateSubjects["user"].pipe(takeUntil(this.destroyer)).subscribe(() => {
+      this.resetProjected();
       this.resetAvailable();
+      this.resetProjected();
     });
+  }
+  resetProjected() {
+    if (this.state.users && this.state.user) {
+      this.projected.available = this.available - this.withdraw.available;
+      this.state.users.forEach(user => {
+        this.projected.user[user].own[this.comShort] = this.state.user[user].own[this.comShort]
+          - this.withdraw.user[user].own[this.comShort];
+      });
+    }
   }
   ngOnDestroy(): void {
     this.destroyer.next(true);
