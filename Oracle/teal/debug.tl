@@ -48,7 +48,7 @@ if gameExists then
     local partial: {string: any} = {}
     partial["cmd"] = "update"
     -- Check key type
-    local keyType = redis.call("TYPE", debugKey) as string
+    local keyType = (redis.call("TYPE", debugKey) as Status).ok
     -- These work regardless of if key is a user sub-field or not
     if keyType == "hash" then
       -- Assign value to hash field
