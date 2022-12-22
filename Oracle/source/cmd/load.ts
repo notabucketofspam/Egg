@@ -25,7 +25,6 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   else
     await Promise.all([
       ioredis.hgetall(`game:${data.game}:price`).then(reply => send.price = fromHgetall(reply)),
-      ioredis.hgetall(`game:${data.game}:next-price`).then(reply => send["next-price"] = fromHgetall(reply)),
       ioredis.hgetall(`game:${data.game}:delta`).then(reply => send.delta = fromHgetall(reply)),
       ioredis.hgetall(`game:${data.game}:pw`).then(reply => send.pw = fromHgetall(reply)),
       ioredis.hgetall(`game:${data.game}:round`).then(reply => send.round = fromHgetall(reply)),
