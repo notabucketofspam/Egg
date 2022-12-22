@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -13,12 +13,15 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() state!: State;
   subscriptions: Record<string, Subscription> = {};
   @Input() localSubjects!: Record<string, Subject<void>>;
+  destroyer = new ReplaySubject<boolean>(1);
   constructor() { }
   ngOnDestroy(): void {
-    if (this.subscriptions["cart-add"])
-      this.subscriptions["cart-add"].unsubscribe();
-    if (this.subscriptions["cart-remove"])
-      this.subscriptions["cart-remove"].unsubscribe();
+    this.destroyer.next(true);
+    this.destroyer.complete();
+    //if (this.subscriptions["cart-add"])
+    //  this.subscriptions["cart-add"].unsubscribe();
+    //if (this.subscriptions["cart-remove"])
+    //  this.subscriptions["cart-remove"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["cart"]) {
@@ -26,8 +29,10 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   ngOnInit(): void {
-    this.subscriptions["cart-add"] = this.localSubjects["cart-add"].subscribe(() => this.setCartTotal());
-    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => this.setCartTotal());
+    this.subscriptions["cart-add"] = this.localSubjects["cart-add"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.setCartTotal());
+    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.setCartTotal());
   }
   removeItem(index: number) {
     this.cart.splice(index, 1);

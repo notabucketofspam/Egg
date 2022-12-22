@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-round',
@@ -23,22 +23,25 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
     "Public Works & Membership Management",
     "Contributions & Good Will"
   ];
+  destroyer = new ReplaySubject<boolean>(1);
   constructor() { }
   ngOnInit(): void {
-    this.subscriptions["round"] = this.stateSubjects["round"].subscribe(() => {
+    this.subscriptions["round"] = this.stateSubjects["round"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.readyState = false;
       this.readyIcon = "\u{26AA}";
     });
-    this.subscriptions["ready"] = this.stateSubjects["ready"].subscribe(() => {
+    this.subscriptions["ready"] = this.stateSubjects["ready"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.setNotReady();
       this.checkIfReady();
     });
   }
   ngOnDestroy() {
-    if (this.subscriptions["round"])
-      this.subscriptions["round"].unsubscribe();
-    if (this.subscriptions["ready"])
-      this.subscriptions["ready"].unsubscribe();
+    this.destroyer.next(true);
+    this.destroyer.complete();
+    //if (this.subscriptions["round"])
+    //  this.subscriptions["round"].unsubscribe();
+    //if (this.subscriptions["ready"])
+    //  this.subscriptions["ready"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {

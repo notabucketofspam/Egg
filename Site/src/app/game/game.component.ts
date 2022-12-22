@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Subject, Subscription } from 'rxjs';
+import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 import { ConsoleService } from '../console.service';
 import { WebSocketService } from '../websocket.service';
@@ -44,6 +44,7 @@ export class GameComponent implements OnInit, OnDestroy {
     "cart-remove": new Subject<void>()
   };
   timers: Record<string, NodeJS.Timer> = {};
+  destroyer = new ReplaySubject<boolean>(1);
   constructor(private title: Title, private websocket: WebSocketService,
     private console: ConsoleService) { }
   ngOnInit(): void {
@@ -57,7 +58,7 @@ export class GameComponent implements OnInit, OnDestroy {
       this.cart = JSON.parse(cartStorage);
     else
       localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, "[]");
-    this.subscriptions["alive"] = this.websocket.aliveSubject.subscribe(alive => {
+    this.subscriptions["alive"] = this.websocket.aliveSubject.pipe(takeUntil(this.destroyer)).subscribe(alive => {
       if (alive) {
         this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
       } else {
@@ -67,10 +68,13 @@ export class GameComponent implements OnInit, OnDestroy {
     this.subscriptions["websocket"] = this.websocket.subscribe({ next });
   }
   ngOnDestroy() {
+    this.destroyer.next(true);
+    this.destroyer.complete();
+    // Have to do this one manually, since WebSocketService lacks pipe()
     if (this.subscriptions["websocket"])
       this.subscriptions["websocket"].unsubscribe();
-    if (this.subscriptions["alive"])
-      this.subscriptions["alive"].unsubscribe();
+    //if (this.subscriptions["alive"])
+    //  this.subscriptions["alive"].unsubscribe();
   }
   private next(value: Next) {
     this.console.log(value);

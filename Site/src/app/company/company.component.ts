@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
+import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 import { ConsoleService } from '../console.service';
 import { TimeService } from '../time.service';
 
@@ -58,6 +58,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   changeMemberPrice = 0;
   tierPrices = [0, 400, 550, 650, 800];
   @Output() memberEE = new EventEmitter<string>();
+  destroyer = new ReplaySubject<boolean>(1);
   constructor(private time: TimeService, private console: ConsoleService) { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
@@ -111,7 +112,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   ngOnInit(): void {
-    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => {
+    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => {
       if (this.state.users) {
         this.state.users.forEach(user => {
           this.withdraw.user[user].own[this.comShort] = 0;
@@ -134,26 +136,28 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
     this.comShort = this.conglomerate + ':' + this.company;
-    this.subscriptions["pw"] = this.stateSubjects["pw"].subscribe(() => {
+    this.subscriptions["pw"] = this.stateSubjects["pw"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetChangeMemberPrice();
     });
     this.tradeOfferForm.controls["tx"].setValue(this.user);
-    this.subscriptions["delta"] = this.stateSubjects["delta"].subscribe(() => {
+    this.subscriptions["delta"] = this.stateSubjects["delta"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetDelta();
     });
-    this.subscriptions["user"] = this.stateSubjects["user"].subscribe(() => {
+    this.subscriptions["user"] = this.stateSubjects["user"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetAvailable();
     });
   }
   ngOnDestroy(): void {
-    if (this.subscriptions["cart-remove"])
-      this.subscriptions["cart-remove"].unsubscribe();
-    if (this.subscriptions["pw"])
-      this.subscriptions["pw"].unsubscribe();
-    if (this.subscriptions["delta"])
-      this.subscriptions["delta"].unsubscribe();
-    if (this.subscriptions["user"])
-      this.subscriptions["user"].unsubscribe();
+    this.destroyer.next(true);
+    this.destroyer.complete();
+    //if (this.subscriptions["cart-remove"])
+    //  this.subscriptions["cart-remove"].unsubscribe();
+    //if (this.subscriptions["pw"])
+    //  this.subscriptions["pw"].unsubscribe();
+    //if (this.subscriptions["delta"])
+    //  this.subscriptions["delta"].unsubscribe();
+    //if (this.subscriptions["user"])
+    //  this.subscriptions["user"].unsubscribe();
   }
   resetAvailable() {
     if (this.state.users && this.state.user) {

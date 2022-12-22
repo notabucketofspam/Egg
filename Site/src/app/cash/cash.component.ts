@@ -1,7 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
+import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-cash',
@@ -25,19 +25,23 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   @Input() stateSubjects!: Record<string, Subject<void>>;
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() state!: State;
+  destroyer = new ReplaySubject<boolean>(1);
   constructor(private currencyPipe: CurrencyPipe) { }
   ngOnInit(): void {
-    this.subscriptions["cash"] = this.stateSubjects["cash"].subscribe(() => {
+    this.subscriptions["cash"] = this.stateSubjects["cash"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetProjectedCash();
     });
-    this.subscriptions["pa"] = this.stateSubjects["pa"].subscribe(() => {
+    this.subscriptions["pa"] = this.stateSubjects["pa"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       if (this.state.users && this.state.pa) {
         this.resetPaTotal();
       }
     });
-    this.subscriptions["cart-add"] = this.localSubjects["cart-add"].subscribe(() => this.resetProjectedCash());
-    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].subscribe(() => this.resetProjectedCash());
-    this.subscriptions["pledge"] = this.stateSubjects["pledge"].subscribe(() => {
+    this.subscriptions["cart-add"] = this.localSubjects["cart-add"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.resetProjectedCash());
+    this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.resetProjectedCash());
+    this.subscriptions["pledge"] = this.stateSubjects["pledge"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => {
       this.resetProjectedCash();
     });
   }
@@ -57,16 +61,18 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
      this.projected.cash[this.user] -= this.state.pledge[this.user];
   }
   ngOnDestroy() {
-    if (this.subscriptions["pa"])
-      this.subscriptions["pa"].unsubscribe();
-    if (this.subscriptions["cash"])
-      this.subscriptions["cash"].unsubscribe();
-    if (this.subscriptions["cart-add"])
-      this.subscriptions["cart-add"].unsubscribe();
-    if (this.subscriptions["cart-remove"])
-      this.subscriptions["cart-remove"].unsubscribe();
-    if (this.subscriptions["pledge"])
-      this.subscriptions["pledge"].unsubscribe();
+    this.destroyer.next(true);
+    this.destroyer.complete();
+    //if (this.subscriptions["pa"])
+    //  this.subscriptions["pa"].unsubscribe();
+    //if (this.subscriptions["cash"])
+    //  this.subscriptions["cash"].unsubscribe();
+    //if (this.subscriptions["cart-add"])
+    //  this.subscriptions["cart-add"].unsubscribe();
+    //if (this.subscriptions["cart-remove"])
+    //  this.subscriptions["cart-remove"].unsubscribe();
+    //if (this.subscriptions["pledge"])
+    //  this.subscriptions["pledge"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
