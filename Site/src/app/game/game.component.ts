@@ -215,7 +215,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   debug($event: DebugForm) {
     this.console.log("debug", $event);
-    //this.websocket.nextJ($event);
+    this.websocket.nextJ($event);
   }
   patch() {
     this.websocket.nextJ({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver });
