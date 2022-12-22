@@ -12,7 +12,7 @@ type Debug = {
 export const cmd = "debug";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Debug) {
   try {
-    const fields = data.user && data.userField ? [data.field, "users"] : [data.field];
+    const fields = data.user && data.userField ? ["users"] : ["users", data.field];
     const users = data.user && data.userField ? [data.user] : undefined;
     const userFields = data.user && data.userField ? [data.userField] : undefined;
     const keys = toScriptKeys(data.game, fields, users, userFields);

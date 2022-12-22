@@ -3,8 +3,8 @@ redis.setresp(3)
 -- Things to be returned from the script
 local send: {string: string}
 -- Script params
-local debugKey = KEYS[1]
-local usersKey = KEYS[2]
+local usersKey = KEYS[1]
+local debugKey = KEYS[2]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local username = ARGV[3]
