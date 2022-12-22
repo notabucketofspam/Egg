@@ -37,11 +37,6 @@ if gameExists then
       return send
     end
   end
-  -- Change debugKey if it refers to a user sub-field
-  -- KEYS[1] is useless in this case, as it will always have the value "user"
-  if userCount == 1 then
-    debugKey = KEYS[3]
-  end
   -- Check that key exists
   local keyExists = redis.call("EXISTS", debugKey) as number
   if keyExists == 1 then
