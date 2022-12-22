@@ -63,16 +63,6 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this.destroyer.next(true);
     this.destroyer.complete();
-    //if (this.subscriptions["pa"])
-    //  this.subscriptions["pa"].unsubscribe();
-    //if (this.subscriptions["cash"])
-    //  this.subscriptions["cash"].unsubscribe();
-    //if (this.subscriptions["cart-add"])
-    //  this.subscriptions["cart-add"].unsubscribe();
-    //if (this.subscriptions["cart-remove"])
-    //  this.subscriptions["cart-remove"].unsubscribe();
-    //if (this.subscriptions["pledge"])
-    //  this.subscriptions["pledge"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {

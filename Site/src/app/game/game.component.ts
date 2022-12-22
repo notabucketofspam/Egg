@@ -73,8 +73,6 @@ export class GameComponent implements OnInit, OnDestroy {
     // Have to do this one manually, since WebSocketService lacks pipe()
     if (this.subscriptions["websocket"])
       this.subscriptions["websocket"].unsubscribe();
-    //if (this.subscriptions["alive"])
-    //  this.subscriptions["alive"].unsubscribe();
   }
   private next(value: Next) {
     this.console.log(value);

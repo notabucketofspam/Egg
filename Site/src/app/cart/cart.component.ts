@@ -18,10 +18,6 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroyer.next(true);
     this.destroyer.complete();
-    //if (this.subscriptions["cart-add"])
-    //  this.subscriptions["cart-add"].unsubscribe();
-    //if (this.subscriptions["cart-remove"])
-    //  this.subscriptions["cart-remove"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["cart"]) {

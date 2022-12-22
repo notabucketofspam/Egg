@@ -38,10 +38,6 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this.destroyer.next(true);
     this.destroyer.complete();
-    //if (this.subscriptions["round"])
-    //  this.subscriptions["round"].unsubscribe();
-    //if (this.subscriptions["ready"])
-    //  this.subscriptions["ready"].unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
