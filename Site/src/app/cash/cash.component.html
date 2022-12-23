@@ -46,9 +46,12 @@
       </div>
       <div class="Flex Row Center">
         <button type="submit"
-        [disabled]="reportForm.controls['amount'].value===null||reportForm.controls['amount'].value<0">
+        [disabled]="reportForm.controls['amount'].value===null||reportForm.controls['amount'].value<0||!state.round||state.round.phase!==1">
           Submit
         </button>
+      </div>
+      <div class="Flex Row Center" *ngIf="state.round&&state.round.phase!==1">
+        You cannot change your pledge in this phase
       </div>
     </form>
   </div>
