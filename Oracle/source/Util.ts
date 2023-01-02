@@ -158,3 +158,12 @@ export function toScriptKeys(game: string, fields: string[], users?: string[], u
   }
   return keys;
 }
+export interface CartItem {
+  id: string;
+  tx?: string;
+  rx: string;
+  con: string;
+  com: string;
+  ct: number;
+  nix?: number;
+}

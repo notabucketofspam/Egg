@@ -1,11 +1,12 @@
-import { fromScriptError, toScriptKeys, Util } from "../Util.js";
+import { CartItem, fromScriptError, toScriptKeys, Util } from "../Util.js";
 // Command
 type Ready = {
   cmd: "ready",
   game: string,
   user: string,
   ready: boolean,
-  phase: number
+  phase: number,
+  cart?: CartItem[]
 };
 export const cmd = "ready";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Ready) {
@@ -29,40 +30,47 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       partialObj["cash"] = morePartialObj["cash"];
     } else if ((partialObj["round"]["phase"] === 2 || partialObj["round"]["phase"] === 3)
       && data.phase !== partialObj["round"]["phase"]) {
-      // Roll for initiative / second initiative
-      const fields = ["users", "init", "second-init"];
+      // Roll for initiative
+      const fields = ["users", "init"];
       const keys = toScriptKeys(data.game, fields);
       const morePartialJson = await ioredis.evalsha(scripts["roll-init"], keys.length, ...keys,
-        0, data.game, partialObj["round"]["phase"] - 1) as string;
+        0, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
-      if (morePartialObj["init"])
-        partialObj["init"] = morePartialObj["init"];
-      else
-        partialObj["second-init"] = morePartialObj["second-init"];
-    } else if (partialObj["round"]["phase"] === 4 && data.phase !== partialObj["round"]["phase"]) {
-      // Do public works update, i.e. raise them automatically
-      const fields = ["pw"];
+      partialObj["init"] = morePartialObj["init"];
+    } else if (partialObj["round"]["phase"] === 3 && data.phase !== partialObj["round"]["phase"]) {
+      // Process the first stock trading window
+      // This will push through purchases that work (to whatever extent that is)
+      // and send trade offers to their targets
+      const fields = ["users", "init", "price", "next-price", "delta"];
       const users = await ioredis.smembers(`game:${data.game}:users`);
-      const userFields = ["own"];
-      const keys = toScriptKeys(data.game, fields, users, userFields);
-      // Script note: only PWs that have changed in flavor will be returned
-      const morePartialJson = await ioredis.evalsha(scripts["raise-pw"], keys.length, ...keys,
-        users.length, data.game) as string;
+      const userFields = ["own", "offers-json"];
+      const moreKeys = toScriptKeys(data.game, fields, users, userFields);
+      const morePartialJson = await ioredis.evalsha(scripts["trade"], moreKeys.length, ...moreKeys,
+        users.length, data.game, "3") as string;
       const morePartialObj = JSON.parse(morePartialJson);
-      partialObj["pw"] = morePartialObj["pw"];
-      // Process stock transactions; order-of-operations TBD
-      // Disable until such decisions are made
-      if (false) {
-        fields.push("price", "delta");
-        userFields.push("offers-json");
-        const moreKeys = toScriptKeys(data.game, fields, users, userFields);
-        const evenMorePartialJson = await ioredis.evalsha(scripts["trade"], moreKeys.length, ...moreKeys,
-          users.length, data.game) as string;
-        const evenMorePartialObject = JSON.parse(evenMorePartialJson);
-        // Might need to put user[user].own in here as well
-        partialObj["price"] = evenMorePartialObject["price"];
-        partialObj["delta"] = evenMorePartialObject["delta"];
-      }
+      partialObj["user"] = morePartialObj["user"];
+    } else if (partialObj["round"]["phase"] === 4 && data.phase !== partialObj["round"]["phase"]) {
+      // Process the second stock trading window
+      // This is responses to trade offers (accept or reject)
+      const users = await ioredis.smembers(`game:${data.game}:users`);
+      const fields = ["users", "price", "next-price", "delta"];
+      const userFields = ["own", "offers-json"];
+      const keys = toScriptKeys(data.game, fields, users, userFields);
+      const morePartialJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
+        users.length, data.game, "4") as string;
+      const morePartialObj = JSON.parse(morePartialJson);
+      partialObj["user"] = morePartialObj["user"];
+      partialObj["price"] = morePartialObj["price"];
+      partialObj["delta"] = morePartialObj["delta"];
+      // Do public works update, i.e. raise them automatically
+      fields.splice(0, fields.length, "pw");
+      userFields.pop();
+      const moreKeys = toScriptKeys(data.game, fields, users, userFields);
+      // Script note: only PWs that have changed in flavor will be returned
+      const evenMorePartialJson = await ioredis.evalsha(scripts["raise-pw"], moreKeys.length, ...moreKeys,
+        users.length, data.game) as string;
+      const evenMorePartialObj = JSON.parse(evenMorePartialJson);
+      partialObj["pw"] = evenMorePartialObj["pw"];
     } else if (partialObj["round"]["phase"] === 5 && data.phase !== partialObj["round"]["phase"]) {
       // Do good will update
       const fields: string[] = ["users", "cash", "pledge", "pa"];
