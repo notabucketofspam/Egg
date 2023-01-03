@@ -36,29 +36,27 @@ if gameExists then
     for i = 2, userCount do
       redis.call("HSET", KEYS[i as integer], unpack(hsetConglomerates))
     end
-    -- increase version ###
-    redis.call("INCR", verKey)
   elseif ver == 1 then
     -- add "last-member" to each user
     -- Ends up being the exact same as above
     for i = 2, userCount do
       redis.call("HSET", KEYS[i as integer], unpack(hsetConglomerates))
     end
-    -- increase version ###
-    redis.call("INCR", verKey)
   elseif ver == 2 then
     -- remove "last-own" from all users
     redis.call("DEL", unpack(KEYS, 2))
-    -- increase version ###
-    redis.call("INCR", verKey)
   elseif ver == 3 then
     -- add "next-price" to game
     redis.call("HSET", KEYS[2], unpack(hsetConglomeratesPrice))
-    -- increase version ###
-    redis.call("INCR", verKey)
+  elseif ver == 4 then
+    -- remove "second-init" from game
+    redis.call("DEL", KEYS[2])
   else
-    -- already on the latest patch, so do nothing
+    -- already on the latest patch, so decrement here and increment again in a moment
+    redis.call("DECR", verKey)
   end
+  -- increment version ###
+  redis.call("INCR", verKey)
   send = redis.status_reply("OK")
 else
   -- No game in games set

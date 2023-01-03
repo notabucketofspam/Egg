@@ -8,7 +8,7 @@ try {
   process.exit(1);
 }
 await Promise.all<void>([
-  new Promise<void>(resolve => ioredis.set("global-ver", 4, () => resolve())),
+  new Promise<void>(resolve => ioredis.set("global-ver", 5, () => resolve())),
   new Promise<void>(resolve => ioredis.script("FLUSH", () => resolve()))
 ]);
 // Script setup
