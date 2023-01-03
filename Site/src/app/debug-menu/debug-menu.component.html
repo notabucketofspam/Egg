@@ -17,7 +17,6 @@
     <option [ngValue]="'pa'">pa</option>
     <option [ngValue]="'cash'">cash</option>
     <option [ngValue]="'init'">init</option>
-    <option [ngValue]="'second-init'">second-init</option>
     <option [ngValue]="'ver'">ver</option>
     <option [ngValue]="'global-ver'">global-ver</option>
   </select>
@@ -130,7 +129,7 @@
             <span *ngSwitchCase="0">Dividends</span>
             <span *ngSwitchCase="1">Pledging</span>
             <span *ngSwitchCase="2">Stock Trading</span>
-            <span *ngSwitchCase="3">Second-Chance Stock Trading</span>
+            <span *ngSwitchCase="3">Review Trade Offers</span>
             <span *ngSwitchCase="4" style="font-size: 97%;">Public Works & Membership Management</span>
             <span *ngSwitchCase="5">Contributions & Good Will</span>
             <span *ngSwitchDefault></span>
@@ -330,10 +329,6 @@
     </ng-container>
     <ng-container *ngSwitchCase="'init'">
       <!-- need to fix debug.tl to handle zset -->
-      Not implemented.
-    </ng-container>
-    <ng-container *ngSwitchCase="'second-init'">
-      <!-- same as above -->
       Not implemented.
     </ng-container>
     <ng-container *ngSwitchCase="'ver'">

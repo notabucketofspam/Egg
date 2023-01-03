@@ -35,7 +35,6 @@ export class GameComponent implements OnInit, OnDestroy {
     pa: new Subject<void>(),
     cash: new Subject<void>(),
     init: new Subject<void>(),
-    "second-init": new Subject<void>(),
     ver: new Subject<void>()
   };
   /** Subjects for non-State properties */

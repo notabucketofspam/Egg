@@ -19,7 +19,7 @@ export class RoundComponent implements OnInit, OnChanges, OnDestroy {
     "Dividends",
     "Pledging",
     "Stock Trading",
-    "Second-Chance Stock Trading",
+    "Review Trade Offers",
     "Public Works & Membership Management",
     "Contributions & Good Will"
   ];

@@ -24,8 +24,5 @@
     <dt *ngIf="state.round&&state.round.phase===2">
       Initiative: {{state.init[user] + "/" + state.users.length}}
     </dt>
-    <dt *ngIf="state.round&&state.round.phase===3">
-      Second initiative: {{state["second-init"][user] + "/" + state.users.length}}
-    </dt>
   </dl>
 </div>

@@ -50,7 +50,6 @@ declare interface State extends Next {
   pa: Record<string, number>;
   cash: Record<string, number>;
   init: Record<string, number>;
-  "second-init": Record<string, number>;
   ver: number;
   "global-ver": number;
 }
@@ -72,7 +71,6 @@ declare interface CartItem {
   con: string;
   com: string;
   ct: number;
-  nix?: number;
 }
 declare interface DebugForm {
   cmd: Cmd.Debug,
