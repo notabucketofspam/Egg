@@ -12,7 +12,7 @@
         <span class="Remove" (click)="removeItem(i)"
         [class.Disabled]="state.ready&&state.ready.includes(user)">X</span>
         <span class="ItemNo">Item {{item.id}}</span>
-        <span class="Price" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
+        <span style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
       </dt>
       <dd>Conglomerate: {{item.con}}</dd>
       <dd>Company: {{item.com}}</dd>
