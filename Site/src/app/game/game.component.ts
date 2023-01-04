@@ -201,10 +201,18 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   ready($event: boolean) {
     this.console.log(`user ${this.user} ready: ${$event}`);
-    this.websocket.nextJ({
-      cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
-      phase: this.state.round.phase
-    });
+    if (this.state.round.phase === 2 || this.state.round.phase === 3) {
+      const cartJson = this.cart.map(item => JSON.stringify(item));
+      this.websocket.nextJ({
+        cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
+        phase: this.state.round.phase, "cart-json": cartJson
+      });
+    } else {
+      this.websocket.nextJ({
+        cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
+        phase: this.state.round.phase
+      });
+    }
   }
   reportPledge($event: number) {
     this.console.log(`user ${this.user} pledge ${$event}`);
