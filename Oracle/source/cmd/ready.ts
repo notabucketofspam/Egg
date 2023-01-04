@@ -23,7 +23,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     } else {
       const baseKeys = toScriptKeys(data.game, baseFields);
       partialJson = await ioredis.evalsha(scripts["ready"], baseKeys.length, ...baseKeys,
-        0, data.game, data.user, String(data.ready), 0) as string;
+        0, data.game, data.user, String(data.ready), -1) as string;
     }
     const partialObj = JSON.parse(partialJson);
     // Only trigger on phase change, not just any toggle

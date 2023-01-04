@@ -37,8 +37,8 @@ if gameExists then
       redis.call("SREM", readyKey, username)
     end
     -- Adjust cart
-    redis.call("DEL", cartJsonKey)
-    if cartLength > 0 then
+    if cartLength > -1 then
+      redis.call("DEL", cartJsonKey)
       redis.call("SADD", cartJsonKey, unpack(ARGV, 6))
     end
     -- Check what changes must be returned to the clients
