@@ -69,6 +69,9 @@ i {
 .Flex.Center {
   justify-content: center;
 }
+.Ul {
+  text-decoration-line: underline;
+}
 button, select, option, input {
   border-style: outset;
   border-width: 1px;
