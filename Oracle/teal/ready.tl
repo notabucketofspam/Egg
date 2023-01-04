@@ -6,10 +6,12 @@ local send: {string: string}
 local usersKey = KEYS[1]
 local readyKey = KEYS[2]
 local roundKey = KEYS[3]
+local cartJsonKey = KEYS[4]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local username = ARGV[3]
 local isReady = ARGV[4]
+local cartLength = tonumber(ARGV[5])
 -- Check that game exists
 local games = redis.call("SMEMBERS", "games") as Set
 local gameExists = false
@@ -33,6 +35,11 @@ if gameExists then
       redis.call("SADD", readyKey, username)
     else
       redis.call("SREM", readyKey, username)
+    end
+    -- Adjust cart
+    redis.call("DEL", cartJsonKey)
+    if cartLength > 0 then
+      redis.call("SADD", cartJsonKey, unpack(ARGV, 6))
     end
     -- Check what changes must be returned to the clients
     local partial = {

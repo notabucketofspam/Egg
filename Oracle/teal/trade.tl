@@ -4,7 +4,6 @@ redis.setresp(3)
 local send: {string: string}
 -- Script params
 local usersKey = KEYS[1]
--- initKey may refer to either init or second-init, depending on phase
 local initKey = KEYS[2]
 local priceKey = KEYS[3]
 local nextPriceKey = KEYS[4]

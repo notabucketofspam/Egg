@@ -1,4 +1,4 @@
-import { CartItem, fromScriptError, toScriptKeys, Util } from "../Util.js";
+import { fromScriptError, toScriptKeys, Util } from "../Util.js";
 // Command
 type Ready = {
   cmd: "ready",
@@ -6,16 +6,25 @@ type Ready = {
   user: string,
   ready: boolean,
   phase: number,
-  cart?: CartItem[]
+  "cart-json"?: string[]
 };
 export const cmd = "ready";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Ready) {
   try {
     // Do round update
+    let partialJson = "";
     const baseFields = ["users", "ready", "round"];
-    const baseKeys = toScriptKeys(data.game, baseFields);
-    const partialJson = await ioredis.evalsha(scripts["ready"], baseKeys.length, ...baseKeys,
-      0, data.game, data.user, String(data.ready)) as string;
+    if (data["cart-json"] && (data.phase === 2 || data.phase === 3)) {
+      const baseUsers = [data.user];
+      const baseUserFields = ["cart-json"];
+      const baseKeys = toScriptKeys(data.game, baseFields, baseUsers, baseUserFields);
+      partialJson = await ioredis.evalsha(scripts["ready"], baseKeys.length, ...baseKeys,
+        1, data.game, data.user, String(data.ready), data["cart-json"].length, ...data["cart-json"]) as string;
+    } else {
+      const baseKeys = toScriptKeys(data.game, baseFields);
+      partialJson = await ioredis.evalsha(scripts["ready"], baseKeys.length, ...baseKeys,
+        0, data.game, data.user, String(data.ready), 0) as string;
+    }
     const partialObj = JSON.parse(partialJson);
     // Only trigger on phase change, not just any toggle
     if (partialObj["round"]["phase"] === 0 && data.phase !== partialObj["round"]["phase"]) {
@@ -47,7 +56,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const morePartialJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
         users.length, data.game, "3") as string;
       const morePartialObj = JSON.parse(morePartialJson);
-      partialObj["user"] = morePartialObj["user"];
+      //partialObj["user"] = morePartialObj["user"];
     } else if (partialObj["round"]["phase"] === 4 && data.phase !== partialObj["round"]["phase"]) {
       // Process the second stock trading window
       // This is responses to trade offers (accept or reject)
