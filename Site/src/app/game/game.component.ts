@@ -129,10 +129,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   parseOffers() {
     this.state.users.forEach(user => {
-      this.state.user[user].offers = [];
-      this.state.user[user]["offers-json"].forEach(offer => {
-        this.state.user[user].offers.push(JSON.parse(offer));
-      });
+      this.state.user[user].offers = this.state.user[user]["offers-json"].map(offer => JSON.parse(offer));
     });
   }
   reloadPage() {
