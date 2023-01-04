@@ -14,6 +14,7 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
   subscriptions: Record<string, Subscription> = {};
   @Input() localSubjects!: Record<string, Subject<void>>;
   destroyer = new ReplaySubject<boolean>(1);
+  @Input() user!: string;
   constructor() { }
   ngOnDestroy(): void {
     this.destroyer.next(true);
@@ -31,8 +32,12 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(() => this.setCartTotal());
   }
   removeItem(index: number) {
-    this.cart.splice(index, 1);
-    this.cartEE.emit();
+    if (this.state.ready.includes(this.user) && (this.state.round.phase === 2 || this.state.round.phase === 3)) {
+      alert("Locked in! Can't modify the cart once ready; must un-ready to make changes.");
+    } else {
+      this.cart.splice(index, 1);
+      this.cartEE.emit();
+    }
   }
   setCartTotal() {
     if (this.state && this.state.price) {

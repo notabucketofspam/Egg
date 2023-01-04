@@ -1,14 +1,16 @@
 <button class="MenuButton Top Center Closed">CART</button>
 <div class="Menu Top Center NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
   <div class="TotalPrice">
-    <b style="display: flex;">Total:</b>
-    <span class="Price"><b>{{cartTotal | currency}}</b></span>
+    <b class="Flex">Total:</b>
+    <b class="Flex Ul" *ngIf="state.ready&&state.ready.includes(user)">Locked in!</b>
+    <span class="Flex"><b>{{cartTotal | currency}}</b></span>
   </div>
   <hr />
   <dl class="List">
     <ng-template ngFor let-item [ngForOf]="cart" let-i="index">
       <dt>
-        <span class="Remove" (click)="removeItem(i)">X</span>
+        <span class="Remove" (click)="removeItem(i)"
+        [class.Disabled]="state.ready&&state.ready.includes(user)">X</span>
         <span class="ItemNo">Item {{item.id}}</span>
         <span class="Price" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
       </dt>
