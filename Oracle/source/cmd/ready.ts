@@ -12,9 +12,9 @@ export const cmd = "ready";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Ready) {
   try {
     // Do round update
-    const fields = ["users", "ready", "round"];
-    const keys = toScriptKeys(data.game, fields);
-    const partialJson = await ioredis.evalsha(scripts["ready"], keys.length, ...keys,
+    const baseFields = ["users", "ready", "round"];
+    const baseKeys = toScriptKeys(data.game, baseFields);
+    const partialJson = await ioredis.evalsha(scripts["ready"], baseKeys.length, ...baseKeys,
       0, data.game, data.user, String(data.ready)) as string;
     const partialObj = JSON.parse(partialJson);
     // Only trigger on phase change, not just any toggle
@@ -28,8 +28,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         users.length, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["cash"] = morePartialObj["cash"];
-    } else if ((partialObj["round"]["phase"] === 2 || partialObj["round"]["phase"] === 3)
-      && data.phase !== partialObj["round"]["phase"]) {
+    } else if (partialObj["round"]["phase"] === 2 && data.phase !== partialObj["round"]["phase"]) {
       // Roll for initiative
       const fields = ["users", "init"];
       const keys = toScriptKeys(data.game, fields);
@@ -44,8 +43,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const fields = ["users", "init", "price", "next-price", "delta"];
       const users = await ioredis.smembers(`game:${data.game}:users`);
       const userFields = ["own", "offers-json"];
-      const moreKeys = toScriptKeys(data.game, fields, users, userFields);
-      const morePartialJson = await ioredis.evalsha(scripts["trade"], moreKeys.length, ...moreKeys,
+      const keys = toScriptKeys(data.game, fields, users, userFields);
+      const morePartialJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
         users.length, data.game, "3") as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["user"] = morePartialObj["user"];
