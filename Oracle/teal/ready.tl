@@ -39,7 +39,9 @@ if gameExists then
     -- Adjust cart
     if cartLength > -1 then
       redis.call("DEL", cartJsonKey)
-      redis.call("SADD", cartJsonKey, unpack(ARGV, 6))
+      if cartLength > 0 then
+        redis.call("SADD", cartJsonKey, unpack(ARGV, 6))
+      end
     end
     -- Check what changes must be returned to the clients
     local partial = {
