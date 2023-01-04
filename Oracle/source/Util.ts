@@ -112,7 +112,8 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
         // Property "value" is malformed (usually from the debug command when modifying a set)
         return JSON.stringify({
           cmd, err: err.message,
-          why: `Property "value" is malformed`, proof });
+          why: `Property "value" is malformed`, proof
+        });
       }
       case "EBADTYPE": {
         // Key is not a valid type (only accepts: hash, set, zset, string)
@@ -120,12 +121,6 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
           cmd, err: err.message,
           why: "Key is not a valid type (hash, set, zset, string)", proof
         });
-      }
-      case "EBADPHASE": {
-        // Not the right phase for initiative / second initiative (only phase 2 & 3)
-        return JSON.stringify({
-          cmd, err: err.message,
-          why: "Not the right phase for initiative / second initiative", proof });
       }
       default: {
         // Unknown error
