@@ -51,7 +51,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       // First will push through purchases that work (to whatever extent that is)
       // and send trade offers to their targets
       // Second is responses to trade offers (accept or reject)
-      const fields = ["init"];
+      const fields = ["init", "price", "cash"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
       const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
       const userFields = ["cart-json", "offers-json", "own"];
@@ -60,6 +60,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         userCount, data.game, partialObj["round"]["phase"]) as string;
       const tradeObj = JSON.parse(tradeJson) as TradeObj;
       partialObj["user"] = tradeObj["user"];
+      partialObj["cash"] = tradeObj["cash"];
       // Compute next stock price and either hold it until next phase
       // or overwrite current stock price
       fields.splice(0, fields.length, "price", "next-price", "delta");
@@ -109,5 +110,6 @@ type TradeObj = {
   list: {
     key: string,
     json: string
-  }[]
+  }[],
+  cash: Record<string, number>
 };

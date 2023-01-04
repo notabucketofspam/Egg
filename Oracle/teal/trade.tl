@@ -5,6 +5,8 @@ local send: {string: string}
 -- Script params
 -- initKey will be unused in the second window
 local initKey = KEYS[1]
+local priceKey = KEYS[2]
+local cashKey = KEYS[3]
 -- userFields are: cart-json, offers-json, own
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
@@ -23,11 +25,11 @@ local record Trade
 end
 local function getKey(ui: number, key: string): string 
   if key == "cart" then
-    return KEYS[-1 + 3*ui as integer]
-  elseif key == "offers" then
-    return KEYS[3*ui as integer]
-  elseif key == "own" then
     return KEYS[1 + 3*ui as integer]
+  elseif key == "offers" then
+    return KEYS[2 + 3*ui as integer]
+  elseif key == "own" then
+    return KEYS[3 + 3*ui as integer]
   end
 end
 -- Check that game exists
@@ -45,14 +47,19 @@ if gameExists then
   local list: {Trade} = {}
   -- {username: {own: {comshort: count}}}
   local user: {string: {string: {string: number}}} = {}
+  local cash: {string: number} = {}
   -- use ARGV here instead of userCount bc it's already a string
   local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1], "REV") as {string}
   local allUserOwn: {string: {string: string}} = {}
+  local cashMap = (redis.call("HGETALL", cashKey) as Hash).map
+  local price = (redis.call("HGETALL", priceKey) as Hash).map
   for ui = 1, userCount do
-    allUserOwn[zusers[ui as integer]] = (redis.call("HGETALL", getKey(ui, "own")) as Hash).map
-    user[zusers[ui as integer]] = {
+    local username = zusers[ui as integer]
+    allUserOwn[username] = (redis.call("HGETALL", getKey(ui, "own")) as Hash).map
+    user[username] = {
       own = {}
     }
+    cash[username] = tonumber(cashMap[username])
     -- Delete existing offers (in case something has gone awry);
     -- there should be no offers at the start of any phase, only at the end
     redis.call("DEL", getKey(ui, "offers"))
@@ -75,11 +82,19 @@ if gameExists then
             available = available - tonumber(userOwn[comshort])
           end
           if available > 0 then
+            -- Ownership
             local newct = math.min(available, item.ct)
             local newOwn = tostring(newct + tonumber(allUserOwn[rxUser][comshort]))
             allUserOwn[rxUser][comshort] = newOwn
             user[rxUser].own[comshort] = tonumber(newOwn)
             redis.call("HSET", getKey(rxi, "own"), comshort, newOwn)
+            available = available - newct
+            -- Cash
+            local newCash = cash[rxUser] - newct*tonumber(price[comshort])
+            cash[rxUser] = newCash
+            redis.call("HSET", cashKey, rxUser, tostring(newCash))
+            -- Record trade
+            item.ct = newct
             trade.key = "game:" .. gameId .. ":trade:" .. item.id
             trade.json = cjson.encode(item)
             table.insert(list, trade)
@@ -93,7 +108,9 @@ if gameExists then
               break
             end
           end
-          redis.call("SADD", getKey(txi, "offers"), itemjson)
+          local txUser = zusers[txi as integer]
+          item.ct = math.min(tonumber(allUserOwn[txUser][comshort]), item.ct)
+          redis.call("SADD", getKey(txi, "offers"), cjson.encode(item))
         end
       end
     end
@@ -129,6 +146,12 @@ if gameExists then
         allUserOwn[rxUser][comshort] = rxNewOwn
         user[rxUser].own[comshort] = rxOwn + item.ct
         redis.call("HSET", getKey(rxi, "own"), comshort, rxNewOwn)
+        -- Handle cash
+        local txNewCash = cash[txUser] + item.ct*tonumber(price[comshort])
+        cash[txUser] = txNewCash
+        local rxNewCash = cash[rxUser] - item.ct*tonumber(price[comshort])
+        cash[rxUser] = rxNewCash
+        redis.call("HSET", cashKey, rxUser, tostring(rxNewCash), txUser, tostring(txNewCash))
       end
     end
   else
@@ -136,7 +159,7 @@ if gameExists then
     send = redis.error_reply("EBADPHASE")
     return send
   end
-  send = redis.status_reply(cjson.encode({list, user}))
+  send = redis.status_reply(cjson.encode({list, user, cash}))
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
