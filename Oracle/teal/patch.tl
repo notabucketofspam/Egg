@@ -26,6 +26,7 @@ local gameExists = false
 for game in pairs(games.set) do
   if game == gameKey then
     gameExists = true
+    break
   end
 end
 if gameExists then

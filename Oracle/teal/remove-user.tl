@@ -20,6 +20,7 @@ local gameExists = false
 for game in pairs(games.set) do
   if game == gameId then
     gameExists = true
+    break
   end
 end
 if gameExists then
@@ -29,6 +30,7 @@ if gameExists then
   for user in pairs(users.set) do
     if user == username then
       userExists = true
+      break
     end
   end
   if userExists then
