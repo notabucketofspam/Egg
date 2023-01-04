@@ -64,12 +64,12 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       // Compute next stock price and either hold it until next phase
       // or overwrite current stock price
       fields.splice(0, fields.length, "price", "next-price", "delta");
-      keys.splice(0, keys.length, ...toScriptKeys(data.game, fields));
-      // keys2 and argv are the same length to simplify the math in Teal
-      const keys2 = keys.concat(tradeObj.list.map(value => value.key));
+      // keys and argv are the same length to simplify the math in Teal
+      keys.splice(0, keys.length, ...toScriptKeys(data.game, fields),
+        ...tradeObj.list.map(value => value.key));
       const argv = ["0", data.game, `${partialObj["round"]["phase"]}`,
         ...tradeObj.list.map(value => value.json)];
-      const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys2.length, ...keys2, ...argv) as string;
+      const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys.length, ...keys, ...argv) as string;
       if (partialObj["round"]["phase"] === 4) {
         // Only include price / delta updates when they're actually applied
         const stockPriceObj = JSON.parse(stockPriceJson);
