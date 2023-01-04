@@ -45,40 +45,45 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         0, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["init"] = morePartialObj["init"];
-    } else if (partialObj["round"]["phase"] === 3 && data.phase !== partialObj["round"]["phase"]) {
-      // Process the first stock trading window
-      // This will push through purchases that work (to whatever extent that is)
+    } else if ((partialObj["round"]["phase"] === 3 || partialObj["round"]["phase"] === 4)
+      && data.phase !== partialObj["round"]["phase"]) {
+      // Process a stock trading window
+      // First will push through purchases that work (to whatever extent that is)
       // and send trade offers to their targets
-      const fields = ["users", "init", "price", "next-price", "delta"];
-      const users = await ioredis.smembers(`game:${data.game}:users`);
-      const userFields = ["own", "offers-json"];
-      const keys = toScriptKeys(data.game, fields, users, userFields);
-      const morePartialJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
-        users.length, data.game, "3") as string;
-      const morePartialObj = JSON.parse(morePartialJson);
-      //partialObj["user"] = morePartialObj["user"];
-    } else if (partialObj["round"]["phase"] === 4 && data.phase !== partialObj["round"]["phase"]) {
-      // Process the second stock trading window
-      // This is responses to trade offers (accept or reject)
-      const users = await ioredis.smembers(`game:${data.game}:users`);
-      const fields = ["users", "price", "next-price", "delta"];
-      const userFields = ["own", "offers-json"];
-      const keys = toScriptKeys(data.game, fields, users, userFields);
-      const morePartialJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
-        users.length, data.game, "4") as string;
-      const morePartialObj = JSON.parse(morePartialJson);
-      partialObj["user"] = morePartialObj["user"];
-      partialObj["price"] = morePartialObj["price"];
-      partialObj["delta"] = morePartialObj["delta"];
-      // Do public works update, i.e. raise them automatically
-      fields.splice(0, fields.length, "pw");
-      userFields.pop();
-      const moreKeys = toScriptKeys(data.game, fields, users, userFields);
-      // Script note: only PWs that have changed in flavor will be returned
-      const evenMorePartialJson = await ioredis.evalsha(scripts["raise-pw"], moreKeys.length, ...moreKeys,
-        users.length, data.game) as string;
-      const evenMorePartialObj = JSON.parse(evenMorePartialJson);
-      partialObj["pw"] = evenMorePartialObj["pw"];
+      // Second is responses to trade offers (accept or reject)
+      const fields = ["init"];
+      const userCount = await ioredis.scard(`game:${data.game}:users`);
+      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
+      const userFields = ["cart-json", "offers-json", "own"];
+      const keys = toScriptKeys(data.game, fields, zusers, userFields);
+      const tradeJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
+        userCount, data.game, partialObj["round"]["phase"]) as string;
+      const tradeObj = JSON.parse(tradeJson) as TradeObj;
+      partialObj["user"] = tradeObj["user"];
+      // Compute next stock price and either hold it until next phase
+      // or overwrite current stock price
+      fields.splice(0, fields.length, "price", "next-price", "delta");
+      keys.splice(0, keys.length, ...toScriptKeys(data.game, fields));
+      // keys2 and argv are the same length to simplify the math in Teal
+      const keys2 = keys.concat(tradeObj.list.map(value => value.key));
+      const argv = ["0", data.game, `${partialObj["round"]["phase"]}`,
+        ...tradeObj.list.map(value => value.json)];
+      const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys2.length, ...keys2, ...argv) as string;
+      if (partialObj["round"]["phase"] === 4) {
+        // Only include price / delta updates when they're actually applied
+        const stockPriceObj = JSON.parse(stockPriceJson);
+        partialObj["price"] = stockPriceObj["price"];
+        partialObj["delta"] = stockPriceObj["delta"];
+        // Do public works update, i.e. raise them automatically
+        fields.splice(0, fields.length, "pw");
+        userFields.splice(0, userFields.length, "own");
+        const moreKeys = toScriptKeys(data.game, fields, zusers, userFields);
+        // Script note: only PWs that have changed in flavor will be returned
+        const morePartialJson = await ioredis.evalsha(scripts["raise-pw"], moreKeys.length, ...moreKeys,
+          userCount, data.game) as string;
+        const morePartialObj = JSON.parse(morePartialJson);
+        partialObj["pw"] = morePartialObj["pw"];
+      }
     } else if (partialObj["round"]["phase"] === 5 && data.phase !== partialObj["round"]["phase"]) {
       // Do good will update
       const fields: string[] = ["users", "cash", "pledge", "pa"];
@@ -97,3 +102,12 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     client.send(fromScriptError("update", err as Error));
   }
 }
+type TradeObj = {
+  user: {
+    [user: string]: Record<string, number>
+  },
+  list: {
+    key: string,
+    json: string
+  }[]
+};
