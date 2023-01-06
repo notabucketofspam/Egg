@@ -21,7 +21,20 @@ for game in pairs(games.set) do
   end
 end
 if gameExists then
-  
+  local partial = {
+    price: {string: number} = {},
+    delta: {string: number} = {}
+  }
+  if phase == "3" then
+    -- Record trades and calculate next-price
+  elseif phase == "4" then
+    -- Apply next-price to current price and generate delta
+  else
+    -- Something has gone wrong
+    send = redis.error_reply("EBADPHASE")
+    return send
+  end
+  send = redis.status_reply(cjson.encode(partial))
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
