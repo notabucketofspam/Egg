@@ -122,6 +122,13 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
           why: "Key is not a valid type (hash, set, zset, string)", proof
         });
       }
+      case "EBADPHASE": {
+        // Wrong phase for operation (usually during trading)
+        return JSON.stringify({
+          cmd, err: err.message,
+          why: "Wrong phase for operation", proof
+        });
+      }
       default: {
         // Unknown error
         return JSON.stringify({ cmd, err: err.message, why: "Unknown error", proof });
