@@ -51,7 +51,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       // First will push through purchases that work (to whatever extent that is)
       // and send trade offers to their targets
       // Second is responses to trade offers (accept or reject)
-      const fields = ["init", "price", "cash"];
+      const fields = ["init", "price", "cash", "round"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
       const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
       const userFields = ["cart-json", "offers-json", "own"];

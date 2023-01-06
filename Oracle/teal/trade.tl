@@ -7,6 +7,7 @@ local send: {string: string}
 local initKey = KEYS[1]
 local priceKey = KEYS[2]
 local cashKey = KEYS[3]
+local roundKey = KEYS[4]
 -- userFields are: cart-json, offers-json, own
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
@@ -23,13 +24,19 @@ local record Trade
   key: string
   json: string
 end
+local record ComTotal
+  con: string
+  com: string
+  total: number
+  round: number
+end
 local function getKey(ui: number, key: string): string 
   if key == "cart" then
-    return KEYS[1 + 3*ui as integer]
-  elseif key == "offers" then
     return KEYS[2 + 3*ui as integer]
-  elseif key == "own" then
+  elseif key == "offers" then
     return KEYS[3 + 3*ui as integer]
+  elseif key == "own" then
+    return KEYS[4 + 3*ui as integer]
   end
 end
 -- Check that game exists
@@ -43,8 +50,14 @@ for game in pairs(games.set) do
 end
 if gameExists then
   -- Sorted array of Trade objects; each object has Redis key and JSON string.
-  -- This will only be relevant for the first trading window
+  -- This will only be relevant for the first trading window.
   local list: {Trade} = {}
+  -- Each company will have all of its transactions summed to get a single delta
+  -- for the round
+  local comTotals: {string: ComTotal} = {}
+  -- The round number will be affixed to every transaction, so that
+  -- stock-price.tl can sort them chronologically later on
+  local round = tonumber(redis.call("HGET", roundKey, "round") as string)
   -- {username: {own: {comshort: count}}}
   local user: {string: {string: {string: number}}} = {}
   local cash: {string: number} = {}
@@ -74,7 +87,6 @@ if gameExists then
       for itemjson in pairs(cart.set) do
         local item = cjson.decode(itemjson) as Item
         local comshort = item.con .. ":" .. item.com
-        local trade: Trade = {}
         if item.tx == nil then
           -- No user, so take from available
           local available = 100 as number
@@ -93,11 +105,19 @@ if gameExists then
             local newCash = cash[rxUser] - newct*tonumber(price[comshort])
             cash[rxUser] = newCash
             redis.call("HSET", cashKey, rxUser, tostring(newCash))
-            -- Record trade
-            item.ct = newct
-            trade.key = "game:" .. gameId .. ":trade:" .. item.id
-            trade.json = cjson.encode(item)
-            table.insert(list, trade)
+            -- Prepare to record trade
+            if comTotals[comshort] == nil then
+              -- Company not yet in the table
+              comTotals[comshort] = {
+                con = item.con,
+                com = item.com,
+                total = newct,
+                round = round
+              }
+            else
+              -- Company is in the table
+              comTotals[comshort].total = comTotals[comshort].total + newct
+            end
           end
         else
           -- Send offer to other user
@@ -113,6 +133,16 @@ if gameExists then
           redis.call("SADD", getKey(txi, "offers"), cjson.encode(item))
         end
       end
+      -- User cart has been processed, so get rid of it
+      redis.call("DEL", getKey(rxi, "cart"))
+    end
+    -- Convert comTotals into an array of JSON strings
+    for _, comtotal in pairs(comTotals) do
+      local trade: Trade = {
+        key = "game:" .. gameId .. ":trade:" .. comtotal.con .. ":" .. comtotal.com .. ":" .. round,
+        json = cjson.encode(comtotal)
+      }
+      table.insert(list, trade)
     end
   elseif phase == "4" then
     -- Second trading window
@@ -153,6 +183,8 @@ if gameExists then
         cash[rxUser] = rxNewCash
         redis.call("HSET", cashKey, rxUser, tostring(rxNewCash), txUser, tostring(txNewCash))
       end
+      -- User cart has been processed (again), so get rid of it (again)
+      redis.call("DEL", getKey(txi, "cart"))
     end
   else
     -- Something has gone wrong
