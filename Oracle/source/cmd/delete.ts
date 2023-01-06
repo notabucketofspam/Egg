@@ -8,9 +8,9 @@ export const cmd = "delete";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Delete) {
   try {
     const fields = ["index", "users", "pledge", "can-trade", "pa", "cash", "init", "second-init",
-      "price", "delta", "pw", "round", "ready", "ver"];
+      "price", "delta", "pw", "round", "ready", "ver", "next-price"];
     const users = await ioredis.smembers(`game:${data.game}:users`);
-    const userFields = ["last-member", "last-own", "member", "offers", "own"];
+    const userFields = ["last-member", "cart-json", "member", "offers-json", "own"];
     const keys = toScriptKeys(data.game, fields, users, userFields);
     await ioredis.evalsha(scripts["delete"], keys.length, ...keys, users.length, data.game);
     for (const [aliveClient, clientMeta] of aliveClients) {
