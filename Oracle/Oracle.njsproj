@@ -53,7 +53,7 @@
     <Content Include="teal\patch.tl" />
     <Content Include="teal\pledge.tl" />
     <Content Include="teal\raise-pw.tl" />
-    <Content Include="teal\raise.tl" />
+    <Content Include="old\raise.tl" />
     <Content Include="teal\ready.tl" />
     <Content Include="teal\remove-user.tl" />
     <Content Include="teal\roll-init.tl" />
