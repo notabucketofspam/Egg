@@ -8,11 +8,12 @@ import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 })
 export class CartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() cart!: CartItem[];
-  @Output() cartEE = new EventEmitter<string>();
+  @Output() cartEE = new EventEmitter<void>();
   cartTotal = 0;
   @Input() state!: State;
   subscriptions: Record<string, Subscription> = {};
   @Input() localSubjects!: Record<string, Subject<void>>;
+  @Input() stateSubjects!: Record<string, Subject<void>>;
   destroyer = new ReplaySubject<boolean>(1);
   @Input() user!: string;
   constructor() { }
@@ -24,12 +25,19 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
     if (changes["cart"]) {
       this.setCartTotal();
     }
+    if (changes["state"]) {
+      if (changes["state"].currentValue["round"]) {
+        this.checkClearCart();
+      }
+    }
   }
   ngOnInit(): void {
     this.subscriptions["cart-add"] = this.localSubjects["cart-add"].pipe(takeUntil(this.destroyer))
       .subscribe(() => this.setCartTotal());
     this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].pipe(takeUntil(this.destroyer))
       .subscribe(() => this.setCartTotal());
+    this.subscriptions["round"] = this.stateSubjects["round"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.checkClearCart());
   }
   removeItem(index: number) {
     if (this.state.ready.includes(this.user) && (this.state.round.phase === 2 || this.state.round.phase === 3)) {
@@ -45,6 +53,13 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
       this.cart.forEach(item => {
         this.cartTotal += item.ct * this.state.price[item.con + ':' + item.com];
       });
+    }
+  }
+  checkClearCart() {
+    if (this.state.round && this.state.round.phase === 3) {
+      // Clear the cart after the first trading window is complete
+      this.cart.length = 0;
+      this.cartEE.emit();
     }
   }
 }
