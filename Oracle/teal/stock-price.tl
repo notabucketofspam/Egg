@@ -96,10 +96,11 @@ if gameExists then
         }
       end)
       -- Also, calculate PW price volatility multiplier
-      local pwsum = 0 as number
+      local pwsum = 0.0
       for stock, fv in pairs(pw) do
-        if getCon(stock) == con then
-          pwsum = pwsum + flavor[tonumber(fv) as integer]
+        local fvn = tonumber(fv) as integer
+        if fvn > 0 and getCon(stock) == con then
+          pwsum = pwsum + flavor[fvn]
         end
       end
       pwmult[con] = pwsum + 1
@@ -156,7 +157,7 @@ if gameExists then
       table.insert(deltaHset, comshort)
       table.insert(deltaHset, tostring(newdelta[comshort]))
     end
-    redis.call("HSET", unpack(deltaHset))
+    redis.call("HSET", deltaKey, unpack(deltaHset))
     send = redis.status_reply(cjson.encode({price = newprice, delta = newdelta}))
   else
     -- Something has gone wrong

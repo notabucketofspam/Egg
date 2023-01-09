@@ -69,9 +69,6 @@ if gameExists then
   for ui = 1, userCount do
     local username = zusers[ui as integer]
     allUserOwn[username] = (redis.call("HGETALL", getKey(ui, "own")) as Hash).map
-    user[username] = {
-      own = {}
-    }
     cash[username] = tonumber(cashMap[username])
     -- Delete existing offers (in case something has gone awry);
     -- there should be no offers at the start of any phase, only at the end
@@ -98,6 +95,11 @@ if gameExists then
             local newct = math.min(available, item.ct)
             local newOwn = tostring(newct + tonumber(allUserOwn[rxUser][comshort]))
             allUserOwn[rxUser][comshort] = newOwn
+            if user[rxUser] == nil then
+              user[rxUser] = {
+                own = {}
+              }
+            end
             user[rxUser].own[comshort] = tonumber(newOwn)
             redis.call("HSET", getKey(rxi, "own"), comshort, newOwn)
             available = available - newct
@@ -160,6 +162,11 @@ if gameExists then
         local txOwn = tonumber(allUserOwn[txUser][comshort])
         local txNewOwn = tostring(txOwn - item.ct)
         allUserOwn[txUser][comshort] = txNewOwn
+        if user[txUser] == nil then
+          user[txUser] = {
+            own = {}
+          }
+        end
         user[txUser].own[comshort] = txOwn - item.ct
         redis.call("HSET", getKey(txi, "own"), comshort, txNewOwn)
         -- Give to receiving user
@@ -174,6 +181,11 @@ if gameExists then
         local rxOwn = tonumber(allUserOwn[rxUser][comshort])
         local rxNewOwn = tostring(rxOwn + item.ct)
         allUserOwn[rxUser][comshort] = rxNewOwn
+        if user[rxUser] == nil then
+          user[rxUser] = {
+            own = {}
+          }
+        end
         user[rxUser].own[comshort] = rxOwn + item.ct
         redis.call("HSET", getKey(rxi, "own"), comshort, rxNewOwn)
         -- Handle cash
@@ -191,7 +203,14 @@ if gameExists then
     send = redis.error_reply("EBADPHASE")
     return send
   end
-  send = redis.status_reply(cjson.encode({list, user, cash}))
+  local partial = {
+    list = list,
+    user = user,
+    cash = cash
+  }
+  local partialjson = cjson.encode(partial)
+  local partialjson2 = string.gsub(partialjson, '"list":{}', '"list":[]')
+  send = redis.status_reply(partialjson2)
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
