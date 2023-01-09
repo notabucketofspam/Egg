@@ -12,7 +12,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     const keys = toScriptKeys(gameId, fields);
     await ioredis.evalsha(scripts["new"], keys.length, ...keys, 0, gameId, `game:${gameId}:trade:`);
     try {
-      const fields = ["users", "pledge", "can-trade", "pa", "cash", "init", "second-init"];
+      const fields = ["users", "pledge", "can-trade", "pa", "cash", "init"];
       const users = [data.user];
       const userFields = ["last-member", "member", "own"];
       const keys = toScriptKeys(gameId, fields, users, userFields);

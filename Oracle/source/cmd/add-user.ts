@@ -8,7 +8,7 @@ type AddUser = {
 export const cmd = "add-user";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: AddUser) {
   try {
-    const fields = ["users", "pledge", "can-trade", "pa", "cash", "init", "second-init"];
+    const fields = ["users", "pledge", "can-trade", "pa", "cash", "init"];
     const users = [data.user];
     const userFields = ["last-member", "member", "own"];
     const keys = toScriptKeys(data.game, fields, users, userFields);
