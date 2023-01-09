@@ -6,11 +6,35 @@ local send: {string: string}
 local priceKey = KEYS[1]
 local nextPriceKey = KEYS[2]
 local deltaKey = KEYS[3]
+local pwKey = KEYS[4]
+local indexKey = KEYS[5]
+local roundKey = KEYS[6]
 -- Remaining keys refer to trades
 local userCount = tonumber(ARGV[1])
 local gameKey = ARGV[2]
 local phase = ARGV[3]
+local startKeys = tonumber(ARGV[4]) as integer
+local unused = ARGV[5]
+local unused2 = ARGV[6]
 -- Remaining args are trade JSON strings
+local record Trade
+  con: string
+  com: string
+  total: number
+  round: number
+end
+-- Transform a list of one type into another type
+local function map<T, V>(list: {T}, fn: function(T, integer): (V)): {V}
+  local newlist: {V} = {}
+  for i = 1 as integer, #list do
+    newlist[i] = fn(list[i], i)
+  end
+  return newlist
+end
+-- Get conglomerate from stock name
+local function getCon(stock: string): string
+  return string.match(stock, "([^:]*)")
+end
 -- Check that game exists
 local games = redis.call("SMEMBERS", "games") as Set
 local gameExists = false
@@ -21,20 +45,123 @@ for game in pairs(games.set) do
   end
 end
 if gameExists then
-  local partial = {
-    price: {string: number} = {},
-    delta: {string: number} = {}
-  }
+  local price = (redis.call("HGETALL", priceKey) as Hash).map
+  local delta = (redis.call("HGETALL", deltaKey) as Hash).map
+  local pw = (redis.call("HGETALL", pwKey) as Hash).map
+  local round = tonumber(redis.call("HGET", roundKey, "round") as string)
+  -- Can start at 0 because PW flavor 1 (Most Excellent) has the same value (0)
+  -- as PW flavor 0 (no PW)
+  local flavor = {0.0, 0.15, 0.2, 0.25}
   if phase == "3" then
     -- Record trades and calculate next-price
+    --
+    -- Replace next-price on the off-chance that price has changed in the middle
+    -- of the round (i.e. from debugging)
+    local priceDump = redis.call("DUMP", priceKey) as string
+    redis.call("RESTORE", nextPriceKey, "0", priceDump, "REPLACE")
+    local nextPriceHset: {string} = {}
+    -- Insert all trades into KeyDB first
+    local trades: {Trade} = {}
+    for i = startKeys, #ARGV do
+      local tradeKey = KEYS[i]
+      local trade = cjson.decode(ARGV[i]) as Trade
+      redis.call("HSET", tradeKey, "con", trade.con, "com", trade.com,
+        "total", tostring(trade.total), "round", tostring(trade.round))
+        table.insert(trades, trade)
+    end
+    -- Can't calculate prices at the very start of the game
+    if round == 0 then
+      send = redis.status_reply("OK")
+      return send
+    end
+    -- Get results first so that searches don't have to be re-run each loop
+    local search: {string: {string}} = {
+      Cathy = redis.call("FT.SEARCH", indexKey, "@con:{Cathy}", "NOCONTENT") as {string},
+      Terry = redis.call("FT.SEARCH", indexKey, "@con:{Terry}", "NOCONTENT") as {string},
+      Gary = redis.call("FT.SEARCH", indexKey, "@con:{Gary}", "NOCONTENT") as {string},
+      Doug = redis.call("FT.SEARCH", indexKey, "@con:{Doug}", "NOCONTENT") as {string},
+    }
+    -- Parse search results into trade objects
+    local results: {string: {Trade}} = {}
+    local pwmult: {string: number} = {}
+    for con, list in pairs(search) do
+      table.remove(list, 1)
+      results[con] = map(list, function(itemkey: string): Trade
+        local item = (redis.call("HGETALL", itemkey) as Hash).map
+        return {
+          con = item.con,
+          com = item.com,
+          total = tonumber(item.total),
+          round = tonumber(item.round)
+        }
+      end)
+      -- Also, calculate PW price volatility multiplier
+      local pwsum = 0 as number
+      for stock, fv in pairs(pw) do
+        if getCon(stock) == con then
+          pwsum = pwsum + flavor[tonumber(fv) as integer]
+        end
+      end
+      pwmult[con] = pwsum + 1
+    end
+    -- Process trades with applied mathematics
+    for i = 1, #trades do
+      local trade = trades[i]
+      local comshort = trade.con..":"..trade.com
+      -- Get deltas
+      local com_delta = trade.total
+      local con_delta = 0.0
+      local com_lastdelta = 0.0
+      local con_lastdelta = 0.0
+      for iii = 1, #results[trade.con] do
+        local otherTrade = results[trade.con][iii]
+        if otherTrade.con == trade.con then
+          if otherTrade.round == round then
+            -- Deltas for this turn
+            con_delta = con_delta + otherTrade.total
+          end
+          if otherTrade.round == round - 1 then
+            -- Deltas for last turn
+            con_lastdelta = con_lastdelta + otherTrade.total
+            if otherTrade.com == trade.com then
+              com_lastdelta = otherTrade.total
+            end
+          end
+        end
+      end
+      -- Some kind of weighted average idk
+      local deltamult = (6*com_delta + con_delta + 6*com_lastdelta + con_lastdelta)/2000
+      -- Apply volatility mult. to this weighted average (or whatever it is...)
+      local finalmult = pwmult[trade.con]*deltamult + 1
+      -- Finally, apply to the current price and store for later
+      local newprice = tonumber(price[comshort])*finalmult
+      table.insert(nextPriceHset, comshort)
+      table.insert(nextPriceHset, tostring(newprice))
+    end
+    -- Apply all prices in KeyDB
+    redis.call("HSET", nextPriceKey, unpack(nextPriceHset))
+    -- Return value isn't used in this phase
+    send = redis.status_reply("OK")
   elseif phase == "4" then
     -- Apply next-price to current price and generate delta
+    local nextPriceDump = redis.call("DUMP", nextPriceKey) as string
+    redis.call("RESTORE", priceKey, "0", nextPriceDump, "REPLACE")
+    local nextPrice = (redis.call("HGETALL", nextPriceKey) as Hash).map
+    local newprice: {string: number} = {}
+    local newdelta: {string: number} = {}
+    local deltaHset: {string} = {}
+    for comshort, value in pairs(nextPrice) do
+      newprice[comshort] = tonumber(value)
+      newdelta[comshort] = tonumber(value) - tonumber(price[comshort])
+      table.insert(deltaHset, comshort)
+      table.insert(deltaHset, tostring(newdelta[comshort]))
+    end
+    redis.call("HSET", unpack(deltaHset))
+    send = redis.status_reply(cjson.encode({price = newprice, delta = newdelta}))
   else
     -- Something has gone wrong
     send = redis.error_reply("EBADPHASE")
-    return send
   end
-  send = redis.status_reply(cjson.encode(partial))
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")

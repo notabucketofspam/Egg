@@ -63,11 +63,11 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       partialObj["cash"] = tradeObj["cash"];
       // Compute next stock price and either hold it until next phase
       // or overwrite current stock price
-      fields.splice(0, fields.length, "price", "next-price", "delta");
+      fields.splice(0, fields.length, "price", "next-price", "delta", "pw", "index", "round");
       // keys and argv are the same length to simplify the math in Teal
       keys.splice(0, keys.length, ...toScriptKeys(data.game, fields),
         ...tradeObj.list.map(value => value.key));
-      const argv = ["0", data.game, `${partialObj["round"]["phase"]}`,
+      const argv = ["0", data.game, `${newPhase}`, fields.length + 1, "unused", "unused2",
         ...tradeObj.list.map(value => value.json)];
       const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys.length, ...keys, ...argv) as string;
       if (newPhase === 4) {
