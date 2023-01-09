@@ -86,7 +86,7 @@ if gameExists then
       local cart = redis.call("SMEMBERS", getKey(rxi, "cart")) as Set
       for itemjson in pairs(cart.set) do
         local item = cjson.decode(itemjson) as Item
-        local comshort = item.con .. ":" .. item.com
+        local comshort = item.con..":"..item.com
         if item.tx == nil then
           -- No user, so take from available
           local available = 100 as number
@@ -139,7 +139,7 @@ if gameExists then
     -- Convert comTotals into an array of JSON strings
     for _, comtotal in pairs(comTotals) do
       local trade: Trade = {
-        key = "game:" .. gameId .. ":trade:" .. comtotal.con .. ":" .. comtotal.com .. ":" .. round,
+        key = "game:"..gameId..":trade:"..comtotal.con..":"..comtotal.com..":"..round,
         json = cjson.encode(comtotal)
       }
       table.insert(list, trade)
@@ -155,7 +155,7 @@ if gameExists then
         -- Items do not need "trade" keys, since these transactions are only
         -- between players, which does not activate the price mechanism
         local item = cjson.decode(itemjson) as Item
-        local comshort = item.con .. ":" .. item.com
+        local comshort = item.con..":"..item.com
         -- Take from sending user
         local txOwn = tonumber(allUserOwn[txUser][comshort])
         local txNewOwn = tostring(txOwn - item.ct)
