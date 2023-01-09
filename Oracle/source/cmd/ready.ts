@@ -26,8 +26,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         0, data.game, data.user, String(data.ready), -1) as string;
     }
     const partialObj = JSON.parse(partialJson);
+    const newPhase = partialObj["round"]["phase"];
     // Only trigger on phase change, not just any toggle
-    if (partialObj["round"]["phase"] === 0 && data.phase !== partialObj["round"]["phase"]) {
+    if (newPhase === 0 && data.phase !== newPhase) {
       // Do dividends update
       const fields: string[] = ["users", "cash", "pw"];
       const users = await ioredis.smembers(`game:${data.game}:users`);
@@ -37,7 +38,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         users.length, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["cash"] = morePartialObj["cash"];
-    } else if (partialObj["round"]["phase"] === 2 && data.phase !== partialObj["round"]["phase"]) {
+    } else if (newPhase === 2 && data.phase !== newPhase) {
       // Roll for initiative
       const fields = ["users", "init"];
       const keys = toScriptKeys(data.game, fields);
@@ -45,8 +46,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         0, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["init"] = morePartialObj["init"];
-    } else if ((partialObj["round"]["phase"] === 3 || partialObj["round"]["phase"] === 4)
-      && data.phase !== partialObj["round"]["phase"]) {
+    } else if ((newPhase === 3 || newPhase === 4) && data.phase !== newPhase) {
       // Process a stock trading window
       // First will push through purchases that work (to whatever extent that is)
       // and send trade offers to their targets
@@ -57,7 +57,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const userFields = ["cart-json", "offers-json", "own"];
       const keys = toScriptKeys(data.game, fields, zusers, userFields);
       const tradeJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
-        userCount, data.game, partialObj["round"]["phase"]) as string;
+        userCount, data.game, newPhase) as string;
       const tradeObj = JSON.parse(tradeJson) as TradeObj;
       partialObj["user"] = tradeObj["user"];
       partialObj["cash"] = tradeObj["cash"];
@@ -70,7 +70,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const argv = ["0", data.game, `${partialObj["round"]["phase"]}`,
         ...tradeObj.list.map(value => value.json)];
       const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys.length, ...keys, ...argv) as string;
-      if (partialObj["round"]["phase"] === 4) {
+      if (newPhase === 4) {
         // Only include price / delta updates when they're actually applied
         const stockPriceObj = JSON.parse(stockPriceJson);
         partialObj["price"] = stockPriceObj["price"];
@@ -85,7 +85,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         const morePartialObj = JSON.parse(morePartialJson);
         partialObj["pw"] = morePartialObj["pw"];
       }
-    } else if (partialObj["round"]["phase"] === 5 && data.phase !== partialObj["round"]["phase"]) {
+    } else if (newPhase === 5 && data.phase !== newPhase) {
       // Do good will update
       const fields: string[] = ["users", "cash", "pledge", "pa"];
       const users = await ioredis.smembers(`game:${data.game}:users`);
