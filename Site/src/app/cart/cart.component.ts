@@ -27,7 +27,7 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (changes["state"]) {
       if (changes["state"].currentValue["round"]) {
-        this.checkClearCart();
+        this.checkCart();
       }
     }
   }
@@ -37,10 +37,10 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
     this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].pipe(takeUntil(this.destroyer))
       .subscribe(() => this.setCartTotal());
     this.subscriptions["round"] = this.stateSubjects["round"].pipe(takeUntil(this.destroyer))
-      .subscribe(() => this.checkClearCart());
+      .subscribe(() => this.checkCart());
   }
   removeItem(index: number) {
-    if (this.state.ready.includes(this.user) && (this.state.round.phase === 2 || this.state.round.phase === 3)) {
+    if (this.state.ready.includes(this.user) && this.state.round.phase === 2) {
       alert("Locked in! Can't modify the cart once ready; must un-ready to make changes.");
     } else {
       this.cart.splice(index, 1);
@@ -55,7 +55,7 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
       });
     }
   }
-  checkClearCart() {
+  checkCart() {
     if (this.state.round && this.state.round.phase === 3) {
       // Clear the cart after the first trading window is complete
       this.cart.length = 0;

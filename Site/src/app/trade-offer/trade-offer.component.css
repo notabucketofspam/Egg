@@ -1,1 +1,32 @@
-
+.TotalProfit {
+  display: flex;
+  margin-left: 6%;
+  justify-content: space-between;
+}
+.List {
+  margin: 0% auto auto auto;
+}
+dd {
+  margin: auto auto auto 10%;
+}
+dt {
+  display: flex;
+}
+.Add {
+  color: #00ff00;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  background-color: white;
+  padding: 0px 3px 0px 3px;
+}
+.Add:hover {
+  cursor: pointer;
+}
+.Disabled {
+  background-color: #777777;
+  color: #007700;
+}
+.ItemNo {
+  margin-left: 1%;
+}

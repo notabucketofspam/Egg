@@ -2,8 +2,8 @@
 <div class="Menu Top Center NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
   <div class="TotalPrice">
     <b class="Flex">Total:</b>
-    <b class="Flex Ul" *ngIf="state.ready&&state.ready.includes(user)">Locked in!</b>
-    <span class="Flex"><b>{{cartTotal | currency}}</b></span>
+    <b class="Flex Ul" *ngIf="state.ready&&state.ready.includes(user)&&state.round.phase===2">Locked in!</b>
+    <b class="Flex">{{cartTotal | currency}}</b>
   </div>
   <hr />
   <dl class="List">

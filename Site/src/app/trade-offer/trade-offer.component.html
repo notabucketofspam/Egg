@@ -1,4 +1,23 @@
 <button class="MenuButton Top Left Closed">OFFERS</button>
 <div class="Menu Top Left NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
-
+  <div class="TotalProfit">
+    <b class="Flex">Profit:</b>
+    <b class="Flex Ul" *ngIf="state.ready&&state.ready.includes(user)&&state.round.phase===3">Locked in!</b>
+    <b class="Flex">{{profitTotal | currency}}</b>
+  </div>
+  <hr />
+  <dl class="List" *ngIf="state.user">
+    <ng-template ngFor let-item [ngForOf]="state.user[user].offers" let-i="index">
+      <dt>
+        <span class="Add" (click)="modifyItem(i)"
+              [class.Disabled]="state.ready&&state.ready.includes(user)">+</span>
+        <span class="ItemNo">Item {{item.id}}</span>
+        <span style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
+      </dt>
+      <dd>Conglomerate: {{item.con}}</dd>
+      <dd>Company: {{item.com}}</dd>
+      <dd>To: {{item.rx}}</dd>
+      <dd>Amount: {{item.ct}}</dd>
+    </ng-template>
+</dl>
 </div>

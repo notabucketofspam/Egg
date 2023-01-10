@@ -40,10 +40,12 @@ export class GameComponent implements OnInit, OnDestroy {
   /** Subjects for non-State properties */
   localSubjects: Record<string, Subject<void>> = {
     "cart-add": new Subject<void>(),
-    "cart-remove": new Subject<void>()
+    "cart-remove": new Subject<void>(),
+    "acceptedOffers": new Subject<void>()
   };
   timers: Record<string, NodeJS.Timer> = {};
   destroyer = new ReplaySubject<boolean>(1);
+  acceptedOffers: CartItem[] = [];
   constructor(private title: Title, private websocket: WebSocketService,
     private console: ConsoleService) { }
   ngOnInit(): void {
@@ -52,11 +54,18 @@ export class GameComponent implements OnInit, OnDestroy {
     [this.game, this.user] = JSON.parse(lastGame);
     this.title.setTitle(`Game ${this.game} | Eggonomics`);
     const next = (value: WebSocketMessage) => this.next(JSON.parse(value as string));
+    // Load from localStorage
     const cartStorage = localStorage.getItem(`game:${this.game}:user:${this.user}:cart`);
     if (cartStorage)
       this.cart = JSON.parse(cartStorage);
     else
       localStorage.setItem(`game:${this.game}:user:${this.user}:cart`, "[]");
+    const acceptedOffersStorage = localStorage.getItem(`game:${this.game}:user:${this.user}:accepted-offers`);
+    if (acceptedOffersStorage)
+      this.acceptedOffers = JSON.parse(acceptedOffersStorage);
+    else
+      localStorage.setItem(`game:${this.game}:user:${this.user}:accepted-offers`, "[]");
+    // Prepare WebSocket
     this.subscriptions["alive"] = this.websocket.aliveSubject.pipe(takeUntil(this.destroyer)).subscribe(alive => {
       if (alive) {
         this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
@@ -198,11 +207,17 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   ready($event: boolean) {
     this.console.log(`user ${this.user} ready: ${$event}`);
-    if (this.state.round.phase === 2 || this.state.round.phase === 3) {
+    if (this.state.round.phase === 2) {
       const cartJson = this.cart.map(item => JSON.stringify(item));
       this.websocket.nextJ({
         cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
         phase: this.state.round.phase, "cart-json": cartJson
+      });
+    } else if (this.state.round.phase === 3) {
+      const acceptedOffersJson = this.acceptedOffers.map(item => JSON.stringify(item));
+      this.websocket.nextJ({
+        cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
+        phase: this.state.round.phase, "cart-json": acceptedOffersJson
       });
     } else {
       this.websocket.nextJ({
@@ -226,5 +241,8 @@ export class GameComponent implements OnInit, OnDestroy {
     this.console.log("user", this.user, "| stock", $event, "| newTier",
       this.state.user[this.user].member[$event] + 1);
     this.websocket.nextJ({ cmd: Cmd.Member, game: this.game, user: this.user, stock: $event });
+  }
+  modifyOffer() {
+
   }
 }
