@@ -28,6 +28,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     amount: new FormControl(0)
   });
   @Input() cart!: CartItem[];
+  @Input() acceptedOffers!: CartItem[];
   @Input() localSubjects!: Record<string, Subject<void>>;
   private subscriptions: Record<string, Subscription> = {};
   withdraw = {
@@ -97,36 +98,40 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
             });
           }
         });
-        this.resetProjected();
+        if (this.state.round && this.state.round.phase === 3)
+          this.resetFromLocal(this.acceptedOffers);
+        else
+          this.resetFromLocal(this.cart);
       }
-      if (changes["state"].currentValue.users)
-        this.localSubjects["cart-remove"].next();
       if (changes["state"].currentValue.pw) {
         this.titleBlockClass = this.flavorClasses[this.state.pw[this.comShort]];
         this.resetChangeMemberPrice();
       }
     }
   }
+  resetFromLocal(itemArray: CartItem[]) {
+    if (this.state.users) {
+      this.state.users.forEach(user => {
+        this.withdraw.user[user].own[this.comShort] = 0;
+      });
+      this.withdraw.available = 0;
+      itemArray.forEach(item => {
+        if (item.com === this.company) {
+          if (item.tx)
+            this.withdraw.user[item.tx].own[this.comShort] = item.ct;
+          else
+            this.withdraw.available = item.ct;
+          this.withdraw.user[item.rx].own[this.comShort] = -item.ct;
+        }
+      });
+      this.resetProjected();
+    }
+  }
   ngOnInit(): void {
     this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].pipe(takeUntil(this.destroyer))
-      .subscribe(() => {
-      if (this.state.users) {
-        this.state.users.forEach(user => {
-          this.withdraw.user[user].own[this.comShort] = 0;
-        });
-        this.withdraw.available = 0;
-        this.cart.forEach(item => {
-          if (item.com === this.company) {
-            if (item.tx)
-              this.withdraw.user[item.tx].own[item.con + ":" + item.com] = item.ct;
-            else
-              this.withdraw.available = item.ct;
-            this.withdraw.user[this.user].own[this.comShort] -= item.ct;
-          }
-        });
-        this.resetProjected();
-      }
-    });
+      .subscribe(() => this.resetFromLocal(this.cart));
+    this.subscriptions["accepted-offers"] = this.localSubjects["accepted-offers"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.resetFromLocal(this.acceptedOffers));
     this.comShort = this.conglomerate + ':' + this.company;
     this.subscriptions["pw"] = this.stateSubjects["pw"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetChangeMemberPrice();

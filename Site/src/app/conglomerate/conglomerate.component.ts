@@ -23,6 +23,7 @@ export class ConglomerateComponent implements OnInit, OnDestroy {
   @Input() description!: string;
   @Output() cartBubbleEE = new EventEmitter<CartItem>();
   @Input() cart!: CartItem[];
+  @Input() acceptedOffers!: CartItem[];
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() stateSubjects!: Record<string, Subject<void>>;
   @Output() memberBubbleEE = new EventEmitter<string>();
