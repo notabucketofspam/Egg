@@ -9,15 +9,18 @@
   <dl class="List" *ngIf="state.user">
     <ng-template ngFor let-item [ngForOf]="state.user[user].offers" let-i="index">
       <dt>
-        <span class="Add" (click)="modifyItem(i)"
-              [class.Disabled]="state.ready&&state.ready.includes(user)">+</span>
-        <span class="ItemNo">Item {{item.id}}</span>
-        <span style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
+        <span class="ModifyButton Add" (click)="modifyItem(i)"
+        [class.Disabled]="state.ready&&state.ready.includes(user)"
+        [class]="{Add:!acceptedOffersIds.includes(state.user[user].offers[i].id),Remove:acceptedOffersIds.includes(state.user[user].offers[i].id)}">
+          {{acceptedOffersIds.includes(state.user[user].offers[i].id) ? "X" : "+"}}
+        </span>
+        <span [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)" class="ItemNo">Item {{item.id}}</span>
+        <span [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)" style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
       </dt>
-      <dd>Conglomerate: {{item.con}}</dd>
-      <dd>Company: {{item.com}}</dd>
-      <dd>To: {{item.rx}}</dd>
-      <dd>Amount: {{item.ct}}</dd>
+      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Conglomerate: {{item.con}}</dd>
+      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Company: {{item.com}}</dd>
+      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">To: {{item.rx}}</dd>
+      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Amount: {{item.ct}}</dd>
     </ng-template>
 </dl>
 </div>

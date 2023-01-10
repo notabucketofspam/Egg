@@ -12,20 +12,34 @@ dd {
 dt {
   display: flex;
 }
-.Add {
-  color: #00ff00;
+dd.Accepted, span.Accepted {
+  text-decoration-line: line-through;
+  color: #999999;
+}
+.ModifyButton {
   border-color: black;
   border-style: solid;
   border-width: 1px;
   background-color: white;
   padding: 0px 3px 0px 3px;
 }
-.Add:hover {
+.Add {
+  color: #00ff00;
+  padding-left: 4px;
+}
+.Remove {
+  color: #ff0000;
+}
+.ModifyButton:hover {
   cursor: pointer;
 }
-.Disabled {
+.Add.Disabled {
   background-color: #777777;
-  color: #007700;
+  color: #00BB00;
+}
+.Remove.Disabled {
+  background-color: #777777;
+  color: #770000;
 }
 .ItemNo {
   margin-left: 1%;

@@ -41,7 +41,7 @@ export class GameComponent implements OnInit, OnDestroy {
   localSubjects: Record<string, Subject<void>> = {
     "cart-add": new Subject<void>(),
     "cart-remove": new Subject<void>(),
-    "acceptedOffers": new Subject<void>()
+    "accepted-offers": new Subject<void>()
   };
   timers: Record<string, NodeJS.Timer> = {};
   destroyer = new ReplaySubject<boolean>(1);
@@ -243,6 +243,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.websocket.nextJ({ cmd: Cmd.Member, game: this.game, user: this.user, stock: $event });
   }
   modifyOffer() {
-
+    this.localSubjects["accepted-offers"].next();
+    localStorage.setItem(`game:${this.game}:user:${this.user}:accepted-offers`, JSON.stringify(this.acceptedOffers));
   }
 }
