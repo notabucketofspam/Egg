@@ -70,7 +70,7 @@
         </div>
       </div>
       <button type="submit" class="Flex Row Form Submit Large"
-              [disabled]="!state.round||(state.round.phase===2&&state.ready.includes(user))||tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null&&(tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.projected.user[tradeOfferForm.controls['tx'].value].own[this.comShort]||tradeOfferForm.controls['amount'].value%1!==0)||tradeOfferForm.controls['tx'].value===null&&(tradeOfferForm.controls['amount'].value===0||tradeOfferForm.controls['amount'].value%1!==0||tradeOfferForm.controls['amount'].value>this.projected.available)">
+              [disabled]="!state.round||state.round.phase===3||(state.round.phase===2&&state.ready.includes(user))||tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null&&(tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.projected.user[tradeOfferForm.controls['tx'].value].own[this.comShort]||tradeOfferForm.controls['amount'].value%1!==0)||tradeOfferForm.controls['tx'].value===null&&(tradeOfferForm.controls['amount'].value===0||tradeOfferForm.controls['amount'].value%1!==0||tradeOfferForm.controls['amount'].value>this.projected.available)">
         {{(tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null)?"Submit offer":tradeOfferForm.controls['amount'].value>=0?"Add to cart":"Sell off stocks"}}
       </button>
     </form>
