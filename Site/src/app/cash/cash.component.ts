@@ -15,6 +15,7 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
     amount: new FormControl(0)
   });
   @Input() cart!: CartItem[];
+  @Input() acceptedOffers!: CartItem[];
   projected = {
     cash: {} as State["cash"],
     paTotal: 0
@@ -36,6 +37,8 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
         this.resetPaTotal();
       }
     });
+    this.subscriptions["accepted-offers"] = this.localSubjects["accepted-offers"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.resetProjectedCash());
     this.subscriptions["cart-add"] = this.localSubjects["cart-add"].pipe(takeUntil(this.destroyer))
       .subscribe(() => this.resetProjectedCash());
     this.subscriptions["cart-remove"] = this.localSubjects["cart-remove"].pipe(takeUntil(this.destroyer))
@@ -58,7 +61,11 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
         this.projected.cash[item.tx] += item.ct * this.state.price[item.con + ':' + item.com];
       this.projected.cash[this.user] -= item.ct * this.state.price[item.con + ':' + item.com];
     }
-     this.projected.cash[this.user] -= this.state.pledge[this.user];
+    for (const item of this.acceptedOffers) {
+      this.projected.cash[this.user] += item.ct * this.state.price[item.con + ':' + item.com];
+      this.projected.cash[item.rx] -= item.ct * this.state.price[item.con + ':' + item.com];
+    }
+    this.projected.cash[this.user] -= this.state.pledge[this.user];
   }
   ngOnDestroy() {
     this.destroyer.next(true);
