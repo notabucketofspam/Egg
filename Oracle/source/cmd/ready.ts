@@ -59,8 +59,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const tradeJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
         userCount, data.game, newPhase) as string;
       const tradeObj = JSON.parse(tradeJson) as TradeObj;
-      partialObj["user"] = tradeObj["user"];
-      partialObj["cash"] = tradeObj["cash"];
+      partialObj["cash"] = tradeObj.cash;
+      if (tradeObj.user)
+        partialObj["user"] = tradeObj.user;
       // Compute next stock price and either hold it until next phase
       // or overwrite current stock price
       fields.splice(0, fields.length, "price", "next-price", "delta", "pw", "index", "round");
@@ -104,7 +105,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   }
 }
 type TradeObj = {
-  user: {
+  user?: {
     [user: string]: Record<string, number>
   },
   list: {

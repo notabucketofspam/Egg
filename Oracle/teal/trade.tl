@@ -203,14 +203,17 @@ if gameExists then
     send = redis.error_reply("EBADPHASE")
     return send
   end
-  local partial = {
+  local partial: {string: any} = {
     list = list,
-    user = user,
     cash = cash
   }
+  if next(user) ~= nil then
+    partial["user"] = user
+  end
   local partialjson = cjson.encode(partial)
   local partialjson2 = string.gsub(partialjson, '"list":{}', '"list":[]')
-  send = redis.status_reply(partialjson2)
+  local partialjson3 = string.gsub(partialjson2, '"cash":{}', '"cash":[]')
+  send = redis.status_reply(partialjson3)
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
