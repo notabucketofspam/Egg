@@ -30,12 +30,13 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     // Only trigger on phase change, not just any toggle
     if (newPhase === 0 && data.phase !== newPhase) {
       // Do dividends update
-      const fields: string[] = ["users", "cash", "pw"];
-      const users = await ioredis.smembers(`game:${data.game}:users`);
-      const userFields = ["last-member", "member", "own"];
-      const keys = toScriptKeys(data.game, fields, users, userFields);
+      const fields: string[] = ["init", "cash", "pw", "price"];
+      const userCount = await ioredis.scard(`game:${data.game}:users`);
+      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
+      const userFields = ["member", "own"];
+      const keys = toScriptKeys(data.game, fields, zusers, userFields);
       const morePartialJson = await ioredis.evalsha(scripts["dividends"], keys.length, ...keys,
-        users.length, data.game) as string;
+        userCount, data.game) as string;
       const morePartialObj = JSON.parse(morePartialJson);
       partialObj["cash"] = morePartialObj["cash"];
     } else if (newPhase === 2 && data.phase !== newPhase) {

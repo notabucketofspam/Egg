@@ -3,17 +3,24 @@ redis.setresp(3)
 -- Things to be returned from the script
 local send: {string: string}
 -- Script params
-local usersKey = KEYS[1]
+local initKey = KEYS[1]
 local cashKey = KEYS[2]
 local pwKey = KEYS[3]
--- NOTE there is also the set of "user[name]..." keys;
--- the order is (in this case): last-member, member, own
--- The formula is effectively KEYS[(x + n*(i - 1)) as integer], where
--- x is start of user keys, n is number of user keys, and i is loop index
--- (up to userCount), which can be simplified through arithmetic
--- order-of-operations to KEYS[(x - n + n*i) as integer]
+local priceKey = KEYS[4]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
+-- User fields are: member, own
+local function getKey(i: number, key: string): string 
+  if key == "member" then
+    return KEYS[5 + 2*i as integer]
+  elseif key == "own" then
+    return KEYS[6 + 2*i as integer]
+  end
+end
+-- Get conglomerate from stock name
+local function getCon(stock: string): string
+  return string.match(stock, "([^:]*)")
+end
 -- Check that game exists
 local games = redis.call("SMEMBERS", "games") as Set
 local gameExists = false
@@ -24,46 +31,39 @@ for game in pairs(games.set) do
   end
 end
 if gameExists then
-  -- Don't need to check if user exists in game,
-  -- since this applies to all users
-  --
-  --
-  -- Set "last-member" equal to "member" for all
-  for i = 1, userCount do
-    local lastMemberTable = (redis.call("HGETALL", KEYS[(4 + 3*i) as integer]) as Hash).map
-    local memberTable = (redis.call("HGETALL", KEYS[(5 + 3*i) as integer]) as Hash).map
-    for stock in pairs(lastMemberTable) do
-      if lastMemberTable[stock] ~= memberTable[stock] then
-        local newTier = tostring(memberTable[stock])
-        local lastMemberKey = KEYS[(1 + 3*i) as integer]
-        redis.call("HSET", lastMemberKey, stock, newTier)
-      end
-    end
-  end
-  -- Need "member" for basically just Doug (which is KEYS[2 + 3*i]),
-  -- "own" for dividends direct from stocks (which is KEYS[3 + 3*i]),
-  -- and "pw" for dividend %
-  --
   -- Setup new state params
-  local partialState = {
+  local partial = {
     cash: {string: number} = {},
-    cmd = "update"
   }
   -- Payout of stock based on which public work is built
-  local dividendsTable = {0, 0.15, 0.25, 0.35, 0.5}
+  local flavor = {0.15, 0.25, 0.35, 0.5}
   -- Bonuses of Doug tiers
-  local dougTable = {0, 0.15, 0.2, 0.25}
-  -- Current cash of all users
-  local cashTable = (redis.call("HGETALL", cashKey) as Hash).map
-  -- Which public works are built and where
-  local pwTable = (redis.call("HGETALL", pwKey) as Hash).map
+  local dougMult = {1.15, 1.2, 1.25}
+  local cash = (redis.call("HGETALL", cashKey) as Hash).map
+  local pw = (redis.call("HGETALL", pwKey) as Hash).map
+  local price = (redis.call("HGETALL", priceKey) as Hash).map
   -- Math time
-  local users = redis.call("SMEMBERS", usersKey) as Set
-  for user in pairs(users.set) do
-    local newCash = tonumber(cashTable[user])
-    partialState.cash[user] = newCash
+  local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1], "REV") as {string}
+  for i = 1 as integer, #zusers do
+    local user = zusers[i]
+    local newcash = tonumber(cash[user])
+    local member = (redis.call("HGETALL", getKey(i, "member")) as Hash).map
+    local own = (redis.call("HGETALL", getKey(i, "own")) as Hash).map
+    for com, count in pairs(own) do
+      local pwFlavor = tonumber(pw[com]) as integer
+      if pwFlavor > 0 then
+        local basediv = tonumber(own[com])*tonumber(price[com])*flavor[pwFlavor]
+        local memberTier = tonumber(member[com]) as integer
+        if getCon(com) == "Doug" and memberTier > 0 then
+          basediv = basediv*dougMult[memberTier]
+        end
+        newcash = newcash + basediv
+      end
+    end
+    partial.cash[user] = newcash
   end
-  send = redis.status_reply(cjson.encode(partialState))
+  -- Add back later
+  send = redis.status_reply(cjson.encode(partial))
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
