@@ -69,7 +69,7 @@ const patches: ((ioredis: Redis, scripts: Record<string, string>,
       try {
         // ver 3 -> 4
         // add "next-price" to game
-        const fields = ["ver", "next-price"];
+        const fields = ["ver", "next-price", "price"];
         const keys = toScriptKeys(game, fields);
         await ioredis.evalsha(scripts["patch"], keys.length, ...keys, users.length, game, ver);
         return false;

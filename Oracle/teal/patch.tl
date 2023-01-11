@@ -9,12 +9,6 @@ local hsetConglomerates = {
   "Gary:CALC", "0", "Gary:GUI", "0", "Gary:GLIT", "0", "Gary:GPU", "0",
   "Doug:CANN", "0", "Doug:DOOD", "0", "Doug:DUG", "0", "Doug:CLUB", "0"
 }
-local hsetConglomeratesPrice = {
-  "Cathy:CREAM", "135", "Cathy:BEER", "135", "Cathy:CRUNCH", "135", "Cathy:ROLL", "135",
-  "Terry:TOWER", "135", "Terry:TAP", "135", "Terry:TIME", "135", "Terry:TENT", "135",
-  "Gary:CALC", "135", "Gary:GUI", "135", "Gary:GLIT", "135", "Gary:GPU", "135",
-  "Doug:CANN", "135", "Doug:DOOD", "135", "Doug:DUG", "135", "Doug:CLUB", "135"
-}
 -- Script params
 local verKey = KEYS[1]
 local userCount = tonumber(ARGV[1])
@@ -31,7 +25,12 @@ for game in pairs(games.set) do
 end
 if gameExists then
   -- choose a patch; will need to externally iterate to apply more than one
-  if ver == 0 then
+  local globalVer = tonumber(redis.call("GET", "global-ver") as string)
+  if ver == globalVer then
+    -- already on the latest patch, so do nothing
+    send = redis.status_reply("OK")
+    return send
+  elseif ver == 0 then
     -- add "last-own" to each user
     -- "last-own" is now the only field provided by the new toScriptKeys()
     for i = 2, userCount do
@@ -48,7 +47,10 @@ if gameExists then
     redis.call("DEL", unpack(KEYS, 2))
   elseif ver == 3 then
     -- add "next-price" to game
-    redis.call("HSET", KEYS[2], unpack(hsetConglomeratesPrice))
+    local nextPriceKey = KEYS[2]
+    local priceKey = KEYS[3]
+    local priceDump = redis.call("DUMP", priceKey) as string
+    redis.call("RESTORE", nextPriceKey, "0", priceDump, "REPLACE")
   elseif ver == 4 then
     -- remove "second-init" from game
     redis.call("DEL", KEYS[2])
@@ -58,9 +60,6 @@ if gameExists then
     local cashKey = KEYS[3]
     local cashDump = redis.call("DUMP", cashKey) as string
     redis.call("RESTORE", lastCashKey, "0", cashDump, "REPLACE")
-  else
-    -- already on the latest patch, so decrement here and increment again in a moment
-    redis.call("DECR", verKey)
   end
   -- increment version ###
   redis.call("INCR", verKey)
