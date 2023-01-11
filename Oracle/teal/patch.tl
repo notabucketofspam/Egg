@@ -52,6 +52,12 @@ if gameExists then
   elseif ver == 4 then
     -- remove "second-init" from game
     redis.call("DEL", KEYS[2])
+  elseif ver == 5 then
+    -- add "last-cash" to game
+    local lastCashKey = KEYS[2]
+    local cashKey = KEYS[3]
+    local cashDump = redis.call("DUMP", cashKey) as string
+    redis.call("RESTORE", lastCashKey, "0", cashDump, "REPLACE")
   else
     -- already on the latest patch, so decrement here and increment again in a moment
     redis.call("DECR", verKey)

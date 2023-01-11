@@ -33,7 +33,7 @@ redis.call("HSET", priceKey, unpack(hsetConglomeratesPrice))
 redis.call("HSET", deltaKey, unpack(hsetConglomerates))
 redis.call("HSET", pwKey, unpack(hsetConglomerates))
 redis.call("HSET", roundKey, "round", "0", "phase", "0")
-redis.call("SET", verKey, "5")
+redis.call("SET", verKey, "6")
 redis.call("HSET", nextPriceKey, unpack(hsetConglomeratesPrice))
 -- Final reply
 send = redis.status_reply("OK")
