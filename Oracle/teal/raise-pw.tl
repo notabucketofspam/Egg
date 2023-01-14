@@ -17,9 +17,9 @@ for game in pairs(games.set) do
   end
 end
 if gameExists then
-  local partial = {
-    pw: {string: number} = {}
-  }
+  local record partial
+    pw: {string: number}
+  end
   local pwTable = (redis.call("HGETALL", pwKey) as Hash).map
   local allUserOwn: {{string: string}} = {}
   for i = 1, userCount do
@@ -41,6 +41,9 @@ if gameExists then
       end
       if meetsRequirement then
         redis.call("HSET", pwKey, stock, "4")
+        if partial.pw == nil then
+          partial.pw = {}
+        end
         partial.pw[stock] = 4
       end
     elseif fv < 3 then
@@ -55,6 +58,9 @@ if gameExists then
       end
       if meetsRequirement then
         redis.call("HSET", pwKey, stock, "3")
+        if partial.pw == nil then
+          partial.pw = {}
+        end
         partial.pw[stock] = 3
       end
     elseif fv < 2 then
@@ -71,6 +77,9 @@ if gameExists then
       end
       if totalOwn >= 50 and owningUsersCount >= 3 then
         redis.call("HSET", pwKey, stock, "2")
+        if partial.pw == nil then
+          partial.pw = {}
+        end
         partial.pw[stock] = 2
       end
     elseif fv < 1 then
@@ -85,6 +94,9 @@ if gameExists then
       end
       if owningUsersCount == userCount then
         redis.call("HSET", pwKey, stock, "1")
+        if partial.pw == nil then
+          partial.pw = {}
+        end
         partial.pw[stock] = 1
       end
     end
