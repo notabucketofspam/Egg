@@ -8,7 +8,7 @@ export const cmd = "new";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: New) {
   const gameId = Date.now().toString(16).padStart(14, "0");
   try {
-    const fields = ["index", "price", "delta", "pw", "round", "ver", "next-price"];
+    const fields = ["index", "price", "delta", "pw", "round", "ver", "next-price", "soup"];
     const keys = toScriptKeys(gameId, fields);
     await ioredis.evalsha(scripts["new"], keys.length, ...keys, 0, gameId, `game:${gameId}:trade:`);
     try {

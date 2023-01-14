@@ -60,6 +60,9 @@ if gameExists then
     local cashKey = KEYS[3]
     local cashDump = redis.call("DUMP", cashKey) as string
     redis.call("RESTORE", lastCashKey, "0", cashDump, "REPLACE")
+  elseif ver == 6 then
+    -- add "soup" to game
+    redis.call("SET", KEYS[2], "0")
   end
   -- increment version ###
   redis.call("INCR", verKey)
