@@ -44,7 +44,7 @@
     <Content Include="teal\debug.tl" />
     <Content Include="teal\delete.tl" />
     <Content Include="teal\dividends.tl" />
-    <Content Include="teal\good-will.tl" />
+    <Content Include="teal\end-round.tl" />
     <Content Include="teal\ls.tl" />
     <Content Include="teal\member.tl" />
     <Content Include="teal\new.tl" />

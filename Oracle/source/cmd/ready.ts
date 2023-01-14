@@ -88,15 +88,21 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         partialObj["pw"] = morePartialObj["pw"];
       }
     } else if (newPhase === 5 && data.phase !== newPhase) {
-      // Do good will update
-      const fields: string[] = ["users", "cash", "pledge", "pa"];
-      const users = await ioredis.smembers(`game:${data.game}:users`);
+      // Do good will / pledge update
+      const fields: string[] = ["init", "cash", "pledge", "pa", "can-trade", "last-cash", "soup"];
+      const userCount = await ioredis.scard(`game:${data.game}:users`);
+      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
       const userFields = ["last-member", "member"];
-      const keys = toScriptKeys(data.game, fields, users, userFields);
-      const morePartialJson = await ioredis.evalsha(scripts["good-will"], keys.length, ...keys,
-        users.length, data.game) as string;
-      const morePartialObj = JSON.parse(morePartialJson);
-      partialObj["cash"] = morePartialObj["cash"];
+      const keys = toScriptKeys(data.game, fields, zusers, userFields);
+      const endRoundJson = await ioredis.evalsha(scripts["end-round"], keys.length, ...keys,
+        userCount, data.game) as string;
+      const endRoundObj = JSON.parse(endRoundJson);
+      partialObj["cash"] = endRoundObj["cash"];
+      partialObj["pa"] = endRoundObj["pa"];
+      partialObj["pledge"] = endRoundObj["pledge"];
+      partialObj["soup"] = endRoundObj["soup"];
+      if (endRoundObj["user"])
+        partialObj["pledge"] = endRoundObj["pledge"];
     }
     for (const [aliveClient, clientMeta] of aliveClients)
       if (clientMeta.game === data.game)
