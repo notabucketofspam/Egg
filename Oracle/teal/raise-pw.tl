@@ -20,17 +20,22 @@ if gameExists then
   local partial = {
     pw: {string: number} = {}
   }
-  local pwTable = (redis.call("HGETALL", pwKey) as Hash).map as {string: string}
-  -- "repeat until true" with "do break end" is a jank way of implementing
-  -- "continue" in a Lua for loop 
-  for stock, flavor in pairs(pwTable) do repeat
+  local pwTable = (redis.call("HGETALL", pwKey) as Hash).map
+  local allUserOwn: {{string: string}} = {}
+  for i = 1, userCount do
+    local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map
+    table.insert(allUserOwn, userOwn)
+  end
+  for stock, flavor in pairs(pwTable) do
+    -- Flavor value
+    local fv = tonumber(flavor)
     -- Check bulldoze eligibility
-    if tonumber(flavor) < 4 then
+    if fv < 4 then
       -- Change to Dog Water
       local meetsRequirement = false
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
-        if tonumber(userOwn[stock]) >= 80 then
+        local ownership = tonumber(allUserOwn[i as integer][stock])
+        if ownership >= 80 then
           meetsRequirement = true
         end
       end
@@ -38,14 +43,13 @@ if gameExists then
         redis.call("HSET", pwKey, stock, "4")
         partial.pw[stock] = 4
       end
-      do break end
-    elseif tonumber(flavor) < 3 then
+    elseif fv < 3 then
       -- Change to Bad
       -- Basically copy-paste from above
       local meetsRequirement = false
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
-        if tonumber(userOwn[stock]) >= 50 then
+        local ownership = tonumber(allUserOwn[i as integer][stock])
+        if ownership >= 50 then
           meetsRequirement = true
         end
       end
@@ -53,16 +57,15 @@ if gameExists then
         redis.call("HSET", pwKey, stock, "3")
         partial.pw[stock] = 3
       end
-      do break end
-    elseif tonumber(flavor) < 2 then
+    elseif fv < 2 then
       -- Change to Good
       -- Also basically copy-paste from above, with a little more math
       local totalOwn = 0
       local owningUsersCount = 0
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
-        totalOwn = totalOwn + tonumber(userOwn[stock]) as integer
-        if tonumber(userOwn[stock]) > 0 then
+        local ownership = tonumber(allUserOwn[i as integer][stock])
+        totalOwn = totalOwn + ownership as integer
+        if ownership > 0 then
           owningUsersCount = owningUsersCount + 1
         end
       end
@@ -70,14 +73,13 @@ if gameExists then
         redis.call("HSET", pwKey, stock, "2")
         partial.pw[stock] = 2
       end
-      do break end
-    elseif tonumber(flavor) < 1 then
+    elseif fv < 1 then
       -- Change to Most Excellent
       -- One last copy-paste, for good measure
       local owningUsersCount = 0
       for i = 1, userCount do
-        local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map as {string: string}
-        if tonumber(userOwn[stock]) > 0 then
+        local ownership = tonumber(allUserOwn[i as integer][stock])
+        if ownership > 0 then
           owningUsersCount = owningUsersCount + 1
         end
       end
@@ -85,9 +87,8 @@ if gameExists then
         redis.call("HSET", pwKey, stock, "1")
         partial.pw[stock] = 1
       end
-      do break end
     end
-  until true end
+  end
   send = redis.status_reply(cjson.encode(partial))
 else
   -- No game in games set
