@@ -18,7 +18,7 @@ local unused = ARGV[5]
 local unused2 = ARGV[6]
 -- Remaining args are trade JSON strings
 local record Trade
-  id: string
+  time: number
   con: string
   com: string
   total: number
@@ -56,6 +56,10 @@ if gameExists then
   if phase == "3" then
     -- Record trades and calculate next-price
     --
+    -- Get time of day (time pauses inside of a Lua script); need this to compare
+    -- against other times later for price mech
+    local timeString = (redis.call("TIME") as {string})[1]
+    local time = tonumber(timeString)
     -- Replace next-price on the off-chance that price has changed in the middle
     -- of the round (i.e. from debugging)
     local priceDump = redis.call("DUMP", priceKey) as string
@@ -66,15 +70,11 @@ if gameExists then
     for i = startKeys, #ARGV do
       local tradeKey = KEYS[i]
       local trade = cjson.decode(ARGV[i]) as Trade
+      trade.time = time
       redis.call("HSET", tradeKey, "con", trade.con, "com", trade.com,
         "total", tostring(trade.total), "round", tostring(trade.round),
-        "id", trade.id)
-        table.insert(trades, trade)
-    end
-    -- Can't calculate prices at the very start of the game
-    if round == 0 then
-      send = redis.status_reply("OK")
-      return send
+        "time", timeString)
+      table.insert(trades, trade)
     end
     -- Get results first so that searches don't have to be re-run each loop
     local search: {string: {string}} = {
@@ -86,17 +86,31 @@ if gameExists then
     -- Parse search results into trade objects
     local results: {string: {Trade}} = {}
     local pwmult: {string: number} = {}
+    local lastTime: number
     for con, list in pairs(search) do
       table.remove(list, 1)
       results[con] = map(list, function(itemkey: string): Trade
         local item = (redis.call("HGETALL", itemkey) as Hash).map
         return {
+          time = tonumber(item.time),
           con = item.con,
           com = item.com,
           total = tonumber(item.total),
           round = tonumber(item.round)
         }
       end)
+      -- Sort results by time, newest first
+      table.sort(results[con], function(a: Trade, b: Trade): (boolean)
+        return a.time > b.time
+      end)
+      -- Get last time that any trade for any con was made
+      for i = 1, #results[con] do
+        local thisTime = results[con][i].time
+        if thisTime ~= time and (lastTime == nil or lastTime < thisTime) then
+          lastTime = thisTime
+          break
+        end
+      end
       -- Also, calculate PW price volatility multiplier
       local pwsum = 0.0
       for stock, fv in pairs(pw) do
@@ -118,17 +132,14 @@ if gameExists then
       local con_lastdelta = 0.0
       for iii = 1, #results[trade.con] do
         local otherTrade = results[trade.con][iii]
-        if otherTrade.con == trade.con then
-          if otherTrade.round == round then
-            -- Deltas for this turn
-            con_delta = con_delta + otherTrade.total
-          end
-          if otherTrade.round == round - 1 then
-            -- Deltas for last turn
-            con_lastdelta = con_lastdelta + otherTrade.total
-            if otherTrade.com == trade.com then
-              com_lastdelta = otherTrade.total
-            end
+        if otherTrade.time == time then
+          -- Deltas for this turn
+          con_delta = con_delta + otherTrade.total
+        elseif lastTime ~= nil and otherTrade.time == lastTime then
+          -- Deltas for last turn
+          con_lastdelta = con_lastdelta + otherTrade.total
+          if otherTrade.com == trade.com then
+            com_lastdelta = otherTrade.total
           end
         end
       end
