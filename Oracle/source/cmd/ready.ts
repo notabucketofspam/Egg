@@ -12,41 +12,43 @@ export const cmd = "ready";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Ready) {
   try {
     // Do round update
-    let partialJson = "";
-    const baseFields = ["users", "ready", "round"];
+    let readyJson = "";
+    const readyFields = ["users", "ready", "round"];
     if (data["cart-json"] && (data.phase === 2 || data.phase === 3)) {
-      const baseUsers = [data.user];
-      const baseUserFields = ["cart-json"];
-      const baseKeys = toScriptKeys(data.game, baseFields, baseUsers, baseUserFields);
-      partialJson = await ioredis.evalsha(scripts["ready"], baseKeys.length, ...baseKeys,
+      const users = [data.user];
+      const userFields = ["cart-json"];
+      const keys = toScriptKeys(data.game, readyFields, users, userFields);
+      readyJson = await ioredis.evalsha(scripts["ready"], keys.length, ...keys,
         1, data.game, data.user, String(data.ready), data["cart-json"].length, ...data["cart-json"]) as string;
     } else {
-      const baseKeys = toScriptKeys(data.game, baseFields);
-      partialJson = await ioredis.evalsha(scripts["ready"], baseKeys.length, ...baseKeys,
+      const keys = toScriptKeys(data.game, readyFields);
+      readyJson = await ioredis.evalsha(scripts["ready"], keys.length, ...keys,
         0, data.game, data.user, String(data.ready), -1) as string;
     }
-    const partialObj = JSON.parse(partialJson);
-    const newPhase = partialObj["round"]["phase"];
+    const partial = JSON.parse(readyJson);
+    const newPhase = partial["round"]["phase"] as number;
     // Only trigger on phase change, not just any toggle
     if (newPhase === 0 && data.phase !== newPhase) {
       // Do dividends update
-      const fields: string[] = ["init", "cash", "pw", "price"];
+      const fields = ["init", "cash", "pw", "price"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
       const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
       const userFields = ["member", "own"];
       const keys = toScriptKeys(data.game, fields, zusers, userFields);
-      const morePartialJson = await ioredis.evalsha(scripts["dividends"], keys.length, ...keys,
+      const dividendsJson = await ioredis.evalsha(scripts["dividends"], keys.length, ...keys,
         userCount, data.game) as string;
-      const morePartialObj = JSON.parse(morePartialJson);
-      partialObj["cash"] = morePartialObj["cash"];
+      const dividends = JSON.parse(dividendsJson);
+      if (dividends["cash"])
+        partial["cash"] = dividends["cash"];
     } else if (newPhase === 2 && data.phase !== newPhase) {
       // Roll for initiative
       const fields = ["users", "init"];
       const keys = toScriptKeys(data.game, fields);
-      const morePartialJson = await ioredis.evalsha(scripts["roll-init"], keys.length, ...keys,
+      const rollInitJson = await ioredis.evalsha(scripts["roll-init"], keys.length, ...keys,
         0, data.game) as string;
-      const morePartialObj = JSON.parse(morePartialJson);
-      partialObj["init"] = morePartialObj["init"];
+      const rollInit = JSON.parse(rollInitJson);
+      if (rollInit["init"])
+        partial["init"] = rollInit["init"];
     } else if ((newPhase === 3 || newPhase === 4) && data.phase !== newPhase) {
       // Process a stock trading window
       // First will push through purchases that work (to whatever extent that is)
@@ -59,61 +61,68 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const keys = toScriptKeys(data.game, fields, zusers, userFields);
       const tradeJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
         userCount, data.game, newPhase) as string;
-      const tradeObj = JSON.parse(tradeJson) as TradeObj;
-      partialObj["cash"] = tradeObj.cash;
-      if (tradeObj.user)
-        partialObj["user"] = tradeObj.user;
+      const trade = JSON.parse(tradeJson) as TradeObj;
+      if (trade.cash)
+        partial["cash"] = trade.cash;
+      if (trade.user)
+        partial["user"] = trade.user;
       // Compute next stock price and either hold it until next phase
       // or overwrite current stock price
-      fields.splice(0, fields.length, "price", "next-price", "delta", "pw", "index", "round");
-      // keys and argv are the same length to simplify the math in Teal
-      keys.splice(0, keys.length, ...toScriptKeys(data.game, fields),
-        ...tradeObj.list.map(value => value.key));
-      const argv = ["0", data.game, `${newPhase}`, fields.length + 1, "unused", "unused2",
-        ...tradeObj.list.map(value => value.json)];
-      const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys.length, ...keys, ...argv) as string;
+      const fields2 = ["price", "next-price", "delta", "pw", "index", "round"];
+      const keys2 = toScriptKeys(data.game, fields2).concat(trade.list.map(value => value.key));
+      const argv = ["0", data.game, `${newPhase}`, `${fields2.length + 1}`, "unused", "unused2",
+        ...trade.list.map(value => value.json)];
+      const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys2.length, ...keys2, ...argv) as string;
       if (newPhase === 4) {
         // Only include price / delta updates when they're actually applied
-        const stockPriceObj = JSON.parse(stockPriceJson);
-        partialObj["price"] = stockPriceObj["price"];
-        partialObj["delta"] = stockPriceObj["delta"];
+        const stockPrice = JSON.parse(stockPriceJson);
+        if (stockPrice["price"])
+          partial["price"] = stockPrice["price"];
+        if (stockPrice["delta"])
+          partial["delta"] = stockPrice["delta"];
         // Do public works update, i.e. raise them automatically
-        fields.splice(0, fields.length, "pw");
-        userFields.splice(0, userFields.length, "own");
-        const moreKeys = toScriptKeys(data.game, fields, zusers, userFields);
+        const fields3 = ["pw"];
+        const userFields3 = ["own"];
+        const keys3 = toScriptKeys(data.game, fields3, zusers, userFields3);
         // Script note: only PWs that have changed in flavor will be returned
-        const morePartialJson = await ioredis.evalsha(scripts["raise-pw"], moreKeys.length, ...moreKeys,
+        const raisePwJson = await ioredis.evalsha(scripts["raise-pw"], keys3.length, ...keys3,
           userCount, data.game) as string;
-        const morePartialObj = JSON.parse(morePartialJson);
-        partialObj["pw"] = morePartialObj["pw"];
+        const raisePw = JSON.parse(raisePwJson);
+        if (raisePw["pw"])
+          partial["pw"] = raisePw["pw"];
       }
     } else if (newPhase === 5 && data.phase !== newPhase) {
       // Do good will / pledge update
-      const fields: string[] = ["init", "cash", "pledge", "pa", "can-trade", "last-cash", "soup"];
+      const fields = ["init", "cash", "pledge", "pa", "can-trade", "last-cash", "soup"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
       const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
       const userFields = ["last-member", "member"];
       const keys = toScriptKeys(data.game, fields, zusers, userFields);
       const endRoundJson = await ioredis.evalsha(scripts["end-round"], keys.length, ...keys,
         userCount, data.game) as string;
-      const endRoundObj = JSON.parse(endRoundJson);
-      partialObj["cash"] = endRoundObj["cash"];
-      partialObj["pa"] = endRoundObj["pa"];
-      partialObj["pledge"] = endRoundObj["pledge"];
-      partialObj["soup"] = endRoundObj["soup"];
-      if (endRoundObj["user"])
-        partialObj["pledge"] = endRoundObj["pledge"];
+      const endRound = JSON.parse(endRoundJson);
+      if (endRound["cash"])
+        partial["cash"] = endRound["cash"];
+      if (endRound["pa"])
+        partial["pa"] = endRound["pa"];
+      if (endRound["pledge"])
+        partial["pledge"] = endRound["pledge"];
+      if (endRound["soup"])
+        partial["soup"] = endRound["soup"];
+      if (endRound["user"])
+        partial["user"] = endRound["user"];
     }
+    const partialJson = JSON.stringify(partial);
     for (const [aliveClient, clientMeta] of aliveClients)
       if (clientMeta.game === data.game)
-        aliveClient.send(JSON.stringify(partialObj));
+        aliveClient.send(partialJson);
   } catch (err) {
     client.send(fromScriptError("update", err as Error));
   }
 }
 type TradeObj = {
   user?: {
-    [user: string]: Record<string, number>
+    [user: string]: Record<string, Record<string, number>>
   },
   list: {
     key: string,
