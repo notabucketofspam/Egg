@@ -32,9 +32,9 @@ local record ComTotal
   round: number
 end
 local function getKey(ui: number, key: string): string 
-  if key == "cart" then
+  if key == "cart-json" then
     return KEYS[2 + 3*ui as integer]
-  elseif key == "offers" then
+  elseif key == "offers-json" then
     return KEYS[3 + 3*ui as integer]
   elseif key == "own" then
     return KEYS[4 + 3*ui as integer]
@@ -73,14 +73,15 @@ if gameExists then
     cash[username] = tonumber(cashMap[username])
     -- Delete existing offers (in case something has gone awry);
     -- there should be no offers at the start of any phase, only at the end
-    redis.call("DEL", getKey(ui, "offers"))
-    -- Add empty offers to return value (alerts client that "offers" is now empty)
+    redis.call("DEL", getKey(ui, "offers-json"))
+    -- Add empty offers to return value; alerts client that "offers-json" is now empty,
+    -- but it may get filled later, depending on the phase
     if user[username] == nil then
       user[username] = {
-        offers = {}
+        ["offers-json"] = {}
       }
     else
-      user[username]["offers"] = {}
+      user[username]["offers-json"] = {}
     end
   end
   if phase == "3" then
@@ -89,7 +90,7 @@ if gameExists then
     for rxi = 1, userCount do
       -- Theoretically, rx for every item in the cart should be this user
       local rxUser = zusers[rxi as integer]
-      local cart = redis.call("SMEMBERS", getKey(rxi, "cart")) as Set
+      local cart = redis.call("SMEMBERS", getKey(rxi, "cart-json")) as Set
       for itemjson in pairs(cart.set) do
         local item = cjson.decode(itemjson) as Item
         local comshort = item.con..":"..item.com
@@ -144,11 +145,23 @@ if gameExists then
           end
           local txUser = zusers[txi as integer]
           item.ct = math.min(tonumber(allUserOwn[txUser][comshort]), item.ct)
-          redis.call("SADD", getKey(txi, "offers"), cjson.encode(item))
+          local itemjson2 = cjson.encode(item)
+          redis.call("SADD", getKey(txi, "offers-json"), itemjson2)
+          -- Include new offers in return value
+          if user[txUser] == nil then
+            user[txUser] = {
+              ["offers-json"] = {}
+            }
+          else
+            user[txUser]["offers-json"] = {}
+          end
+          -- Teal doesn't know how to handle unions of two different table types,
+          -- so "offers-json" is cast as {any} here
+          table.insert(user[txUser]["offers-json"] as {any}, itemjson2)
         end
       end
       -- User cart has been processed, so get rid of it
-      redis.call("DEL", getKey(rxi, "cart"))
+      redis.call("DEL", getKey(rxi, "cart-json"))
     end
     -- Convert comTotals into an array of JSON strings
     for _, comtotal in pairs(comTotals) do
@@ -164,7 +177,7 @@ if gameExists then
     for txi = 1, userCount do
       -- Like above, tx for every item in the cart should be this user
       local txUser = zusers[txi as integer]
-      local cart = redis.call("SMEMBERS", getKey(txi, "cart")) as Set
+      local cart = redis.call("SMEMBERS", getKey(txi, "cart-json")) as Set
       for itemjson in pairs(cart.set) do
         -- Items do not need "trade" keys, since these transactions are only
         -- between players, which does not activate the price mechanism
@@ -208,7 +221,7 @@ if gameExists then
         redis.call("HSET", cashKey, rxUser, tostring(rxNewCash), txUser, tostring(txNewCash))
       end
       -- User cart has been processed (again), so get rid of it (again)
-      redis.call("DEL", getKey(txi, "cart"))
+      redis.call("DEL", getKey(txi, "cart-json"))
     end
   else
     -- Something has gone wrong
@@ -229,7 +242,8 @@ if gameExists then
   end
   local partialjson = cjson.encode(partial)
   local partialjson2 = string.gsub(partialjson, '"list":{}', '"list":[]')
-  send = redis.status_reply(partialjson2)
+  local partialjson3 = string.gsub(partialjson, '"offers-json":{}', '"offers-json":[]')
+  send = redis.status_reply(partialjson3)
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
