@@ -33,6 +33,7 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
   // This is Angular being stubborn again
   Number = Number;
   String = String;
+  initList: string[] = [];
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["state"] && changes["state"].currentValue["users"]) {
@@ -42,6 +43,8 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
         this.setCanNotTrade();
       if (changes["state"].currentValue["user"])
         this.resetStockAvailability();
+      if (changes["state"].currentValue["init"])
+        this.setInitList();
     }
   }
   ngOnDestroy(): void {
@@ -57,6 +60,9 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
     });
     this.subscriptions["user"] = this.stateSubjects["user"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetStockAvailability();
+    });
+    this.subscriptions["init"] = this.stateSubjects["init"].pipe(takeUntil(this.destroyer)).subscribe(() => {
+      this.setInitList();
     });
   }
   submit() {
@@ -94,5 +100,14 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
         this.stockAvailability[stock] -= this.state.user[user].own[stock];
       });
     });
+  }
+  setInitList() {
+    if (this.state && this.state.init) {
+      this.initList.length = 0;
+      for (const [user, init] of Object.entries(this.state.init)) {
+        this.initList[init] = user;
+      }
+      this.initList.splice(0, 1);
+    }
   }
 }

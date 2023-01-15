@@ -17,8 +17,10 @@
     <option [ngValue]="'pa'">pa</option>
     <option [ngValue]="'cash'">cash</option>
     <option [ngValue]="'init'">init</option>
+    <option [ngValue]="'last-cash'">last-cash</option>
     <option [ngValue]="'ver'">ver</option>
     <option [ngValue]="'global-ver'">global-ver</option>
+    <option [ngValue]="'soup'">soup</option>
   </select>
   <br />
   <ng-container [ngSwitch]="debugForm.controls['field'].value">
@@ -123,6 +125,8 @@
           <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0||Number(debugForm.controls['value'].value)%1!==0">Submit</button>
         </ng-container>
         <ng-container *ngSwitchCase="'phase'">
+          Setting phase will not trigger on-change scripts (dividends, roll init, new stock prices, etc.)
+          <br />
           Phase #:
           <input type="number" formControlName="value" placeholder="0" min="0" step="1" max="5" />
           <ng-container [ngSwitch]="debugForm.controls['value'].value">
@@ -161,6 +165,8 @@
         <br />
         <ng-container [ngSwitch]="debugForm.controls['userField'].value">
           <ng-container *ngSwitchCase="debugForm.controls['userField'].value==='last-member'||debugForm.controls['userField'].value==='member'?debugForm.controls['userField'].value:''">
+            Must set same tier for all four companies in a conglomerate for the change to take effect.
+            <br />
             Stock:
             <select formControlName="prop">
               <option [ngValue]="null">---</option>
@@ -212,6 +218,8 @@
       <br />
       <ng-container [ngSwitch]="debugForm.controls['value'].value">
         <ng-container *ngSwitchCase="'sadd'">
+          Adding a user to ready will not trigger on-ready scripts (submit cart, change phase, etc.).
+          <br />
           User:
           <select formControlName="prop">
             <option [ngValue]="null">---</option>
@@ -235,13 +243,13 @@
           Yes:
           <input type="checkbox" formControlName="prop" />
           <span *ngIf="String(debugForm.controls['prop'].value)==='true'&&!state.ready.length">
-            You cannot delete this field while it is empty. 
+            You cannot delete this field while it is empty.
           </span>
           <br />
         </ng-container>
         <ng-container *ngSwitchDefault></ng-container>
       </ng-container>
-      <button type="submit" *ngIf="debugForm.controls['value'].value!==null" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['value'].value==='del'&&!state.ready.length">Submit</button>
+      <button type="submit" *ngIf="debugForm.controls['value'].value!==null" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||String(debugForm.controls['prop'].value)==='false'||debugForm.controls['value'].value==='del'&&!state.ready.length">Submit</button>
     </ng-container>
     <ng-container *ngSwitchCase="'pledge'">
       User:
@@ -297,7 +305,7 @@
         </ng-container>
         <ng-container *ngSwitchDefault></ng-container>
       </ng-container>
-      <button type="submit" *ngIf="debugForm.controls['value'].value!==null" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||debugForm.controls['value'].value==='del'&&!state['can-trade'].length">Submit</button>
+      <button type="submit" *ngIf="debugForm.controls['value'].value!==null" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||String(debugForm.controls['prop'].value)==='false'||debugForm.controls['value'].value==='del'&&!state['can-trade'].length">Submit</button>
     </ng-container>
     <ng-container *ngSwitchCase="'pa'">
       User:
@@ -330,12 +338,47 @@
     <ng-container *ngSwitchCase="'init'">
       <!-- need to fix debug.tl to handle zset -->
       Not implemented.
+      <br />
+      Current init:
+      <br />
+      <ol class="List">
+        <li *ngFor="let username of initList">{{username}}</li>
+      </ol>
+    </ng-container>
+    <ng-container *ngSwitchCase="'last-cash'">
+      User:
+      <select formControlName="prop">
+        <option [ngValue]="null">---</option>
+        <ng-container *ngFor="let user of state.users">
+          <option [ngValue]="user">{{user}}</option>
+        </ng-container>
+      </select>
+      <br />
+      Amount:
+      <input type="number" formControlName="value" placeholder="3000" min="0" step="100" />
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||Number(debugForm.controls['value'].value)<0">Submit</button>
     </ng-container>
     <ng-container *ngSwitchCase="'ver'">
       You cannot modify this field.
+      <br />
+      Current ver: {{state.ver}}
     </ng-container>
     <ng-container *ngSwitchCase="'global-ver'">
       You cannot modify this field.
+      <br />
+      global-ver: {{state['global-ver']}}
+    </ng-container>
+    <ng-container *ngSwitchCase="'soup'">
+      Current value: {{state.soup | currency}}
+      <br />
+      New value:
+      <input type="number" formControlName="value" placeholder="100" min="0" step="100" />
+      <br />
+      Yes:
+      <input type="checkbox" formControlName="prop" />
+      <br />
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||String(debugForm.controls['prop'].value)==='false'||Number(debugForm.controls['value'].value)<0">Submit</button>
     </ng-container>
     <ng-container *ngSwitchDefault></ng-container>
   </ng-container>
