@@ -23,27 +23,6 @@
         {{ deltaEmoji }}
       </div>
     </div>
-    <!--<form [formGroup]="purchaseForm" (ngSubmit)="addToCart()" class="TopBlack Flex Column">
-      <div class="Flex Row Form Space">
-        <div class="Flex Form Button Large">
-          <button (click)="increaseAmount(-1)" type="button"><</button>
-        </div>
-        <div class="Flex Center Column">
-          <span id="purchase-span">Available: {{ available }} ({{projected.available}})</span>
-          <input type="number" value="0" formControlName="amount" max="0.5" class="Form Input Normal Flex"
-            min="0" step="1" />
-        </div>
-        <div class="Flex Form Button Large">
-          <button (click)="increaseAmount(1)" type="button">></button>
-        </div>
-      </div>
-      <div class="Flex Row Form Submit">
-        <button type="submit" style="font-size: 115%;"
-          [disabled]="!purchaseForm.controls['amount'].value||purchaseForm.controls['amount'].value<-this.projected.user[this.user].own[this.comShort]||purchaseForm.controls['amount'].value>this.projected.available||purchaseForm.controls['amount'].value%1!==0">
-          {{ buyOrSellButton }}
-        </button>
-      </div>
-    </form>-->
     <form [formGroup]="tradeOfferForm" (ngSubmit)="tradeOffer()" class="TopBlack Flex Column">
       <div class="Center Flex">&#9888;TRADE OFFER&#9888;</div>
       <div class="Flex Center" id="available-div">
@@ -85,7 +64,7 @@
       <span class="Flex Center">Cost: {{changeMemberPrice|currency}}</span>
     </div>
   </div>
-  <div id="user-list" class="Flex Column">
+  <div id="user-list" class="Flex Column" *ngIf="state.users">
     <span class="Title Small">Users</span>
     <div *ngFor="let user of state.users" class="Flex Column TopBlack">
       <div class="User Name Flex">{{ user }}</div>

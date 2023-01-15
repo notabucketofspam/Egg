@@ -19,9 +19,6 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   @Input() user!: string;
   buyOrSellButton = "Add to cart";
   @Output() cartActionEE = new EventEmitter<CartItem>();
-  purchaseForm = new FormGroup({
-    amount: new FormControl(0)
-  });
   @Input() description!: string;
   tradeOfferForm = new FormGroup({
     tx: new FormControl(this.user),
@@ -180,21 +177,6 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       / this.state.price[this.comShort];
     this.deltaEmoji = this.state.delta[this.comShort] < 0 ? "\u{1F4C9}" : "\u{1F4C8}";
   }
-  addToCart() {
-    this.cartActionEE.emit({
-      id: this.time.gen(),
-      rx: this.user,
-      con: this.conglomerate,
-      com: this.company,
-      ct: this.purchaseForm.controls["amount"].value!
-    });
-    const amount = this.purchaseForm.controls["amount"].value!;
-    this.withdraw.available += amount;
-    this.projected.available = this.available - this.withdraw.available;
-    this.projected.user[this.user].own[this.comShort] += amount;
-    this.purchaseForm.reset({ amount: 0 });
-    this.buyOrSellButton = "Add to cart";
-  }
   tradeOffer() {
     if (!this.state["can-trade"].includes(this.user)) {
       alert("You are not on the list of users that can trade! Next time, don't fail your pledge!");
@@ -223,15 +205,6 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       }
       this.cartActionEE.emit(item);
       this.tradeOfferForm.reset({ tx: this.user, amount: 0 });
-    }
-  }
-  increaseAmount(increase: number) {
-    if (this.purchaseForm.controls["amount"].value !== null) {
-      if (this.purchaseForm.controls["amount"].value + increase
-        >= -this.projected.user[this.user].own[this.comShort]
-        && this.purchaseForm.controls["amount"].value + increase <= this.projected.available)
-        this.purchaseForm.controls["amount"].setValue(this.purchaseForm.controls["amount"].value + increase);
-      this.buyOrSellButton = this.purchaseForm.controls["amount"].value >= 0 ? "Add to cart" : "Sell off stocks";
     }
   }
   increaseTradeOfferAmount(increase: number) {
