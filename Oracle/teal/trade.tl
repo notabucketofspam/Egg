@@ -74,6 +74,14 @@ if gameExists then
     -- Delete existing offers (in case something has gone awry);
     -- there should be no offers at the start of any phase, only at the end
     redis.call("DEL", getKey(ui, "offers"))
+    -- Add empty offers to return value (alerts client that "offers" is now empty)
+    if user[username] == nil then
+      user[username] = {
+        offers = {}
+      }
+    else
+      user[username]["offers"] = {}
+    end
   end
   if phase == "3" then
     -- First trading window
@@ -100,6 +108,8 @@ if gameExists then
               user[rxUser] = {
                 own = {}
               }
+            else
+              user[rxUser]["own"] = {}
             end
             user[rxUser].own[comshort] = tonumber(newOwn)
             redis.call("HSET", getKey(rxi, "own"), comshort, newOwn)
@@ -205,17 +215,21 @@ if gameExists then
     send = redis.error_reply("EBADPHASE")
     return send
   end
-  local partial: {string: any} = {
-    list = list,
-    cash = cash
-  }
+  local record partial
+    list: {Trade}
+    cash: {string: number}
+    user: {string: {string: {string: number}}}
+  end
+  partial.list = list
+  if next(cash) ~= nil then
+    partial["cash"] = cash
+  end
   if next(user) ~= nil then
     partial["user"] = user
   end
   local partialjson = cjson.encode(partial)
   local partialjson2 = string.gsub(partialjson, '"list":{}', '"list":[]')
-  local partialjson3 = string.gsub(partialjson2, '"cash":{}', '"cash":[]')
-  send = redis.status_reply(partialjson3)
+  send = redis.status_reply(partialjson2)
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
