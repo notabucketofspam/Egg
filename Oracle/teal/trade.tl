@@ -25,6 +25,7 @@ local record Trade
   json: string
 end
 local record ComTotal
+  id: string
   con: string
   com: string
   total: number
@@ -111,6 +112,7 @@ if gameExists then
             if comTotals[comshort] == nil then
               -- Company not yet in the table
               comTotals[comshort] = {
+                id = item.id,
                 con = item.con,
                 com = item.com,
                 total = newct,
@@ -141,7 +143,7 @@ if gameExists then
     -- Convert comTotals into an array of JSON strings
     for _, comtotal in pairs(comTotals) do
       local trade: Trade = {
-        key = "game:"..gameId..":trade:"..comtotal.con..":"..comtotal.com..":"..round,
+        key = "game:"..gameId..":trade:"..comtotal.id,
         json = cjson.encode(comtotal)
       }
       table.insert(list, trade)

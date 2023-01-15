@@ -18,6 +18,7 @@ local unused = ARGV[5]
 local unused2 = ARGV[6]
 -- Remaining args are trade JSON strings
 local record Trade
+  id: string
   con: string
   com: string
   total: number
@@ -66,7 +67,8 @@ if gameExists then
       local tradeKey = KEYS[i]
       local trade = cjson.decode(ARGV[i]) as Trade
       redis.call("HSET", tradeKey, "con", trade.con, "com", trade.com,
-        "total", tostring(trade.total), "round", tostring(trade.round))
+        "total", tostring(trade.total), "round", tostring(trade.round),
+        "id", trade.id)
         table.insert(trades, trade)
     end
     -- Can't calculate prices at the very start of the game
