@@ -353,6 +353,7 @@
           <option [ngValue]="user">{{user}}</option>
         </ng-container>
       </select>
+      <span *ngIf="state['last-cash']&&debugForm.controls['prop'].value!==null">Was: {{state['last-cash'][debugForm.controls['prop'].value] | currency}}</span>
       <br />
       Amount:
       <input type="number" formControlName="value" placeholder="3000" min="0" step="100" />
