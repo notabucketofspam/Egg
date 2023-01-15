@@ -50,8 +50,11 @@ declare interface State extends Next {
   pa: Record<string, number>;
   cash: Record<string, number>;
   init: Record<string, number>;
+  "next-price": Record<string, number>;
+  "last-cash": Record<string, number>;
   ver: number;
   "global-ver": number;
+  "soup": number;
 }
 declare interface PartialState {
   [key: string | number]: string | number | PartialState;
