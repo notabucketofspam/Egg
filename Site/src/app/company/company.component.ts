@@ -196,6 +196,10 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     this.buyOrSellButton = "Add to cart";
   }
   tradeOffer() {
+    if (!this.state["can-trade"].includes(this.user)) {
+      alert("You are not on the list of users that can trade! Next time, don't fail your pledge!");
+      return;
+    }
     const tx = this.tradeOfferForm.controls["tx"].value;
     const amount = this.tradeOfferForm.controls["amount"].value;
     if (amount !== null) {

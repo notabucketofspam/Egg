@@ -56,6 +56,10 @@ export class TradeOfferComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
   modifyItem(index: number) {
+    if (!this.state["can-trade"].includes(this.user)) {
+      alert("You are not on the list of users that can trade! Next time, don't fail your pledge!");
+      return;
+    }
     if (this.state.ready.includes(this.user) && this.state.round.phase === 3) {
       alert("Locked in! Can't modify your accepted offers once ready; must un-ready to make changes.");
     } else {
