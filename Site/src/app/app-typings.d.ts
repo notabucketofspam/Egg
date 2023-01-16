@@ -53,7 +53,7 @@ declare interface State extends Next {
   "last-cash": Record<string, number>;
   ver: number;
   "global-ver": number;
-  "soup": number;
+  soup: number;
 }
 declare interface PartialState {
   [key: string | number]: string | number | PartialState;
