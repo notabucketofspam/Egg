@@ -37,13 +37,55 @@ do {
   }));
 } while (0);
 const commandRegisterObjectKeys = Object.keys(commandRegister);
+// Express setup
+import express from "express";
+import { Request, Response } from "express";
+import { HttpHandler } from "./Util.js"
+const app = express();
+app.set("case sensitive routing", true);
+app.use(express.json());
+do {
+  const httpDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/http`), { encoding: "utf8" });
+  const handlerPaths: string[] = [];
+  await readdirRecursive(httpDir, handlerPaths);
+  const handlerRegister: {
+    [method: string]: {
+      [path: string]: {
+        [cmd: string]: HttpHandler
+      }
+    }
+  } = {};
+  await Promise.all(handlerPaths.map(async function (handlerPath) {
+    const handler = await import(path.normalize(`file://${handlerPath}`)) as HttpHandler;
+    if (!handlerRegister[handler.method])
+      handlerRegister[handler.method] = {};
+    if (!handlerRegister[handler.method][handler.path])
+      handlerRegister[handler.method][handler.path] = {};
+    handlerRegister[handler.method][handler.path][handler.cmd] = handler;
+  }));
+  for (const [method, paths] of Object.entries(handlerRegister)) {
+    for (const [path, cmds] of Object.entries(paths)) {
+      const cmdsObjectKeys = Object.keys(cmds);
+      (app as any)[method](path, (req: Request, res: Response) => {
+        const cmd = req.body["cmd"] as string;
+        if (cmd && cmdsObjectKeys.includes(cmd)) {
+          cmds[cmd].exec(req, res);
+        }
+      });
+    }
+  }
+} while (0);
 // WebSocket setup
-import http from "node:http";
 import WebSocket from "ws";
 import ExtWSS from "./ExtWSS.js";
-const server = http.createServer();
+const server = app.listen(39000, "localhost");
 const wss = new ExtWSS({ server });
-server.listen(39000, "localhost");
+// Don't need to include client below, since these are basic HTTP requests
+app.locals = {
+  aliveClients: wss.aliveClients,
+  ioredis,
+  scripts
+};
 // Listen for messages (pongs have already been filtered out)
 wss.on("message", function (client: WebSocket, data: WebSocket.RawData, isBinary: boolean) {
   const dataObject = JSON.parse(data.toString());

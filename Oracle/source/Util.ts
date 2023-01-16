@@ -5,6 +5,8 @@ import fs from "node:fs";
 import WebSocket from "ws";
 // Redis / KeyDB setup
 import Redis from "ioredis";
+// Express setup
+import { Request, Response } from "express";
 /**
  * Find all files in a directory tree.
  * @param {fs.Dir} dir The current directory
@@ -57,7 +59,7 @@ export function fromHgetall(reply: Record<string, string>) {
 /**
  * Resources for command execution
  */
-export declare type Util = {
+export type Util = {
   client: WebSocket,
   aliveClients: Map<WebSocket, ClientMeta>,
   ioredis: Redis,
@@ -66,14 +68,23 @@ export declare type Util = {
 /**
  * What an IORedis promise might resolve to.
  */
-export declare type RedisReply = string | number | RedisReply[];
+export type RedisReply = string | number | RedisReply[];
 /**
  * Metadata about a WebSocket client
  */
-export declare type ClientMeta = {
+export type ClientMeta = {
   isAlive: boolean,
   game?: string,
   user?: string
+};
+/**
+ * Custom Express middleware
+ */
+export type HttpHandler = {
+  cmd: string,
+  method: string,
+  path: string,
+  exec: (req: Request, res: Response) => Promise<void>,
 };
 /**
  * Construct an appropriate client response to a server error (if there is one)
