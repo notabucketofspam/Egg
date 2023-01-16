@@ -28,11 +28,8 @@
 #lists {
   display: flex;
 }
-.List {
-  display: block;
-  margin: 0px auto auto auto;
-}
 dl {
+  display: block;
   white-space: nowrap;
 }
 dt {
