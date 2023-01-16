@@ -44,6 +44,8 @@ import { HttpHandler } from "./Util.js"
 const app = express();
 app.set("case sensitive routing", true);
 app.use(express.json());
+import cors from "cors";
+app.use(cors());
 do {
   const httpDir = fs.opendirSync(path.normalize(`${process.cwd()}/build/http`), { encoding: "utf8" });
   const handlerPaths: string[] = [];
