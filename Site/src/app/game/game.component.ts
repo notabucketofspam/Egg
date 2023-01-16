@@ -18,7 +18,7 @@ export class GameComponent implements OnInit, OnDestroy {
   state = {} as State;
   value = {} as Next;
   conglomerates = [["Cathy", "Cash Back Cathy"], ["Terry", "One-Time Terry"],
-    ["Gary", "Goodwill Gary"], ["Doug", "Doug Dividends"]];
+    ["Gary", "Good Will Gary"], ["Doug", "Doug Dividends"]];
   cart: CartItem[] = [];
   /** One Subject for each field of State, to alert a component that a change has occurred */
   stateSubjects: Record<string, Subject<void>> = {
