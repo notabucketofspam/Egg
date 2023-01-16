@@ -67,6 +67,7 @@
     <Folder Include="old\" />
     <Folder Include="old\Commands\" />
     <Folder Include="old\Commands\StockPrice\" />
+    <Folder Include="old\cmd\" />
     <Folder Include="source\cmd\" />
     <Folder Include="source\http\" />
     <Folder Include="source\http\post\" />
@@ -82,12 +83,12 @@
   <ItemGroup>
     <TypeScriptCompile Include="source\cmd\add-user.ts" />
     <TypeScriptCompile Include="source\cmd\debug.ts" />
-    <TypeScriptCompile Include="source\cmd\delete.ts" />
-    <TypeScriptCompile Include="source\cmd\new.ts" />
-    <TypeScriptCompile Include="source\cmd\remove-user.ts" />
+    <TypeScriptCompile Include="old\cmd\delete.ts" />
+    <TypeScriptCompile Include="old\cmd\new.ts" />
+    <TypeScriptCompile Include="old\cmd\remove-user.ts" />
     <TypeScriptCompile Include="source\http\post\delete.ts" />
     <TypeScriptCompile Include="source\cmd\load.ts" />
-    <TypeScriptCompile Include="source\cmd\ls.ts" />
+    <TypeScriptCompile Include="old\cmd\ls.ts" />
     <TypeScriptCompile Include="source\cmd\member.ts" />
     <TypeScriptCompile Include="source\http\post\ls.ts" />
     <TypeScriptCompile Include="source\http\post\new.ts" />
