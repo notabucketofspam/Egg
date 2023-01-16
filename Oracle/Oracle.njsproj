@@ -89,6 +89,7 @@
     <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="source\cmd\ls.ts" />
     <TypeScriptCompile Include="source\cmd\member.ts" />
+    <TypeScriptCompile Include="source\http\post\ls.ts" />
     <TypeScriptCompile Include="source\http\post\new.ts" />
     <TypeScriptCompile Include="source\cmd\patch.ts" />
     <TypeScriptCompile Include="source\cmd\pledge.ts" />
