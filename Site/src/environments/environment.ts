@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   webSocketUrl: "ws://localhost:39000",
-  fetchUrl: "http://localhost:39000"
+  cmdUrl: "http://localhost:39000/cmd"
 };
 
 /*

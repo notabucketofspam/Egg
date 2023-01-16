@@ -121,7 +121,7 @@ export class StorageComponent implements OnInit, OnDestroy {
         //  }
         //});
         //this.websocket.nextJ({ cmd: Cmd.New, user: this.user });
-        fetch(environment.fetchUrl, {
+        fetch(environment.cmdUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cmd: Cmd.New, user: this.user })
@@ -178,7 +178,7 @@ export class StorageComponent implements OnInit, OnDestroy {
         //  }
         //});
         //this.websocket.nextJ({ cmd: Cmd.Delete, game: this.game });
-        fetch(environment.fetchUrl, {
+        fetch(environment.cmdUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cmd: Cmd.Delete, game: this.game })
@@ -246,7 +246,7 @@ export class StorageComponent implements OnInit, OnDestroy {
         //  }
         //});
         //this.websocket.nextJ({ cmd: Cmd.RemoveUser, game: this.game, user: this.user });
-        fetch(environment.fetchUrl, {
+        fetch(environment.cmdUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cmd: Cmd.RemoveUser, game: this.game, user: this.user })

@@ -33,7 +33,7 @@ export class HomeComponent implements OnDestroy {
     //  }
     //});
     //this.websocket.nextJ({ cmd: Cmd.Ls });
-    fetch(environment.fetchUrl, {
+    fetch(environment.cmdUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cmd: Cmd.Ls })
