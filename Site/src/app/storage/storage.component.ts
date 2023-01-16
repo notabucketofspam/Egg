@@ -3,6 +3,7 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors } from "@angu
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { WebSocketService } from '../websocket.service';
+import { environment } from "../../environments/environment";
 
 @Component({
   selector: 'app-storage',
@@ -96,104 +97,182 @@ export class StorageComponent implements OnInit, OnDestroy {
         break;
       }
       case Cmd.New: {
-        this.subscription = this.websocket.subscribe({
-          next: (value) => {
-            const reply = JSON.parse(value as string) as Next;
-            switch (reply.cmd) {
-              case Cmd.New: {
-                if (reply.err) {
-                  this.messages.length = 0;
-                  this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
-                  this.showListEE.emit("messages");
-                  this.subscription!.unsubscribe();
-                  break;
-                }
-                this.game = (reply as NewGame).newGame;
-                [this.lastGame, this.lastUser] = [this.game, this.user];
-                this.setStorage();
-                this.router.navigate(["/game"]);
-                this.subscription!.unsubscribe();
-                break;
-              }
-              default: break;
-            }
+        //this.subscription = this.websocket.subscribe({
+        //  next: (value) => {
+        //    const reply = JSON.parse(value as string) as Next;
+        //    switch (reply.cmd) {
+        //      case Cmd.New: {
+        //        if (reply.err) {
+        //          this.messages.length = 0;
+        //          this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+        //          this.showListEE.emit("messages");
+        //          this.subscription!.unsubscribe();
+        //          break;
+        //        }
+        //        this.game = (reply as NewGame).newGame;
+        //        [this.lastGame, this.lastUser] = [this.game, this.user];
+        //        this.setStorage();
+        //        this.router.navigate(["/game"]);
+        //        this.subscription!.unsubscribe();
+        //        break;
+        //      }
+        //      default: break;
+        //    }
+        //  }
+        //});
+        //this.websocket.nextJ({ cmd: Cmd.New, user: this.user });
+        fetch(environment.fetchUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cmd: Cmd.New, user: this.user })
+        }).then(res => res.json()).then((reply: NewGame) => {
+          if (reply.err) {
+            this.messages.length = 0;
+            this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+            this.showListEE.emit("messages");
+          } else {
+            this.game = reply.newGame;
+            [this.lastGame, this.lastUser] = [this.game, this.user];
+            this.setStorage();
+            this.router.navigate(["/game"]);
           }
         });
-        this.websocket.nextJ({ cmd: Cmd.New, user: this.user });
         break;
       }
       case Cmd.Delete: {
-        this.subscription = this.websocket.subscribe({
-          next: (value) => {
-            const reply = JSON.parse(value as string) as Next;
-            if (reply.cmd === Cmd.Delete) {
-              if (reply.err) {
-                this.messages.length = 0;
-                this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
-                this.showListEE.emit("messages");
+        //this.subscription = this.websocket.subscribe({
+        //  next: (value) => {
+        //    const reply = JSON.parse(value as string) as Next;
+        //    if (reply.cmd === Cmd.Delete) {
+        //      if (reply.err) {
+        //        this.messages.length = 0;
+        //        this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+        //        this.showListEE.emit("messages");
+        //      } else {
+        //        let gamesFound = 0;
+        //        const removeGames = (storage: string[][]) => {
+        //          const gameIndex = storage.findIndex(gameSet => gameSet[0] === this.game);
+        //          if (gameIndex >= 0) {
+        //            ++gamesFound;
+        //            storage.splice(gameIndex, 1);
+        //            removeGames(storage);
+        //          } else {
+        //            return;
+        //          }
+        //        };
+        //        removeGames(this.storage);
+        //        if (gamesFound)
+        //          localStorage.setItem("games", JSON.stringify(this.storage));
+        //        if (this.lastGame === this.game) {
+        //          delete this.lastGame;
+        //          delete this.lastUser;
+        //          localStorage.removeItem("lastGame");
+        //        }
+        //        this.messages.length = 0;
+        //        this.messages.push(`Game ${this.game} deleted`);
+        //        this.showListEE.emit("messages");
+        //        localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
+        //      }
+        //      this.subscription!.unsubscribe();
+        //    }
+        //  }
+        //});
+        //this.websocket.nextJ({ cmd: Cmd.Delete, game: this.game });
+        fetch(environment.fetchUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cmd: Cmd.Delete, game: this.game })
+        }).then(res => res.json()).then((reply: Delete) => {
+          if (reply.err) {
+            this.messages.length = 0;
+            this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+            this.showListEE.emit("messages");
+          } else {
+            let gamesFound = 0;
+            const removeGames = (storage: string[][]) => {
+              const gameIndex = storage.findIndex(gameSet => gameSet[0] === this.game);
+              if (gameIndex >= 0) {
+                ++gamesFound;
+                storage.splice(gameIndex, 1);
+                removeGames(storage);
               } else {
-                let gamesFound = 0;
-                const removeGames = (storage: string[][]) => {
-                  const gameIndex = storage.findIndex(gameSet => gameSet[0] === this.game);
-                  if (gameIndex >= 0) {
-                    ++gamesFound;
-                    storage.splice(gameIndex, 1);
-                    removeGames(storage);
-                  } else {
-                    return;
-                  }
-                };
-                removeGames(this.storage);
-                if (gamesFound)
-                  localStorage.setItem("games", JSON.stringify(this.storage));
-                if (this.lastGame === this.game) {
-                  delete this.lastGame;
-                  delete this.lastUser;
-                  localStorage.removeItem("lastGame");
-                }
-                this.messages.length = 0;
-                this.messages.push(`Game ${this.game} deleted`);
-                this.showListEE.emit("messages");
-                localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
+                return;
               }
-              this.subscription!.unsubscribe();
+            };
+            removeGames(this.storage);
+            if (gamesFound)
+              localStorage.setItem("games", JSON.stringify(this.storage));
+            if (this.lastGame === this.game) {
+              delete this.lastGame;
+              delete this.lastUser;
+              localStorage.removeItem("lastGame");
             }
+            this.messages.length = 0;
+            this.messages.push(`Game ${this.game} deleted`);
+            this.showListEE.emit("messages");
+            localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
           }
         });
-        this.websocket.nextJ({ cmd: Cmd.Delete, game: this.game });
         break;
       }
       case Cmd.RemoveUser: {
-        this.subscription = this.websocket.subscribe({
-          next: (value) => {
-            const reply = JSON.parse(value as string) as Next;
-            if (reply.cmd === Cmd.RemoveUser) {
-              if (reply.err) {
-                this.messages.length = 0;
-                this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
-                this.showListEE.emit("messages");
-              } else {
-                const matchedGameIndex = this.storage
-                  .findIndex(gameSet => gameSet[0] === this.game && gameSet[1] === this.user);
-                if (matchedGameIndex >= 0) {
-                  this.storage.splice(matchedGameIndex, 1);
-                  localStorage.setItem("games", JSON.stringify(this.storage));
-                }
-                if (this.lastGame === this.game && this.lastUser === this.user) {
-                  delete this.lastGame;
-                  delete this.lastUser;
-                  localStorage.removeItem("lastGame");
-                }
-                this.messages.length = 0;
-                this.messages.push(`User ${this.user} of ${this.game} removed`);
-                this.showListEE.emit("messages");
-                localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
-              }
-              this.subscription!.unsubscribe();
+        //this.subscription = this.websocket.subscribe({
+        //  next: (value) => {
+        //    const reply = JSON.parse(value as string) as Next;
+        //    if (reply.cmd === Cmd.RemoveUser) {
+        //      if (reply.err) {
+        //        this.messages.length = 0;
+        //        this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+        //        this.showListEE.emit("messages");
+        //      } else {
+        //        const matchedGameIndex = this.storage
+        //          .findIndex(gameSet => gameSet[0] === this.game && gameSet[1] === this.user);
+        //        if (matchedGameIndex >= 0) {
+        //          this.storage.splice(matchedGameIndex, 1);
+        //          localStorage.setItem("games", JSON.stringify(this.storage));
+        //        }
+        //        if (this.lastGame === this.game && this.lastUser === this.user) {
+        //          delete this.lastGame;
+        //          delete this.lastUser;
+        //          localStorage.removeItem("lastGame");
+        //        }
+        //        this.messages.length = 0;
+        //        this.messages.push(`User ${this.user} of ${this.game} removed`);
+        //        this.showListEE.emit("messages");
+        //        localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
+        //      }
+        //      this.subscription!.unsubscribe();
+        //    }
+        //  }
+        //});
+        //this.websocket.nextJ({ cmd: Cmd.RemoveUser, game: this.game, user: this.user });
+        fetch(environment.fetchUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cmd: Cmd.RemoveUser, game: this.game, user: this.user })
+        }).then(res => res.json()).then((reply: RemoveUser) => {
+          if (reply.err) {
+            this.messages.length = 0;
+            this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
+            this.showListEE.emit("messages");
+          } else {
+            const matchedGameIndex = this.storage
+              .findIndex(gameSet => gameSet[0] === this.game && gameSet[1] === this.user);
+            if (matchedGameIndex >= 0) {
+              this.storage.splice(matchedGameIndex, 1);
+              localStorage.setItem("games", JSON.stringify(this.storage));
             }
+            if (this.lastGame === this.game && this.lastUser === this.user) {
+              delete this.lastGame;
+              delete this.lastUser;
+              localStorage.removeItem("lastGame");
+            }
+            this.messages.length = 0;
+            this.messages.push(`User ${this.user} of ${this.game} removed`);
+            this.showListEE.emit("messages");
+            localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
           }
         });
-        this.websocket.nextJ({ cmd: Cmd.RemoveUser, game: this.game, user: this.user });
         break;
       }
       default: break;
