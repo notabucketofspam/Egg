@@ -1,7 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
 
-import { WebSocketService } from '../websocket.service';
 import { environment } from "../../environments/environment";
 
 @Component({
@@ -10,9 +8,8 @@ import { environment } from "../../environments/environment";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnDestroy {
-  constructor(private websocket: WebSocketService) { }
+  constructor() { }
   messages: string[] = [];
-  private subscriptions: Record<string, Subscription> = {};
   showLists: Record<string, boolean> = {
     online: false,
     local: false,
@@ -20,19 +17,6 @@ export class HomeComponent implements OnDestroy {
   };
   onlineList?: Record<string, string[]>;
   listOnlineGames() {
-    //this.subscriptions["ls"] = this.websocket.subscribe({
-    //  next: (value) => {
-    //    const reply = JSON.parse(value as string) as Next;
-    //    if (reply.cmd === Cmd.Ls) {
-    //      this.showLists["online"] = true;
-    //      this.showLists["local"] = false;
-    //      this.showLists["messages"] = false;
-    //      this.onlineList = (reply as List).games;
-    //      this.subscriptions["ls"].unsubscribe();
-    //    }
-    //  }
-    //});
-    //this.websocket.nextJ({ cmd: Cmd.Ls });
     fetch(environment.cmdUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -44,10 +28,7 @@ export class HomeComponent implements OnDestroy {
       this.onlineList = list.games;
     });
   }
-  ngOnDestroy() {
-    if (this.subscriptions["ls"])
-      this.subscriptions["ls"].unsubscribe();
-  }
+  ngOnDestroy() { }
   showList($event: string) {
     switch ($event) {
       case "local": {
