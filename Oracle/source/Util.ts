@@ -24,17 +24,6 @@ export async function readdirRecursive(dir: fs.Dir, files: string[]) {
   }
 }
 /**
- * Turn a Redis map reply into an object.
- * @param {RedisReply[]} reply Alternating list of keys (string) and values (RedisReply)
- * @returns {Record<string, RedisReply>} New object with each key set to the respective value
- */
-export function fromMapReply(reply: RedisReply[]) {
-  const newobj: Record<string, RedisReply> = {};
-  for (let index = 0; index < reply.length; index += 2)
-    newobj[reply[index] as string] = reply[index + 1];
-  return newobj;
-}
-/**
  * Turn a Redis sorted set reply (ZRANGE) into an object
  * @param {string[]} reply Alternating list of members and scores
  * @returns {Record<string, number>} The new sorted set
@@ -65,10 +54,6 @@ export type Util = {
   ioredis: Redis,
   scripts: Record<string, string>
 };
-/**
- * What an IORedis promise might resolve to.
- */
-export type RedisReply = string | number | RedisReply[];
 /**
  * Metadata about a WebSocket client
  */
