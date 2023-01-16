@@ -20,7 +20,7 @@
     <tr *ngFor="let username of state.users">
       <td>{{username}}</td>
       <td class="Right">{{state.pa[username] | currency}}</td>
-      <td class="Right" *ngIf="paTotal">{{state.pa[username]/paTotal | percent}}</td>
+      <td class="Right" *ngIf="paTotal">({{state.pa[username]/paTotal | percent}})</td>
       <td class="Right" *ngIf="!paTotal">{{0 | percent}}</td>
     </tr>
     <tr>
