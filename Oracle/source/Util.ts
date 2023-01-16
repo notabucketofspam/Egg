@@ -80,6 +80,8 @@ export type HttpHandler = {
  */
 export function fromScriptError(cmd: string, err?: Error, proof?: Record<string, any>) {
   if (err) {
+    if (err.message.split(" ").length > 1)
+      err.message = err.message.split(" ")[1];
     switch (err.message) {
       case "ENOGAME": {
         // No game in games set
