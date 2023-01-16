@@ -21,7 +21,7 @@
       <td>{{username}}</td>
       <td class="Right">{{state.pa[username] | currency}}</td>
       <td class="Right" *ngIf="paTotal">({{state.pa[username]/paTotal | percent}})</td>
-      <td class="Right" *ngIf="!paTotal">({{0 | percent}})</td>
+      <td class="Right" *ngIf="!paTotal">{{0 | percent}}</td>
     </tr>
     <tr>
       <th colspan="3" class="BorderTop"><b>Public Account Total</b></th>
