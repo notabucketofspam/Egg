@@ -27,6 +27,10 @@ __Apache HTTPD__: [Version 2.4.48](https://httpd.apache.org/), with [OpenSSL 1.1
   DocumentRoot "/httpd/egg/dist/site"
   ServerName eggonomics.net
   ServerAlias www.eggonomics.net
+  <Location "/cmd">
+    ProxyPass "http://localhost:39000/cmd"
+    ProxyPassReverse "http://localhost:39000/cmd"
+  </Location>
   <Location "/wss">
     ProxyPass "ws://localhost:39000"
     ProxyPassReverse "ws://localhost:39000"

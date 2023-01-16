@@ -8,7 +8,7 @@ type RemoveUser = {
 };
 export const cmd = "remove-user";
 export const method = "post";
-export const path = "/";
+export const path = "/cmd";
 export async function exec(req: Request, res: Response) {
   try {
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;

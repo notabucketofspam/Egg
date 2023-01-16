@@ -7,7 +7,7 @@ type New = {
 };
 export const cmd = "new";
 export const method = "post";
-export const path = "/";
+export const path = "/cmd";
 export async function exec(req: Request, res: Response) {
   try {
     const gameId = Date.now().toString(16).padStart(14, "0");

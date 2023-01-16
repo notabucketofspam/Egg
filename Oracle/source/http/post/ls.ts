@@ -6,7 +6,7 @@ type Ls = {
 };
 export const cmd = "ls";
 export const method = "post";
-export const path = "/";
+export const path = "/cmd";
 export async function exec(req: Request, res: Response) {
   const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
   const data = req.body as Ls;
