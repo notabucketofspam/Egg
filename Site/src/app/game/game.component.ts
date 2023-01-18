@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
+import { environment } from '../../environments/environment';
 import { ConsoleService } from '../console.service';
 import { WebSocketService } from '../websocket.service';
 
@@ -149,7 +150,20 @@ export class GameComponent implements OnInit, OnDestroy {
     window.location.reload();
   }
   addUser() {
-    this.websocket.nextJ({ cmd: Cmd.AddUser, game: this.game, user: this.user });
+    fetch(environment.cmdUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cmd: Cmd.AddUser, game: this.game, user: this.user })
+    }).then(res => res.json()).then((reply: AddUser) => {
+      if (reply.err && reply.why) {
+        this.messages.length = 0;
+        this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why);
+        this.ngOnDestroy();
+      } else {
+        this.ngOnDestroy();
+        this.reloadPage();
+      }
+    });
   }
   /**
    * Walk through state and apply changes where applicable

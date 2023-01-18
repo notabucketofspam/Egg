@@ -70,6 +70,10 @@ declare interface RemoveUser extends Next {
   cmd: Cmd.New;
   ok: true;
 }
+declare interface AddUser extends Next {
+  cmd: Cmd.New;
+  ok: true;
+}
 declare interface Disconnect extends Next {
   cmd: Cmd.Disconnect;
   reason: string;
