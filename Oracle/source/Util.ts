@@ -80,8 +80,8 @@ export type HttpHandler = {
  */
 export function fromScriptError(cmd: string, err?: Error, proof?: Record<string, any>) {
   if (err) {
-    if (err.message.split(" ").length > 1)
-      err.message = err.message.split(" ")[1];
+    if (err.message.startsWith("ERR "))
+      err.message = err.message.substring(4);
     switch (err.message) {
       case "ENOGAME": {
         // No game in games set
@@ -129,7 +129,7 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
       }
       default: {
         // Unknown error
-        return JSON.stringify({ cmd, err: err.message, why: "Unknown error", proof });
+        return JSON.stringify({ cmd, err: err.name, why: err.message, proof });
       }
     }
   } else {
