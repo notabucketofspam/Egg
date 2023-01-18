@@ -30,9 +30,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     // Only trigger on phase change, not just any toggle
     if (newPhase === 0 && data.phase !== newPhase) {
       // Do dividends update
-      const fields = ["init", "cash", "pw", "price"];
+      const fields = ["init", "cash", "pw", "price", "last-cash"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
-      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
+      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount);
       const userFields = ["member", "own"];
       const keys = toScriptKeys(data.game, fields, zusers, userFields);
       const dividendsJson = await ioredis.evalsha(scripts["dividends"], keys.length, ...keys,
@@ -54,9 +54,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       // First will push through purchases that work (to whatever extent that is)
       // and send trade offers to their targets
       // Second is responses to trade offers (accept or reject)
-      const fields = ["init", "price", "cash", "round"];
+      const fields = ["init", "price", "cash"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
-      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
+      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount);
       const userFields = ["cart-json", "offers-json", "own"];
       const keys = toScriptKeys(data.game, fields, zusers, userFields);
       const tradeJson = await ioredis.evalsha(scripts["trade"], keys.length, ...keys,
@@ -68,9 +68,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         partial["user"] = trade.user;
       // Compute next stock price and either hold it until next phase
       // or overwrite current stock price
-      const fields2 = ["price", "next-price", "delta", "pw", "index", "round"];
+      const fields2 = ["price", "next-price", "delta", "pw", "index"];
       const keys2 = toScriptKeys(data.game, fields2).concat(trade.list.map(value => value.key));
-      const argv = ["0", data.game, `${newPhase}`, `${fields2.length + 1}`, "unused", "unused2",
+      const argv = ["0", data.game, String(newPhase), String(fields2.length + 1), "unused",
         ...trade.list.map(value => value.json)];
       const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys2.length, ...keys2, ...argv) as string;
       if (newPhase === 4) {
@@ -95,7 +95,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       // Do good will / pledge update
       const fields = ["init", "cash", "pledge", "pa", "can-trade", "last-cash", "soup"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
-      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount, "REV");
+      const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount);
       const userFields = ["last-member", "member"];
       const keys = toScriptKeys(data.game, fields, zusers, userFields);
       const endRoundJson = await ioredis.evalsha(scripts["end-round"], keys.length, ...keys,

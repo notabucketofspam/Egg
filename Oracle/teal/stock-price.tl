@@ -8,21 +8,18 @@ local nextPriceKey = KEYS[2]
 local deltaKey = KEYS[3]
 local pwKey = KEYS[4]
 local indexKey = KEYS[5]
-local roundKey = KEYS[6]
 -- Remaining keys refer to trades
 local userCount = tonumber(ARGV[1])
 local gameKey = ARGV[2]
 local phase = ARGV[3]
 local startKeys = tonumber(ARGV[4]) as integer
 local unused = ARGV[5]
-local unused2 = ARGV[6]
 -- Remaining args are trade JSON strings
 local record Trade
   time: number
   con: string
   com: string
   total: number
-  round: number
 end
 -- Transform a list of one type into another type
 local function map<T, V>(list: {T}, fn: function(T, integer): (V)): {V}
@@ -35,6 +32,11 @@ end
 -- Get conglomerate from stock name
 local function getCon(stock: string): string
   return string.match(stock, "([^:]*)")
+end
+-- Same as above, but for the company
+local function getCom(stock: string): string
+  local com = string.gsub(stock, "([^:]*):", "")
+  return com
 end
 -- Check that game exists
 local games = redis.call("SMEMBERS", "games") as Set
@@ -49,7 +51,6 @@ if gameExists then
   local price = (redis.call("HGETALL", priceKey) as Hash).map
   local delta = (redis.call("HGETALL", deltaKey) as Hash).map
   local pw = (redis.call("HGETALL", pwKey) as Hash).map
-  local round = tonumber(redis.call("HGET", roundKey, "round") as string)
   -- Can start at 0 because PW flavor 1 (Most Excellent) has the same value (0)
   -- as PW flavor 0 (no PW)
   local flavor = {0.0, 0.15, 0.2, 0.25}
@@ -65,15 +66,11 @@ if gameExists then
     local priceDump = redis.call("DUMP", priceKey) as string
     redis.call("RESTORE", nextPriceKey, "0", priceDump, "REPLACE")
     -- Insert all trades into KeyDB first
-    local trades: {Trade} = {}
     for i = startKeys, #ARGV do
       local tradeKey = KEYS[i]
       local trade = cjson.decode(ARGV[i]) as Trade
-      trade.time = time
       redis.call("HSET", tradeKey, "con", trade.con, "com", trade.com,
-        "total", tostring(trade.total), "round", tostring(trade.round),
-        "time", timeString)
-      table.insert(trades, trade)
+        "total", tostring(trade.total), "time", timeString)
     end
     -- Get results first so that searches don't have to be re-run each loop
     local search: {string: {string}} = {
@@ -94,8 +91,7 @@ if gameExists then
           time = tonumber(item.time),
           con = item.con,
           com = item.com,
-          total = tonumber(item.total),
-          round = tonumber(item.round)
+          total = tonumber(item.total)
         }
       end)
       -- Sort results by time, newest first
@@ -121,23 +117,26 @@ if gameExists then
       pwmult[con] = pwsum + 1
     end
     -- Process trades with applied mathematics
-    for i = 1, #trades do
-      local trade = trades[i]
-      local comshort = trade.con..":"..trade.com
+    for stock in pairs(price) do
       -- Get deltas
-      local com_delta = trade.total
+      local con = getCon(stock)
+      local com = getCom(stock)
       local con_delta = 0.0
-      local com_lastdelta = 0.0
+      local com_delta = 0.0
       local con_lastdelta = 0.0
-      for iii = 1, #results[trade.con] do
-        local otherTrade = results[trade.con][iii]
+      local com_lastdelta = 0.0
+      for iii = 1, #results[con] do
+        local otherTrade = results[con][iii]
         if otherTrade.time == time then
           -- Deltas for this turn
           con_delta = con_delta + otherTrade.total
+          if otherTrade.com == com then
+            com_delta = otherTrade.total
+          end
         elseif lastTime ~= nil and otherTrade.time == lastTime then
           -- Deltas for last turn
           con_lastdelta = con_lastdelta + otherTrade.total
-          if otherTrade.com == trade.com then
+          if otherTrade.com == com then
             com_lastdelta = otherTrade.total
           end
         end
@@ -145,10 +144,10 @@ if gameExists then
       -- Some kind of weighted average idk
       local deltamult = (6*com_delta + con_delta + 6*com_lastdelta + con_lastdelta)/2000
       -- Apply volatility mult. to this weighted average (or whatever it is...)
-      local finalmult = pwmult[trade.con]*deltamult + 1
+      local finalmult = pwmult[con]*deltamult + 1
       -- Finally, apply to the current price
-      local newprice = tonumber(price[comshort])*finalmult
-      redis.call("HSET", nextPriceKey, comshort, tostring(newprice))
+      local newprice = tonumber(price[stock])*finalmult
+      redis.call("HSET", nextPriceKey, stock, tostring(newprice))
     end
     -- Return value isn't used in this phase
     send = redis.status_reply("OK")
@@ -159,14 +158,11 @@ if gameExists then
     local nextPrice = (redis.call("HGETALL", nextPriceKey) as Hash).map
     local newprice: {string: number} = {}
     local newdelta: {string: number} = {}
-    local deltaHset: {string} = {}
-    for comshort, value in pairs(nextPrice) do
-      newprice[comshort] = tonumber(value)
-      newdelta[comshort] = tonumber(value) - tonumber(price[comshort])
-      table.insert(deltaHset, comshort)
-      table.insert(deltaHset, tostring(newdelta[comshort]))
+    for stock, value in pairs(nextPrice) do
+      newprice[stock] = tonumber(value)
+      newdelta[stock] = newprice[stock] - tonumber(price[stock])
+      redis.call("HSET", deltaKey, stock, tostring(newdelta[stock]))
     end
-    redis.call("HSET", deltaKey, unpack(deltaHset))
     send = redis.status_reply(cjson.encode({price = newprice, delta = newdelta}))
   else
     -- Something has gone wrong

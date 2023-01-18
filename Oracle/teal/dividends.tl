@@ -7,14 +7,15 @@ local initKey = KEYS[1]
 local cashKey = KEYS[2]
 local pwKey = KEYS[3]
 local priceKey = KEYS[4]
+local lastCashKey = KEYS[5]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 -- User fields are: member, own
 local function getKey(i: number, key: string): string 
   if key == "member" then
-    return KEYS[3 + 2*i as integer]
-  elseif key == "own" then
     return KEYS[4 + 2*i as integer]
+  elseif key == "own" then
+    return KEYS[5 + 2*i as integer]
   end
 end
 -- Get conglomerate from stock name
@@ -43,7 +44,7 @@ if gameExists then
   local pw = (redis.call("HGETALL", pwKey) as Hash).map
   local price = (redis.call("HGETALL", priceKey) as Hash).map
   -- Math time
-  local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1], "REV") as {string}
+  local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1]) as {string}
   for i = 1 as integer, #zusers do
     local user = zusers[i]
     local newcash = tonumber(cash[user])
@@ -61,8 +62,13 @@ if gameExists then
       end
     end
     partial.cash[user] = newcash
+    redis.call("HSET", cashKey, user, tostring(newcash))
   end
-  -- Add back later
+  -- Reset last-cash to current cash in Redis
+  local cashDump = redis.call("DUMP", cashKey) as string
+  redis.call("RESTORE", lastCashKey, "0", cashDump, "REPLACE")
+  send = redis.status_reply(cjson.encode(partial))
+  -- Return to user
   send = redis.status_reply(cjson.encode(partial))
 else
   -- No game in games set

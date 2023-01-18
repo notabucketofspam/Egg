@@ -37,7 +37,7 @@ if gameExists then
     user: {string: {string: {string: number}}}
     soup: number
   end
-  local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1], "REV") as {string}
+  local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1]) as {string}
   local cash = (redis.call("HGETALL", cashKey) as Hash).map
   local pledge = (redis.call("HGETALL", pledgeKey) as Hash).map
   local pa = (redis.call("HGETALL", paKey) as Hash).map
@@ -119,10 +119,10 @@ if gameExists then
       newPa = userPa + contribution
       metPledge[user] = contribution
       goodwill = goodwill + contribution*pledgeMult
-      -- if userPledge > userLastCash then
-      --   -- Bonus cash back for pledging more than user's cash at the start of the round
-      --   newCash = newCash + userPledge*cashBackMult
-      -- end
+      if userPledge > userLastCash then
+        -- Bonus cash back for pledging more than user's cash at the start of the round
+        newCash = newCash + userPledge*cashBackMult
+      end
     end
     -- Set values in Redis
     redis.call("HSET", cashKey, user, tostring(newCash))
@@ -184,9 +184,6 @@ if gameExists then
     local newSoup = redis.call("INCRBYFLOAT", soupKey, tostring(goodwill)) as string
     partial.soup = tonumber(newSoup)
   end
-  -- Reset last-cash to current cash in Redis
-  local cashDump = redis.call("DUMP", cashKey) as string
-  redis.call("RESTORE", lastCashKey, "0", cashDump, "REPLACE")
   send = redis.status_reply(cjson.encode(partial))
 else
   -- No game in games set

@@ -7,7 +7,6 @@ local send: {string: string}
 local initKey = KEYS[1]
 local priceKey = KEYS[2]
 local cashKey = KEYS[3]
-local roundKey = KEYS[4]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local phase = ARGV[3]
@@ -28,16 +27,20 @@ local record ComTotal
   con: string
   com: string
   total: number
-  round: number
+end
+-- Return value user fields
+local record UserFields
+  own: {string: number}
+  ["offers-json"]: {string}
 end
 -- User fields are: cart-json, offers-json, own
 local function getKey(ui: number, key: string): string 
   if key == "cart-json" then
-    return KEYS[2 + 3*ui as integer]
+    return KEYS[1 + 3*ui as integer]
   elseif key == "offers-json" then
-    return KEYS[3 + 3*ui as integer]
+    return KEYS[2 + 3*ui as integer]
   elseif key == "own" then
-    return KEYS[4 + 3*ui as integer]
+    return KEYS[3 + 3*ui as integer]
   end
 end
 -- Check that game exists
@@ -56,14 +59,10 @@ if gameExists then
   -- Each company will have all of its transactions summed to get a single delta
   -- for the round
   local comTotals: {string: ComTotal} = {}
-  -- The round number will be affixed to every transaction, so that
-  -- stock-price.tl can sort them chronologically later on
-  local round = tonumber(redis.call("HGET", roundKey, "round") as string)
-  -- {username: {own: {comshort: count}}}
-  local user: {string: {string: {string: number}}} = {}
+  local user: {string: UserFields} = {}
   local cash: {string: number} = {}
   -- use ARGV here instead of userCount bc it's already a string
-  local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1], "REV") as {string}
+  local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1]) as {string}
   local allUserOwn: {string: {string: string}} = {}
   local cashMap = (redis.call("HGETALL", cashKey) as Hash).map
   local price = (redis.call("HGETALL", priceKey) as Hash).map
@@ -102,16 +101,17 @@ if gameExists then
           if available > 0 then
             -- Ownership
             local newct = math.min(available, item.ct)
-            local newOwn = tostring(newct + tonumber(allUserOwn[rxUser][comshort]))
-            allUserOwn[rxUser][comshort] = newOwn
+            local newOwn = newct + tonumber(allUserOwn[rxUser][comshort])
+            local newOwnStr = tostring(newOwn)
+            allUserOwn[rxUser][comshort] = newOwnStr
             if user[rxUser] == nil then
               user[rxUser] = {}
             end
             if user[rxUser]["own"] == nil then
               user[rxUser]["own"] = {}
             end
-            user[rxUser].own[comshort] = tonumber(newOwn)
-            redis.call("HSET", getKey(rxi, "own"), comshort, newOwn)
+            user[rxUser].own[comshort] = newOwn
+            redis.call("HSET", getKey(rxi, "own"), comshort, newOwnStr)
             available = available - newct
             -- Cash
             local newCash = cash[rxUser] - newct*tonumber(price[comshort])
@@ -124,8 +124,7 @@ if gameExists then
                 id = item.id,
                 con = item.con,
                 com = item.com,
-                total = newct,
-                round = round
+                total = newct
               }
             else
               -- Company is in the table
@@ -152,9 +151,7 @@ if gameExists then
           if user[txUser]["offers-json"] == nil then
             user[txUser]["offers-json"] = {}
           end
-          -- Teal doesn't know how to handle unions of two different table types,
-          -- so "offers-json" is cast as {any} here
-          table.insert(user[txUser]["offers-json"] as {any}, itemjson2)
+          table.insert(user[txUser]["offers-json"], itemjson2)
         end
       end
       -- User cart has been processed, so get rid of it
@@ -230,7 +227,7 @@ if gameExists then
   local record partial
     list: {Trade}
     cash: {string: number}
-    user: {string: {string: {string: number}}}
+    user: {string: UserFields}
   end
   partial.list = list
   if next(cash) ~= nil then
