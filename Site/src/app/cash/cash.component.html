@@ -46,7 +46,7 @@
       </div>
       <div class="Flex Row Center">
         <button type="submit"
-        [disabled]="reportForm.controls['amount'].value===null||reportForm.controls['amount'].value<0||!state.round||state.round.phase!==1">
+                [disabled]="reportForm.controls['amount'].value===null||reportForm.controls['amount'].value<0||!state.round||state.round.phase!==1">
           Submit
         </button>
       </div>
@@ -54,5 +54,13 @@
         You cannot change your pledge in this phase
       </div>
     </form>
+  </div>
+  <div *ngIf="state['can-trade']&&!state['can-trade'].includes(user)">
+    &#10060;
+    You failed a pledge, and therefore are
+    <span style="font-family: ITC Legacy Sans Std Ultra;">barred</span>
+    from stock trading until the end of round
+    {{state.round && state.round.phase === 5 ? (state.round.round + 1) + " (next round)" : (state.round.round) + " (this round)"}},
+    <span style="font-family: ITC Legacy Sans Std Bold Italic;">assuming you don't fail a pledge again</span>
   </div>
 </div>
