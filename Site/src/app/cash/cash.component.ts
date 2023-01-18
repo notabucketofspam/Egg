@@ -55,17 +55,19 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   resetProjectedCash() {
-    this.state.users.forEach(username => this.projected.cash[username] = this.state.cash[username]);
-    for (const item of this.cart) {
-      if (item.tx)
-        this.projected.cash[item.tx] += item.ct * this.state.price[item.con + ':' + item.com];
-      this.projected.cash[this.user] -= item.ct * this.state.price[item.con + ':' + item.com];
+    if (this.state.users) {
+      this.state.users.forEach(username => this.projected.cash[username] = this.state.cash[username]);
+      for (const item of this.cart) {
+        if (item.tx)
+          this.projected.cash[item.tx] += item.ct * this.state.price[item.con + ':' + item.com];
+        this.projected.cash[this.user] -= item.ct * this.state.price[item.con + ':' + item.com];
+      }
+      for (const item of this.acceptedOffers) {
+        this.projected.cash[this.user] += item.ct * this.state.price[item.con + ':' + item.com];
+        this.projected.cash[item.rx] -= item.ct * this.state.price[item.con + ':' + item.com];
+      }
+      this.projected.cash[this.user] -= this.state.pledge[this.user];
     }
-    for (const item of this.acceptedOffers) {
-      this.projected.cash[this.user] += item.ct * this.state.price[item.con + ':' + item.com];
-      this.projected.cash[item.rx] -= item.ct * this.state.price[item.con + ':' + item.com];
-    }
-    this.projected.cash[this.user] -= this.state.pledge[this.user];
   }
   ngOnDestroy() {
     this.destroyer.next(true);
