@@ -142,6 +142,7 @@ export class StorageComponent implements OnInit, OnDestroy {
             this.messages.push(`Game ${this.game} deleted`);
             this.showListEE.emit("messages");
             localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
+            localStorage.removeItem(`game:${this.game}:user:${this.user}:accepted-offers`);
           }
         });
         break;
