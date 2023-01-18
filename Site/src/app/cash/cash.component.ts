@@ -90,8 +90,6 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   report() {
     if (this.reportForm.controls["amount"].value !== null) {
       this.reportEE.emit(this.reportForm.controls["amount"].value);
-      alert(`Cheers, mate! You have pledged \
-${this.currencyPipe.transform(this.reportForm.controls["amount"].value)} to the Public Account!`);
     }
     this.reportForm.reset({ amount: 0 });
   }
