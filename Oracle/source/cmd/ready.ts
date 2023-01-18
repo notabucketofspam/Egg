@@ -111,6 +111,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         partial["soup"] = endRound["soup"];
       if (endRound["user"])
         partial["user"] = endRound["user"];
+      if (endRound["can-trade"])
+        partial["can-trade"] = endRound["can-trade"];
     }
     const partialJson = JSON.stringify(partial);
     for (const [aliveClient, clientMeta] of aliveClients)

@@ -36,13 +36,13 @@ if gameExists then
     pledge: {string: number}
     user: {string: {string: {string: number}}}
     soup: number
+    ["can-trade"]: {string}
   end
   local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1]) as {string}
   local cash = (redis.call("HGETALL", cashKey) as Hash).map
   local pledge = (redis.call("HGETALL", pledgeKey) as Hash).map
   local pa = (redis.call("HGETALL", paKey) as Hash).map
   local soup = redis.call("GET", soupKey) as string
-  -- local canTrade = (redis.call("SMEMBERS", canTradeKey) as Set).set
   local lastCash = (redis.call("HGETALL", lastCashKey) as Hash).map
   -- 15% of total player pledges is added to good will each turn
   local pledgeMult = 0.15
@@ -184,7 +184,16 @@ if gameExists then
     local newSoup = redis.call("INCRBYFLOAT", soupKey, tostring(goodwill)) as string
     partial.soup = tonumber(newSoup)
   end
-  send = redis.status_reply(cjson.encode(partial))
+  -- Check who can / cannot trade next round
+  local canTradeSet = redis.call("SMEMBERS", canTradeKey) as Set
+  local canTrade: {string} = {}
+  for user in pairs(canTradeSet.set) do
+    table.insert(canTrade, user)
+  end
+  partial["can-trade"] = canTrade
+  local partialjson = cjson.encode(partial)
+  local partialjson2 = string.gsub(partialjson, '"can(-)trade":{}', '"can-trade":[]')
+  send = redis.status_reply(partialjson2)
 else
   -- No game in games set
   send = redis.error_reply("ENOGAME")
