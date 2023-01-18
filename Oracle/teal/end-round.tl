@@ -119,10 +119,10 @@ if gameExists then
       newPa = userPa + contribution
       metPledge[user] = contribution
       goodwill = goodwill + contribution*pledgeMult
-      if userPledge > userLastCash then
-        -- Bonus cash back for pledging more than user's cash at the start of the round
-        newCash = newCash + userPledge*cashBackMult
-      end
+      -- if userPledge > userLastCash then
+      --   -- Bonus cash back for pledging more than user's cash at the start of the round
+      --   newCash = newCash + userPledge*cashBackMult
+      -- end
     end
     -- Set values in Redis
     redis.call("HSET", cashKey, user, tostring(newCash))
