@@ -49,7 +49,7 @@ if gameExists then
       end
     end
     -- Subtract upgrade price from user's cash
-    local newCash = redis.call("HINCRBY", cashKey, username, tostring(-upgradePrice)) as number
+    local newCash = redis.call("HINCRBYFLOAT", cashKey, username, tostring(-upgradePrice)) as number
     -- Reply with the new state params
     local partialState = {
       user: {string: {string: {string: number}}} = {},
