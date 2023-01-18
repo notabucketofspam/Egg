@@ -81,11 +81,12 @@
     <Folder Include="old\Methods\post\exec\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="source\cmd\add-user.ts" />
+    <TypeScriptCompile Include="old\cmd\add-user.ts" />
     <TypeScriptCompile Include="source\cmd\debug.ts" />
     <TypeScriptCompile Include="old\cmd\delete.ts" />
     <TypeScriptCompile Include="old\cmd\new.ts" />
     <TypeScriptCompile Include="old\cmd\remove-user.ts" />
+    <TypeScriptCompile Include="source\http\post\add-user.ts" />
     <TypeScriptCompile Include="source\http\post\delete.ts" />
     <TypeScriptCompile Include="source\cmd\load.ts" />
     <TypeScriptCompile Include="old\cmd\ls.ts" />
