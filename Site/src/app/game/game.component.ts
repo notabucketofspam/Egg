@@ -84,6 +84,7 @@ export class GameComponent implements OnInit, OnDestroy {
     // Have to do this one manually, since WebSocketService lacks pipe()
     if (this.subscriptions["websocket"])
       this.subscriptions["websocket"].unsubscribe();
+    this.websocket.unsubscribe();
   }
   private next(value: Next) {
     this.console.log(value);
@@ -94,6 +95,7 @@ export class GameComponent implements OnInit, OnDestroy {
       this.messages.push(`cmd: ${value.cmd}`, value.err, value.why);
       if (value.proof)
         this.messages.push(JSON.stringify(value.proof));
+      this.ngOnDestroy();
       return;
     }
     switch (value.cmd) {
@@ -122,7 +124,6 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       case Cmd.Reload: {
         this.ngOnDestroy();
-        this.websocket.unsubscribe();
         // Reload the page
         this.reloadPage();
         break;

@@ -48,6 +48,7 @@ export class WebSocketService implements OnDestroy {
     }
   });
   aliveSubject = new Subject<boolean>();
+  private subjectBits = 0b0;
   constructor(private console: ConsoleService) { }
   private isAlive() {
     if (this.pingTimeout)
@@ -57,10 +58,14 @@ export class WebSocketService implements OnDestroy {
     }, 36000);
   }
   subscribe(observer?: PartialObserver<WebSocketMessage>) {
+    if (this.subjectBits === 0b11)
+      this.subject = webSocket<WebSocketMessage>(this.subjectConfig);
+    this.subjectBits = 0b1;
     return this.subject.pipe(this.filter).subscribe(observer);
   }
   unsubscribe() {
     this.subject.unsubscribe();
+    this.subjectBits |= 0b10;
   }
   next(value: WebSocketMessage) {
     this.subject.next(value);
