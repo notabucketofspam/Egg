@@ -8,7 +8,6 @@ local initKey = KEYS[1]
 local priceKey = KEYS[2]
 local cashKey = KEYS[3]
 local roundKey = KEYS[4]
--- userFields are: cart-json, offers-json, own
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local phase = ARGV[3]
@@ -31,6 +30,7 @@ local record ComTotal
   total: number
   round: number
 end
+-- User fields are: cart-json, offers-json, own
 local function getKey(ui: number, key: string): string 
   if key == "cart-json" then
     return KEYS[2 + 3*ui as integer]
@@ -77,10 +77,9 @@ if gameExists then
     -- Add empty offers to return value; alerts client that "offers-json" is now empty,
     -- but it may get filled later, depending on the phase
     if user[username] == nil then
-      user[username] = {
-        ["offers-json"] = {}
-      }
-    else
+      user[username] = {}
+    end
+    if user[username]["offers-json"] == nil then
       user[username]["offers-json"] = {}
     end
   end
@@ -106,10 +105,9 @@ if gameExists then
             local newOwn = tostring(newct + tonumber(allUserOwn[rxUser][comshort]))
             allUserOwn[rxUser][comshort] = newOwn
             if user[rxUser] == nil then
-              user[rxUser] = {
-                own = {}
-              }
-            else
+              user[rxUser] = {}
+            end
+            if user[rxUser]["own"] == nil then
               user[rxUser]["own"] = {}
             end
             user[rxUser].own[comshort] = tonumber(newOwn)
@@ -149,10 +147,9 @@ if gameExists then
           redis.call("SADD", getKey(txi, "offers-json"), itemjson2)
           -- Include new offers in return value
           if user[txUser] == nil then
-            user[txUser] = {
-              ["offers-json"] = {}
-            }
-          else
+            user[txUser] = {}
+          end
+          if user[txUser]["offers-json"] == nil then
             user[txUser]["offers-json"] = {}
           end
           -- Teal doesn't know how to handle unions of two different table types,
@@ -188,9 +185,10 @@ if gameExists then
         local txNewOwn = tostring(txOwn - item.ct)
         allUserOwn[txUser][comshort] = txNewOwn
         if user[txUser] == nil then
-          user[txUser] = {
-            own = {}
-          }
+          user[txUser] = {}
+        end
+        if user[txUser].own == nil then
+          user[txUser].own = {}
         end
         user[txUser].own[comshort] = txOwn - item.ct
         redis.call("HSET", getKey(txi, "own"), comshort, txNewOwn)
@@ -207,9 +205,10 @@ if gameExists then
         local rxNewOwn = tostring(rxOwn + item.ct)
         allUserOwn[rxUser][comshort] = rxNewOwn
         if user[rxUser] == nil then
-          user[rxUser] = {
-            own = {}
-          }
+          user[rxUser] = {}
+        end
+        if user[rxUser].own == nil then
+          user[rxUser].own = {}
         end
         user[rxUser].own[comshort] = rxOwn + item.ct
         redis.call("HSET", getKey(rxi, "own"), comshort, rxNewOwn)
@@ -242,7 +241,7 @@ if gameExists then
   end
   local partialjson = cjson.encode(partial)
   local partialjson2 = string.gsub(partialjson, '"list":{}', '"list":[]')
-  local partialjson3 = string.gsub(partialjson, '"offers-json":{}', '"offers-json":[]')
+  local partialjson3 = string.gsub(partialjson2, '"offers(-)json":{}', '"offers-json":[]')
   send = redis.status_reply(partialjson3)
 else
   -- No game in games set

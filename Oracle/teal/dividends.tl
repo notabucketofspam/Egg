@@ -12,9 +12,9 @@ local gameId = ARGV[2]
 -- User fields are: member, own
 local function getKey(i: number, key: string): string 
   if key == "member" then
-    return KEYS[5 + 2*i as integer]
+    return KEYS[3 + 2*i as integer]
   elseif key == "own" then
-    return KEYS[6 + 2*i as integer]
+    return KEYS[4 + 2*i as integer]
   end
 end
 -- Get conglomerate from stock name

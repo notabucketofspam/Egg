@@ -15,9 +15,9 @@ local gameId = ARGV[2]
 -- User fields are: last-member, member
 local function getKey(i: number, key: string): string 
   if key == "last-member" then
-    return KEYS[8 + 2*i as integer]
+    return KEYS[6 + 2*i as integer]
   elseif key == "member" then
-    return KEYS[9 + 2*i as integer]
+    return KEYS[7 + 2*i as integer]
   end
 end
 -- Check that game exists

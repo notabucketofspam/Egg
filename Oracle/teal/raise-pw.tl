@@ -4,7 +4,7 @@ redis.setresp(3)
 local send: {string: string}
 -- Script params
 local pwKey = KEYS[1]
--- The only user sub-field is "own"
+-- User fields are: own
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 -- Check that game exists
@@ -26,7 +26,9 @@ if gameExists then
     local userOwn = (redis.call("HGETALL", KEYS[1 + i as integer]) as Hash).map
     table.insert(allUserOwn, userOwn)
   end
-  for stock, flavor in pairs(pwTable) do
+  -- The structure "for x do repeat ... until true end" can use "do break end" as
+  -- an equivalent implementation of "continue" in Lua
+  for stock, flavor in pairs(pwTable) do repeat
     -- Flavor value
     local fv = tonumber(flavor)
     -- Check bulldoze eligibility
@@ -45,8 +47,10 @@ if gameExists then
           partial.pw = {}
         end
         partial.pw[stock] = 4
+        do break end
       end
-    elseif fv < 3 then
+    end
+    if fv < 3 then
       -- Change to Bad
       -- Basically copy-paste from above
       local meetsRequirement = false
@@ -62,16 +66,18 @@ if gameExists then
           partial.pw = {}
         end
         partial.pw[stock] = 3
+        do break end
       end
-    elseif fv < 2 then
+    end
+    if fv < 2 then
       -- Change to Good
       -- Also basically copy-paste from above, with a little more math
       local totalOwn = 0
       local owningUsersCount = 0
       for i = 1, userCount do
         local ownership = tonumber(allUserOwn[i as integer][stock])
-        totalOwn = totalOwn + ownership as integer
         if ownership > 0 then
+          totalOwn = totalOwn + ownership as integer
           owningUsersCount = owningUsersCount + 1
         end
       end
@@ -81,8 +87,10 @@ if gameExists then
           partial.pw = {}
         end
         partial.pw[stock] = 2
+        do break end
       end
-    elseif fv < 1 then
+    end
+    if fv < 1 then
       -- Change to Most Excellent
       -- One last copy-paste, for good measure
       local owningUsersCount = 0
@@ -98,9 +106,11 @@ if gameExists then
           partial.pw = {}
         end
         partial.pw[stock] = 1
+        -- Don't technically need this one, since it's at the end of the loop
+        -- do break end
       end
     end
-  end
+  until true end
   send = redis.status_reply(cjson.encode(partial))
 else
   -- No game in games set

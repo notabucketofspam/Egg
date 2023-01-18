@@ -64,7 +64,6 @@ if gameExists then
     -- of the round (i.e. from debugging)
     local priceDump = redis.call("DUMP", priceKey) as string
     redis.call("RESTORE", nextPriceKey, "0", priceDump, "REPLACE")
-    local nextPriceHset: {string} = {}
     -- Insert all trades into KeyDB first
     local trades: {Trade} = {}
     for i = startKeys, #ARGV do
@@ -147,13 +146,10 @@ if gameExists then
       local deltamult = (6*com_delta + con_delta + 6*com_lastdelta + con_lastdelta)/2000
       -- Apply volatility mult. to this weighted average (or whatever it is...)
       local finalmult = pwmult[trade.con]*deltamult + 1
-      -- Finally, apply to the current price and store for later
+      -- Finally, apply to the current price
       local newprice = tonumber(price[comshort])*finalmult
-      table.insert(nextPriceHset, comshort)
-      table.insert(nextPriceHset, tostring(newprice))
+      redis.call("HSET", nextPriceKey, comshort, tostring(newprice))
     end
-    -- Apply all prices in KeyDB
-    redis.call("HSET", nextPriceKey, unpack(nextPriceHset))
     -- Return value isn't used in this phase
     send = redis.status_reply("OK")
   elseif phase == "4" then
