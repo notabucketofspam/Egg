@@ -94,7 +94,7 @@ ul.List, ol.List, dl.List {
   position: fixed;
   font-size: 150%;
   cursor: pointer;
-  z-index: 2;
+  z-index: 3;
   width: 110px;
   height: 36px;
 }
@@ -107,7 +107,7 @@ ul.List, ol.List, dl.List {
   border-color: #bbbbbb;
   background-color: #eeeeee;
   position: fixed;
-  z-index: 1;
+  z-index: 2;
   padding: 5px;
 }
 .MenuButton.Top {
@@ -228,4 +228,14 @@ button:hover, .MenuButton:hover, .MenuButton.Open {
 }
 .Com.Doug {
   background-color: #EFF9FE;
+}
+.Tooltip {
+  position: absolute;
+  z-index: 1;
+  background-color: #e3e3e3;
+  border-style: outset;
+  border-width: 1px;
+  border-color: #bbbbbb;
+  font-family: "ITC Legacy Sans Std Medium";
+  padding: 1px 3px;
 }
