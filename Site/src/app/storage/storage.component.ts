@@ -113,7 +113,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cmd: Cmd.Delete, game: this.game })
-        }).then(res => res.json()).then((reply: Delete) => {
+        }).then(res => res.json()).then((reply: Next) => {
           if (reply.err) {
             this.messages.length = 0;
             this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);
@@ -152,7 +152,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cmd: Cmd.RemoveUser, game: this.game, user: this.user })
-        }).then(res => res.json()).then((reply: RemoveUser) => {
+        }).then(res => res.json()).then((reply: Next) => {
           if (reply.err) {
             this.messages.length = 0;
             this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why!);

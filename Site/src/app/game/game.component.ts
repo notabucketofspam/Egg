@@ -157,7 +157,7 @@ export class GameComponent implements OnInit, OnDestroy {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cmd: Cmd.AddUser, game: this.game, user: this.user })
-    }).then(res => res.json()).then((reply: AddUser) => {
+    }).then(res => res.json()).then((reply: Next) => {
       if (reply.err && reply.why) {
         this.messages.length = 0;
         this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why);
