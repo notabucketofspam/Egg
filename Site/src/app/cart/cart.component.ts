@@ -28,6 +28,7 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
     if (changes["state"]) {
       if (changes["state"].currentValue["round"]) {
         this.checkCart();
+        this.setCartTotal();
       }
     }
   }
