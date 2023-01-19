@@ -25,17 +25,17 @@ export async function exec(req: Request, res: Response) {
       break;
     }
   }
-  if (!scriptError) {
-    res.status(200);
-    res.type("application/json");
-    res.send(fromScriptError("patch"));
-  }
   for (const [aliveClient, clientMeta] of aliveClients) {
     if (clientMeta.game === data.game) {
       // Force all clients to reload the page upon patch;
       // this avoids any breaking discrepancies between model / view in Angular
       aliveClient.send(JSON.stringify({ cmd: "reload" }));
     }
+  }
+  if (!scriptError) {
+    res.status(200);
+    res.type("application/json");
+    res.send(fromScriptError("patch"));
   }
 }
 const patches: ((ioredis: Redis, scripts: Record<string, string>,
