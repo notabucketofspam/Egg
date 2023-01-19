@@ -50,6 +50,9 @@ export class GameComponent implements OnInit, OnDestroy {
   timers: Record<string, NodeJS.Timer> = {};
   destroyer = new ReplaySubject<boolean>(1);
   acceptedOffers: CartItem[] = [];
+  projected: Projected = {
+    cash: {}
+  };
   constructor(private title: Title, private websocket: WebSocketService,
     private console: ConsoleService) { }
   ngOnInit(): void {

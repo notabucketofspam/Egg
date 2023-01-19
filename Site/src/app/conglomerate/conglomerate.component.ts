@@ -27,6 +27,7 @@ export class ConglomerateComponent implements OnInit, OnDestroy {
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() stateSubjects!: Record<string, Subject<void>>;
   @Output() memberBubbleEE = new EventEmitter<string>();
+  @Input() projected!: Projected;
   constructor() { }
   ngOnDestroy(): void { }
   ngOnInit(): void { }

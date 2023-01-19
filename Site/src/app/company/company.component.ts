@@ -57,6 +57,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   tierPrices = [0, 400, 550, 650, 800];
   @Output() memberEE = new EventEmitter<string>();
   destroyer = new ReplaySubject<boolean>(1);
+  @Input() projected2!: Projected;
   constructor(private time: TimeService, private console: ConsoleService) { }
   ngOnChanges(changes: SimpleChanges) {
     if (changes["state"]) {
@@ -192,6 +193,13 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
         com: this.company,
         ct: amount
       };
+      if (this.state.price) {
+        const tradeTotal = this.state.price[this.comShort] * amount;
+        if (this.projected2.cash[this.user] && this.projected2.cash[this.user] < tradeTotal) {
+          alert("You cannot afford this many stocks!");
+          return;
+        }
+      }
       if (tx !== null) {
         item.tx = tx;
         this.withdraw.user[tx].own[this.comShort] += amount;

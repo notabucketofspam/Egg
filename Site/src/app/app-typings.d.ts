@@ -55,6 +55,9 @@ declare interface State extends Next {
   "global-ver": number;
   soup: number;
 }
+declare interface Projected {
+  cash: State["cash"];
+}
 declare interface PartialState {
   [key: string | number]: string | number | PartialState;
 }

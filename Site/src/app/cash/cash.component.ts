@@ -16,9 +16,8 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   });
   @Input() cart!: CartItem[];
   @Input() acceptedOffers!: CartItem[];
-  projected = {
-    cash: {} as State["cash"],
-    paTotal: 0
+  @Input() projected = {
+    cash: {} as State["cash"]
   };
   paTotal = 0;
   @Input() user!: string;
