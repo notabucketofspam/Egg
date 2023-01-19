@@ -19,6 +19,7 @@ import { RoundComponent } from './round/round.component';
 import { CashComponent } from './cash/cash.component';
 import { DebugMenuComponent } from './debug-menu/debug-menu.component';
 import { MenuDirective } from './menu.directive';
+import { TooltipDirective } from './tooltip.directive';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { MenuDirective } from './menu.directive';
     RoundComponent,
     CashComponent,
     DebugMenuComponent,
-    MenuDirective
+    MenuDirective,
+    TooltipDirective
   ],
   imports: [
     BrowserModule,
