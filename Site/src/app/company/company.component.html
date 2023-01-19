@@ -48,16 +48,20 @@
           <button (click)="increaseTradeOfferAmount(1)" type="button">></button>
         </div>
       </div>
-      <button type="submit" class="Flex Row Form Submit Large"
+      <button type="submit" class="Flex Row Form Submit Large" appTooltip
+      [options]="[{text:'You are not on the list of users that can trade! Next time, don\'t fail your pledge!',expr:state&&state['can-trade']&&!state['can-trade'].includes(user)},{text:'You cannot afford this many stocks!',expr:state&&state['can-trade']&&state['can-trade'].includes(user)&&!(state.round.phase===2&&state.ready.includes(user))&&tradeOfferForm.controls['amount'].value!==null&&projected2.cash[user]!==undefined&&projected2.cash[user]<tradeOfferForm.controls['amount'].value*state.price[comShort]}]"
               [disabled]="!state.round||state.round.phase===3||(state.round.phase===2&&state.ready.includes(user))||tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null&&(tradeOfferForm.controls['amount'].value<=0||tradeOfferForm.controls['tx'].value===this.user||tradeOfferForm.controls['amount'].value>this.projected.user[tradeOfferForm.controls['tx'].value].own[this.comShort]||tradeOfferForm.controls['amount'].value%1!==0)||tradeOfferForm.controls['tx'].value===null&&(tradeOfferForm.controls['amount'].value===0||tradeOfferForm.controls['amount'].value%1!==0||tradeOfferForm.controls['amount'].value>this.projected.available)">
-        {{(tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null)?"Submit offer":tradeOfferForm.controls['amount'].value>=0?"Add to cart":"Sell off stocks"}}
+        {{state&&state.round&&state.round.phase===2&&state.ready.includes(user)?"Locked in!":(tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null)?"Submit offer":tradeOfferForm.controls['amount'].value>=0?"Add to cart":"Sell off stocks"}}
       </button>
     </form>
     <div class="TopBlack Flex Column">
       <span class="Flex Center">Upgrade Membership</span>
+      <span class="Flex Center" style="font-family: 'ITC Legacy Sans Std Medium'; font-size: 90%;">
+        Available in {{state&&state.round&&state.round.phase===4?"this phase!":"a later phase"}}
+      </span>
       <div class="Flex Row">
         <button (click)="memberEE.emit(comShort)" class="Flex Center Form Submit Large"
-        [disabled]="!changeMemberPrice||!state.user||state.user[user].member[comShort]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
+                [disabled]="!changeMemberPrice||!state.user||state.user[user].member[comShort]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
           Yes
         </button>
       </div>

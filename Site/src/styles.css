@@ -231,7 +231,7 @@ button:hover, .MenuButton:hover, .MenuButton.Open {
 }
 .Tooltip {
   position: absolute;
-  z-index: 1;
+  z-index: 4;
   background-color: #e3e3e3;
   border-style: outset;
   border-width: 1px;

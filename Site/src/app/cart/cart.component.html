@@ -9,8 +9,9 @@
   <dl class="List">
     <ng-template ngFor let-item [ngForOf]="cart" let-i="index">
       <dt>
-        <span class="Remove" (click)="removeItem(i)"
-        [class.Disabled]="state.ready&&state.ready.includes(user)">X</span>
+        <span class="Remove" (click)="removeItem(i)" appTooltip
+        [options]="[{expr:state&&state.round&&state.round.phase===2&&state.ready.includes(user),text:'Locked in! Can\'t modify the cart once ready; must un-ready to make changes.'}]"
+        [class.Disabled]="state.ready&&state.ready.includes(user)&&state.round.phase===2">X</span>
         <span class="ItemNo">Item {{item.id}}</span>
         <span style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
       </dt>

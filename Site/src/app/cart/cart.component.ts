@@ -42,7 +42,7 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
   }
   removeItem(index: number) {
     if (this.state.ready.includes(this.user) && this.state.round.phase === 2) {
-      alert("Locked in! Can't modify the cart once ready; must un-ready to make changes.");
+      //alert("Locked in! Can't modify the cart once ready; must un-ready to make changes.");
     } else {
       this.cart.splice(index, 1);
       this.cartEE.emit();
@@ -57,7 +57,7 @@ export class CartComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   checkCart() {
-    if (this.state.round && this.state.round.phase === 3) {
+    if (this.state.round && this.state.round.phase === 3 && this.cart.length > 0) {
       // Clear the cart after the first trading window is complete
       this.cart.length = 0;
       this.cartEE.emit();

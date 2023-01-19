@@ -180,7 +180,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   }
   tradeOffer() {
     if (!this.state["can-trade"].includes(this.user)) {
-      alert("You are not on the list of users that can trade! Next time, don't fail your pledge!");
+      //alert("You are not on the list of users that can trade! Next time, don't fail your pledge!");
       return;
     }
     const tx = this.tradeOfferForm.controls["tx"].value;
@@ -196,7 +196,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       if (this.state.price) {
         const tradeTotal = this.state.price[this.comShort] * amount;
         if (this.projected2.cash[this.user] && this.projected2.cash[this.user] < tradeTotal) {
-          alert("You cannot afford this many stocks!");
+          //alert("You cannot afford this many stocks!");
           return;
         }
       }

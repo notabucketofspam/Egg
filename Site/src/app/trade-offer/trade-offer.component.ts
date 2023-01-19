@@ -57,11 +57,11 @@ export class TradeOfferComponent implements OnChanges, OnInit, OnDestroy {
   }
   modifyItem(index: number) {
     if (!this.state["can-trade"].includes(this.user)) {
-      alert("You are not on the list of users that can trade! Next time, don't fail your pledge!");
+      //alert("You are not on the list of users that can trade! Next time, don't fail your pledge!");
       return;
     }
     if (this.state.ready.includes(this.user) && this.state.round.phase === 3) {
-      alert("Locked in! Can't modify your accepted offers once ready; must un-ready to make changes.");
+      //alert("Locked in! Can't modify your accepted offers once ready; must un-ready to make changes.");
     } else {
       const targetItem = this.state.user[this.user].offers[index];
       const hasTargetItem = this.acceptedOffers.find(item => item.id === targetItem.id);
@@ -77,7 +77,8 @@ export class TradeOfferComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
   checkAcceptedOffers() {
-    if (this.state.round && this.state.round.phase === 4) {
+    if (this.state.round && this.state.round.phase === 4
+      && this.acceptedOffers.length > 0 && this.acceptedOffersIds.length > 0) {
       // Clear acceptedOffers after the second trading window is complete
       this.acceptedOffers.length = 0;
       this.acceptedOffersIds.length = 0;
