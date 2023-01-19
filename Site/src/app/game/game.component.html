@@ -13,6 +13,14 @@
   <div *ngIf="value.err; else conglomeratesTemplate">
     <div *ngFor="let message of messages">{{ message }}<br /></div>
     <div [ngSwitch]="value.err">
+      <div *ngSwitchCase="'ENOGAME'">
+        <hr />
+        If you are trying to create a <i>new</i> game: return to home with the
+        exit button (below), type your username into the "User" field (leave "Game" blank),
+        and click "Create new game."
+        <br />
+        <button routerLink="">Exit</button>
+      </div>
       <div *ngSwitchCase="'ENOUSER'">
         <button (click)="addUser()">Add user</button>
       </div>
