@@ -123,51 +123,41 @@ ul.List, ol.List, dl.List {
   bottom: 34px;
 }
 .MenuButton.Left {
-  left: calc(1*1366px/4);
+  left: calc(1*1366px/4 - 110px/2);
 }
 .MenuButton.Center {
-  left: calc(2*1366px/4);
+  left: calc(2*1366px/4 - 110px/2);
 }
 .MenuButton.Right {
-  left: calc(3*1366px/4);
+  left: calc(3*1366px/4 - 110px/2);
 }
 .Menu.Left {
-  left: calc(1*1366px/4 - 150px);
+  left: calc(1*1366px/4 - 150px - 110px/2);
 }
 .Menu.Center {
-  left: calc(2*1366px/4 - 150px);
+  left: calc(2*1366px/4 - 150px - 110px/2);
 }
 .Menu.Right {
-  left: calc(3*1366px/4 - 150px);
+  left: calc(3*1366px/4 - 150px - 110px/2);
 }
 @media only screen and (max-width: 1365px) {
   .MenuButton.Left {
-    left: calc(25% - 36px);
+    left: calc(25% - 36px - 110px/4);
   }
-}
-@media only screen and (max-width: 1365px) {
   .MenuButton.Center {
-    left: calc(50% - 36px);
+    left: calc(50% - 36px - 110px/4);
   }
-}
-@media only screen and (max-width: 1365px) {
   .MenuButton.Right {
-    left: calc(75% - 36px);
+    left: calc(75% - 36px - 110px/4);
   }
-}
-@media only screen and (max-width: 1365px) {
   .Menu.Left {
-    left: 0.5%;
+    left: calc(0.5%);
   }
-}
-@media only screen and (max-width: 1365px) {
   .Menu.Center {
-    left: 25.5%;
+    left: calc(25.5% - 110px/4);
   }
-}
-@media only screen and (max-width: 1365px) {
   .Menu.Right {
-    left: 50.5%;
+    left: calc(50.5% - 110px/4);
   }
 }
 button:hover, .MenuButton:hover, .MenuButton.Open {
@@ -182,29 +172,6 @@ button:hover, .MenuButton:hover, .MenuButton.Open {
 .Menu.NoDisplay {
   display: none;
 }
-/*
-.TrueNeutral {
-  background-color: white;
-  color: black;
-}
-.MostExcellent {
-  background-color: lightskyblue;
-  color: black;
-}
-.Good {
-  background-color: lawngreen;
-  color: black;
-}
-.Bad {
-  background-color: orange;
-  color: white;
-}
-.DogWater {
-  background-color: red;
-  color: cyan;
-  font-weight: 900;
-}
-*/
 .Con.Cathy {
   background-color: #F7941D;
 }
