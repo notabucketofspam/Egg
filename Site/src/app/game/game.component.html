@@ -30,16 +30,18 @@
   </div>
 </ng-container>
 <ng-template #conglomeratesTemplate>
-  <app-trade-offer appMenu [state]="state" [user]="user" [acceptedOffers]="acceptedOffers"
-  [localSubjects]="localSubjects" [stateSubjects]="stateSubjects" (offerEE)="modifyOffer()"></app-trade-offer>
   <!--<app-public-work [state]="state" (raiseEE)="raisePublicWork($event)" [user]="user"></app-public-work>-->
   <app-cash appMenu (reportEE)="reportPledge($event)" [localSubjects]="localSubjects"
   [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"
   [acceptedOffers]="acceptedOffers" [projected]="projected"></app-cash>
   <app-debug-menu appMenu [state]="state" (debugEE)="debug($event)" [game]="game"
   [stateSubjects]="stateSubjects"></app-debug-menu>
-  <app-cart appMenu [cart]="cart" (cartEE)="removeItem()" [state]="state" [localSubjects]="localSubjects"
-  [user]="user" [stateSubjects]="stateSubjects"></app-cart>
+  <!--<app-cart appMenu [cart]="cart" (cartEE)="removeItem()" [state]="state" [localSubjects]="localSubjects"
+  [user]="user" [stateSubjects]="stateSubjects"></app-cart>-->
+  <app-trade-offer appMenu [state]="state" [user]="user"
+  [stateSubjects]="stateSubjects" [localSubjects]="localSubjects"
+  [cart]="cart" [acceptedOffers]="acceptedOffers"
+  (cartEE)="removeItem()" (offerEE)="modifyOffer()"></app-trade-offer>
   <app-round appMenu [state]="state" [stateSubjects]="stateSubjects" (readyEE)="ready($event)"
   [user]="this.user"></app-round>
   <div class="Flex Grid">

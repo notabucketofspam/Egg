@@ -1,18 +1,33 @@
-<button class="MenuButton Top Left Closed">OFFERS</button>
-<div class="Menu Top Left NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
-  <div class="TotalProfit">
-    <b class="Flex">Profit:</b>
-    <b class="Flex Ul" *ngIf="state.ready&&state.ready.includes(user)&&state.round.phase===3">Locked in!</b>
-    <b class="Flex">{{profitTotal | currency}}</b>
+<button class="MenuButton Top Center Closed">TRADE</button>
+<div class="Menu Top Center NoDisplay" [ngStyle]="{'overscroll-behavior-y':'none'}">
+  <div class="TotalValue">
+    <b class="Flex">{{state.round&&state.round.phase===3?"Profit:":"Total:"}}</b>
+    <b class="Flex Ul" *ngIf="state.ready&&state.ready.includes(user)&&(state.round.phase===2||state.round.phase===3)">Locked in!</b>
+    <b class="Flex">{{(state.round&&state.round.phase===3?profitTotal:cartTotal) | currency}}</b>
   </div>
   <hr />
-  <dl class="List" *ngIf="state.user">
+  <dl class="List" *ngIf="state.user&&state.round.phase!==3">
+    <ng-template ngFor let-item [ngForOf]="cart" let-i="index">
+      <dt>
+        <span class="ModifyButton Remove" (click)="removeItem(i)" appTooltip
+              [options]="[{expr:state&&state.round&&state.round.phase===2&&state.ready.includes(user),text:'Locked in! Can\'t modify the cart once ready; must un-ready to make changes.'}]"
+              [class.Disabled]="state.ready&&state.ready.includes(user)&&state.round.phase===2">X</span>
+        <span class="ItemNo">Item {{item.id}}</span>
+        <span style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
+      </dt>
+      <dd>Conglomerate: {{item.con}}</dd>
+      <dd>Company: {{item.com}}</dd>
+      <dd *ngIf="item.tx">From: {{item.tx}}</dd>
+      <dd>Amount: {{item.ct}}</dd>
+    </ng-template>
+  </dl>
+  <dl class="List" *ngIf="state.user&&state.round.phase===3">
     <ng-template ngFor let-item [ngForOf]="state.user[user].offers" let-i="index">
       <dt>
         <span class="ModifyButton Add" (click)="modifyItem(i)" appTooltip
-        [options]="[{text:'You are not on the list of users that can trade! Next time, don\'t fail your pledge!',expr:state&&state['can-trade']&&!state['can-trade'].includes(user)},{text:'Locked in! Can\'t modify your accepted offers once ready; must un-ready to make changes.',expr:state&&state['can-trade']&&state['can-trade'].includes(user)&&state.ready.includes(user)}]"
-        [class.Disabled]="state.ready&&state.ready.includes(user)"
-        [class]="{Add:!acceptedOffersIds.includes(state.user[user].offers[i].id),Remove:acceptedOffersIds.includes(state.user[user].offers[i].id)}">
+              [options]="[{text:'You are not on the list of users that can trade! Next time, don\'t fail your pledge!',expr:state&&state['can-trade']&&!state['can-trade'].includes(user)},{text:'Locked in! Can\'t modify your accepted offers once ready; must un-ready to make changes.',expr:state&&state['can-trade']&&state['can-trade'].includes(user)&&state.ready.includes(user)}]"
+              [class.Disabled]="state.ready&&state.ready.includes(user)"
+              [class]="{Add:!acceptedOffersIds.includes(state.user[user].offers[i].id),Remove:acceptedOffersIds.includes(state.user[user].offers[i].id)}">
           {{acceptedOffersIds.includes(state.user[user].offers[i].id) ? "X" : "+"}}
         </span>
         <span [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)" class="ItemNo">Item {{item.id}}</span>
@@ -23,5 +38,5 @@
       <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">To: {{item.rx}}</dd>
       <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Amount: {{item.ct}}</dd>
     </ng-template>
-</dl>
+  </dl>
 </div>

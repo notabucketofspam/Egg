@@ -11,7 +11,7 @@ import { HomeComponent } from './home/home.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ConglomerateComponent } from './conglomerate/conglomerate.component';
 import { CompanyComponent } from './company/company.component';
-import { CartComponent } from './cart/cart.component';
+//import { CartComponent } from './cart/cart.component';
 import { TimeService } from './time.service';
 //import { PublicWorkComponent } from './public-work/public-work.component';
 import { TradeOfferComponent } from './trade-offer/trade-offer.component';
@@ -30,7 +30,7 @@ import { TooltipDirective } from './tooltip.directive';
     PageNotFoundComponent,
     ConglomerateComponent,
     CompanyComponent,
-    CartComponent,
+    //CartComponent,
     //PublicWorkComponent,
     TradeOfferComponent,
     RoundComponent,
