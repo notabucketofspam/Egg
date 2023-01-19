@@ -50,8 +50,8 @@
           Submit
         </button>
       </div>
-      <div class="Flex Row Center" *ngIf="state.round&&state.round.phase!==1">
-        You cannot change your pledge in this phase
+      <div class="Flex Row Center">
+        You {{state.round&&state.round.phase===1?"can":"cannot"}} change your pledge in this phase
       </div>
     </form>
   </div>
