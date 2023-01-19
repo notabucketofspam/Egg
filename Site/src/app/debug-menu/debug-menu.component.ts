@@ -21,7 +21,7 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
   });
   stockList = [
     "Cathy:CREAM", "Cathy:BEER", "Cathy:CRUNCH", "Cathy:ROLL",
-    "Terry:TOWER", "Terry:TAP", "Terry:TIME", "Terry:TENT",
+    "Terri:TOWER", "Terri:TAP", "Terri:TIME", "Terri:TENT",
     "Gary:CALC", "Gary:GUI", "Gary:GLIT", "Gary:GPU",
     "Doug:CANN", "Doug:DOOD", "Doug:DUG", "Doug:CLUB"
   ];
