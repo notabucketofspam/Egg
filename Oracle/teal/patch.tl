@@ -5,7 +5,7 @@ local send: {string: string}
 -- List of conglomerates / stocks (products) and their initial prices / values
 local hsetConglomerates = {
   "Cathy:CREAM", "0", "Cathy:BEER", "0", "Cathy:CRUNCH", "0", "Cathy:ROLL", "0",
-  "Terry:TOWER", "0", "Terry:TAP", "0", "Terry:TIME", "0", "Terry:TENT", "0",
+  "Terri:TOWER", "0", "Terri:TAP", "0", "Terri:TIME", "0", "Terri:TENT", "0",
   "Gary:CALC", "0", "Gary:GUI", "0", "Gary:GLIT", "0", "Gary:GPU", "0",
   "Doug:CANN", "0", "Doug:DOOD", "0", "Doug:DUG", "0", "Doug:CLUB", "0"
 }
@@ -63,6 +63,22 @@ if gameExists then
   elseif ver == 6 then
     -- add "soup" to game
     redis.call("SET", KEYS[2], "0")
+  elseif ver == 8 then
+    -- Terry -> Terri
+    local function toTerri(key: string)
+      local hash = (redis.call("HGETALL", key) as Hash).map
+      local hset: {string} = {
+        "Terri:TOWER", hash["Terry:TOWER"],
+        "Terri:TAP", hash["Terry:TAP"],
+        "Terri:TIME", hash["Terry:TIME"],
+        "Terri:TENT", hash["Terry:TENT"]
+      }
+      redis.call("HDEL", key, "Terry:TOWER", "Terry:TAP", "Terry:TIME", "Terry:TENT")
+      redis.call("HSET", key, unpack(hset))
+    end
+    for i = 2, #KEYS do
+      toTerri(KEYS[i])
+    end
   end
   -- increment version ###
   redis.call("INCR", verKey)

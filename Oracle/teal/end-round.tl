@@ -52,7 +52,7 @@ if gameExists then
   local cashBackMult = 0.1
   -- Tables for membership bonuses
   local cathyMult = {0.15, 0.2, 0.25}
-  local terryMult = {1.05, 1.1, 1.2}
+  local terriMult = {1.05, 1.1, 1.2}
   local garyMult = {1.15, 1.2, 1.3}
   -- Handle pledges first, but also keep track of good will (handled later)
   local metPledge: {string: number} = {}
@@ -81,15 +81,15 @@ if gameExists then
     if userPledge > userCash then
       contribution = userCash
     end
-    -- Handle Terry (one-time match on contribution)
-    local terryTier = tonumber(member["Terry:TIME"]) as integer
-    local terryLastTier = tonumber(lastMember["Terry:TIME"]) as integer
-    if terryTier > 0 and terryLastTier < terryTier then
-      local newTerryMult = 1.0
-      for ii = terryLastTier + 1, terryTier do
-        newTerryMult = newTerryMult*terryMult[ii]
+    -- Handle Terri (one-time match on contribution)
+    local terriTier = tonumber(member["Terri:TIME"]) as integer
+    local terriLastTier = tonumber(lastMember["Terri:TIME"]) as integer
+    if terriTier > 0 and terriLastTier < terriTier then
+      local newTerriMult = 1.0
+      for ii = terriLastTier + 1, terriTier do
+        newTerriMult = newTerriMult*terriMult[ii]
       end
-      contribution = contribution*newTerryMult
+      contribution = contribution*newTerriMult
       -- Reset last-member to current member in Redis
       local memberDump = redis.call("DUMP", memberKey) as string
       redis.call("RESTORE", lastMemberKey, "0", memberDump, "REPLACE")

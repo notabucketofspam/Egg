@@ -131,5 +131,18 @@ const patches: ((ioredis: Redis, scripts: Record<string, string>,
       // ver 7 -> 8
       // add "last-cash" to game (again)
       return patches[5](ioredis, scripts, game, ver, users);
+    },
+    async (ioredis, scripts, game, ver, users) => {
+      try {
+        // ver 8 -> 9
+        // Terry -> Terri
+        const fields = ["ver", "price", "delta", "pw", "next-price"];
+        const userFields = ["last-member", "member", "own"];
+        const keys = toScriptKeys(game, fields, users, userFields);
+        await ioredis.evalsha(scripts["patch"], keys.length, ...keys, users.length, game, ver);
+        return false;
+      } catch (err) {
+        return true;
+      }
     }
 ];

@@ -17,13 +17,13 @@ local indexPrefix = ARGV[3]
 -- List of conglomerates / stocks (products) and their initial prices / values
 local hsetConglomerates = {
   "Cathy:CREAM", "0", "Cathy:BEER", "0", "Cathy:CRUNCH", "0", "Cathy:ROLL", "0",
-  "Terry:TOWER", "0", "Terry:TAP", "0", "Terry:TIME", "0", "Terry:TENT", "0",
+  "Terri:TOWER", "0", "Terri:TAP", "0", "Terri:TIME", "0", "Terri:TENT", "0",
   "Gary:CALC", "0", "Gary:GUI", "0", "Gary:GLIT", "0", "Gary:GPU", "0",
   "Doug:CANN", "0", "Doug:DOOD", "0", "Doug:DUG", "0", "Doug:CLUB", "0"
 }
 local hsetConglomeratesPrice = {
   "Cathy:CREAM", "135", "Cathy:BEER", "135", "Cathy:CRUNCH", "135", "Cathy:ROLL", "135",
-  "Terry:TOWER", "135", "Terry:TAP", "135", "Terry:TIME", "135", "Terry:TENT", "135",
+  "Terri:TOWER", "135", "Terri:TAP", "135", "Terri:TIME", "135", "Terri:TENT", "135",
   "Gary:CALC", "135", "Gary:GUI", "135", "Gary:GLIT", "135", "Gary:GPU", "135",
   "Doug:CANN", "135", "Doug:DOOD", "135", "Doug:DUG", "135", "Doug:CLUB", "135"
 }
@@ -34,7 +34,7 @@ redis.call("HSET", priceKey, unpack(hsetConglomeratesPrice))
 redis.call("HSET", deltaKey, unpack(hsetConglomerates))
 redis.call("HSET", pwKey, unpack(hsetConglomerates))
 redis.call("HSET", roundKey, "round", "0", "phase", "0")
-redis.call("SET", verKey, "8")
+redis.call("SET", verKey, "9")
 redis.call("HSET", nextPriceKey, unpack(hsetConglomeratesPrice))
 redis.call("SET", soupKey, "0")
 -- Final reply

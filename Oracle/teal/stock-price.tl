@@ -75,7 +75,7 @@ if gameExists then
     -- Get results first so that searches don't have to be re-run each loop
     local search: {string: {string}} = {
       Cathy = redis.call("FT.SEARCH", indexKey, "@con:{Cathy}", "NOCONTENT") as {string},
-      Terry = redis.call("FT.SEARCH", indexKey, "@con:{Terry}", "NOCONTENT") as {string},
+      Terri = redis.call("FT.SEARCH", indexKey, "@con:{Terri}", "NOCONTENT") as {string},
       Gary = redis.call("FT.SEARCH", indexKey, "@con:{Gary}", "NOCONTENT") as {string},
       Doug = redis.call("FT.SEARCH", indexKey, "@con:{Doug}", "NOCONTENT") as {string},
     }
