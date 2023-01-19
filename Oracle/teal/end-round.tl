@@ -63,6 +63,8 @@ if gameExists then
     local userPledge = tonumber(pledge[user])
     -- Skip this user if they didn't pledge at all this round
     if userPledge == 0.0 then
+      -- Technically, the user can't fail a $0 pledge
+      redis.call("SADD", canTradeKey, user)
       do break end
     end
     local userCash = tonumber(cash[user])
