@@ -256,7 +256,20 @@ export class GameComponent implements OnInit, OnDestroy {
     this.websocket.nextJ($event);
   }
   patch() {
-    this.websocket.nextJ({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver });
+    fetch(environment.cmdUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver })
+    }).then(res => res.json()).then((reply: Next) => {
+      if (reply.err && reply.why) {
+        this.messages.length = 0;
+        this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why);
+        this.ngOnDestroy();
+      } else {
+        this.ngOnDestroy();
+        this.reloadPage();
+      }
+    });
   }
   changeMember($event: string) {
     this.console.log("user", this.user, "| stock", $event, "| newTier",
