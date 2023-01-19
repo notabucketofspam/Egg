@@ -121,7 +121,8 @@ if gameExists then
       newPa = userPa + contribution
       metPledge[user] = contribution
       goodwill = goodwill + contribution*pledgeMult
-      if userPledge > userLastCash then
+      -- Hopefully this won't crash from "attempt to compare nil with number"
+      if userPledge ~= nil and userLastCash ~= nil and userPledge > userLastCash then
         -- Bonus cash back for pledging more than user's cash at the start of the round
         newCash = newCash + userPledge*cashBackMult
       end
