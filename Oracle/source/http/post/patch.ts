@@ -126,5 +126,10 @@ const patches: ((ioredis: Redis, scripts: Record<string, string>,
       } catch (err) {
         return true;
       }
+    },
+    async (ioredis, scripts, game, ver, users) => {
+      // ver 7 -> 8
+      // add "last-cash" to game (again)
+      return patches[5](ioredis, scripts, game, ver, users);
     }
 ];

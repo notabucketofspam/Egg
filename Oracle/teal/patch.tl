@@ -54,7 +54,7 @@ if gameExists then
   elseif ver == 4 then
     -- remove "second-init" from game
     redis.call("DEL", KEYS[2])
-  elseif ver == 5 then
+  elseif ver == 5 or ver == 7 then
     -- add "last-cash" to game
     local lastCashKey = KEYS[2]
     local cashKey = KEYS[3]
