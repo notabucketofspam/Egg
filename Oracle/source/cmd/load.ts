@@ -56,4 +56,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       ioredis.get(`game:${data.game}:soup`).then(reply => send.soup = reply === null ? 0 : Number(reply))
     ]);
   client.send(JSON.stringify(send));
+  const messages = {
+    cmd: "messages",
+    data: await ioredis.hgetall(`game:${data.game}:messages`)
+  };
+  client.send(JSON.stringify(messages));
 }
