@@ -107,7 +107,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         partial["pa"] = endRound["pa"];
       if (endRound["pledge"])
         partial["pledge"] = endRound["pledge"];
-      if (endRound["soup"])
+      if (typeof endRound["soup"] === "number")
         partial["soup"] = endRound["soup"];
       if (endRound["user"])
         partial["user"] = endRound["user"];
