@@ -115,6 +115,11 @@ export class GameComponent implements OnInit, OnDestroy {
           this.next({ cmd: Cmd.Load, err: "ENEWVER", why: "Game version newer than global version (somehow)" });
         break;
       }
+      case Cmd.Messages: {
+        // Parse incoming messages
+        this.parseMessages();
+        break;
+      }
       case Cmd.Update: {
         // Set changes to game state
         this.update(value as PartialState, this.state, 0);
@@ -143,6 +148,9 @@ export class GameComponent implements OnInit, OnDestroy {
         break;
       }
     }
+  }
+  parseMessages() {
+    
   }
   parseOffers() {
     this.state.users.forEach(user => {
