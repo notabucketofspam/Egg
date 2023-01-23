@@ -57,7 +57,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     ]);
   client.send(JSON.stringify(send));
   const messages = {
-    cmd: "messages",
+    cmd: "message",
     data: await ioredis.hgetall(`game:${data.game}:messages`)
   };
   client.send(JSON.stringify(messages));
