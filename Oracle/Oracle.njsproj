@@ -96,7 +96,7 @@
     <TypeScriptCompile Include="source\http\post\new.ts" />
     <TypeScriptCompile Include="source\http\post\patch.ts" />
     <TypeScriptCompile Include="source\cmd\pledge.ts" />
-    <TypeScriptCompile Include="source\cmd\raise.ts" />
+    <TypeScriptCompile Include="old\cmd\raise.ts" />
     <TypeScriptCompile Include="source\cmd\ready.ts" />
     <TypeScriptCompile Include="source\http\post\remove-user.ts" />
     <TypeScriptCompile Include="source\ExtWSS.ts" />
