@@ -1,10 +1,52 @@
-<div class="Title Block Flex">
-  <span class="Title Large Ultra Flex">{{ description }}</span>
+<div class="Flex">
+  <div class="Title Block Flex">
+    <span class="Title Large Ultra Flex">{{ description }}</span>
+  </div>
+  <div class="Flex Column Memberships">
+    <div class="Flex Title Small Ultra">
+      Membership Tiers
+    </div>
+    <ol class="List" start="0" *ngIf="state&&state.user">
+      <li>
+        {{getUsersInTier(0).join(", ")}}
+      </li>
+      <li>
+        {{getUsersInTier(1).join(", ")}}
+      </li>
+      <li>
+        {{getUsersInTier(2).join(", ")}}
+      </li>
+      <li>
+        {{getUsersInTier(3).join(", ")}}
+      </li>
+    </ol>
+  </div>
+  <div class="TopBlack Flex Column">
+    <span class="Flex Title Small Ultra">Upgrade Membership</span>
+    <div class="Flex Row Center">
+      <form [formGroup]="memberForm" (ngSubmit)="onSubmit()" class="Flex Center Column">
+        <span class="Flex Center" style="font-family: 'ITC Legacy Sans Std Medium'; font-size: 90%;">
+          Available in {{state&&state.round&&state.round.phase===4?"this phase!":"a later phase"}}
+        </span>
+        <div class="Flex Center">
+          Yes:
+          <input type="checkbox" formControlName="yes" />
+        </div>
+        <div class="Flex Center">
+          <button type="submit" class="Flex Center Form Submit Large"
+                  [disabled]="ownsStocks===false||memberForm.controls['yes'].value===null||memberForm.controls['yes'].value===false||!changeMemberPrice||!state.user||state.user[user].member[conglomerate]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
+            Submit
+          </button>
+        </div>
+        <span class="Flex Center">Cost: {{changeMemberPrice|currency}}</span>
+      </form>
+    </div>
+  </div>
 </div>
 <div class="Flex GridAuto">
   <app-company *ngFor="let com of conglomerates[conglomerate]" [company]="com[0]" class="Com"
   [state]="state" [conglomerate]="conglomerate" [description]="com[1]" [user]="user" [class]="conglomerate"
   (cartActionEE)="cartBubbleEE.emit($event)" [cart]="cart" [localSubjects]="localSubjects"
-  [stateSubjects]="stateSubjects" (memberEE)="memberBubbleEE.emit($event)"
+  [stateSubjects]="stateSubjects"
   [acceptedOffers]="acceptedOffers" [projected2]="projected"></app-company>
 </div>

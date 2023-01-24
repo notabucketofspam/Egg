@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-conglomerate',
   templateUrl: './conglomerate.component.html',
   styleUrls: ['./conglomerate.component.css']
 })
-export class ConglomerateComponent implements OnInit, OnDestroy {
+export class ConglomerateComponent implements OnInit, OnDestroy, OnChanges {
   @Input() conglomerate!: string;
   @Input() state!: State;
   @Input() user!: string;
@@ -26,9 +27,66 @@ export class ConglomerateComponent implements OnInit, OnDestroy {
   @Input() acceptedOffers!: CartItem[];
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() stateSubjects!: Record<string, Subject<void>>;
-  @Output() memberBubbleEE = new EventEmitter<string>();
   @Input() projected!: Projected;
+  changeMemberPrice = 0;
+  tierPrices = [0, 400, 550, 650, 800];
+  @Output() memberEE = new EventEmitter<string>();
+  private destroyer = new ReplaySubject<boolean>(1);
+  private subscriptions: Record<string, Subscription> = {};
+  ownsStocks = false;
+  memberForm = new FormGroup({
+    yes: new FormControl(false)
+  });
   constructor() { }
-  ngOnDestroy(): void { }
-  ngOnInit(): void { }
+  ngOnDestroy(): void {
+    this.destroyer.next(true);
+    this.destroyer.complete();
+  }
+  ngOnInit(): void {
+    this.subscriptions["pw"] = this.stateSubjects["pw"].pipe(takeUntil(this.destroyer)).subscribe(() => {
+      this.resetChangeMemberPrice();
+    });
+    this.subscriptions["user"] = this.stateSubjects["user"].pipe(takeUntil(this.destroyer)).subscribe(() => {
+      this.resetChangeMemberPrice();
+    });
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["state"]) {
+      if (changes["state"].currentValue.pw)
+        this.resetChangeMemberPrice();
+      if (changes["state"].currentValue.user)
+        this.checkOwnsStocks();
+    }
+  }
+  getUsersInTier(tier: number) {
+    if (this.state && this.state.users)
+      return this.state.users.filter(username => this.state.user[username].member[this.conglomerate] === tier);
+    else
+      return [];
+  }
+  resetChangeMemberPrice() {
+    if (this.state && this.state.pw) {
+      this.changeMemberPrice = 0;
+      const conSiblings: string[] = Object.keys(this.state.pw)
+        .filter(value => this.conglomerate === value.split(":")[0]);
+      conSiblings.forEach(con => this.changeMemberPrice += this.tierPrices[this.state.pw[con]]);
+    }
+  }
+  onSubmit() {
+    const yes = this.memberForm.controls["yes"].value;
+    if (yes !== null && yes == true) {
+      this.memberEE.emit(this.conglomerate);
+    }
+  }
+  checkOwnsStocks() {
+    if (this.state && this.state.user) {
+      this.ownsStocks = false;
+      for (const [stock, value] of Object.entries(this.state.user[this.user].own)) {
+        if (this.conglomerate === stock.split(":")[0] && value > 0) {
+          this.ownsStocks = true;
+          return;
+        }
+      }
+    }
+  }
 }

@@ -1,7 +1,8 @@
-<div class="Title Block Flex Center" [class]="titleBlockClass">
-  <span *ngIf="state.pw&&state.pw[comShort]>-1" id="icon-span">{{flavorIcons[state.pw[comShort]]}}</span>
-  <span class="Title Normal Ultra">{{ company }}</span>
-  <span class="Title Normal">&nbsp;|&nbsp;</span>
+<div class="Title Block Flex Center Column" [class]="titleBlockClass">
+  <div class="Flex">
+    <span *ngIf="state.pw&&state.pw[comShort]>-1" id="icon-span">{{flavorIcons[state.pw[comShort]]}}</span>
+    <span class="Title Normal Ultra">{{ company }}</span>
+  </div>
   <span class="Title Small">{{ description }}</span>
 </div>
 <div class="Flex Com Row">
@@ -54,29 +55,16 @@
         {{state&&state.round&&state.round.phase===2&&state.ready.includes(user)?"Locked in!":(tradeOfferForm.controls['amount'].value===null||tradeOfferForm.controls['tx'].value!==null)?"Submit offer":tradeOfferForm.controls['amount'].value>=0?"Add to cart":"Sell off stocks"}}
       </button>
     </form>
-    <div class="TopBlack Flex Column">
-      <span class="Flex Center">Upgrade Membership</span>
-      <span class="Flex Center" style="font-family: 'ITC Legacy Sans Std Medium'; font-size: 90%;">
-        Available in {{state&&state.round&&state.round.phase===4?"this phase!":"a later phase"}}
-      </span>
-      <div class="Flex Row">
-        <button (click)="memberEE.emit(conglomerate)" class="Flex Center Form Submit Large"
-                [disabled]="!changeMemberPrice||!state.user||state.user[user].member[conglomerate]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
-          Yes
-        </button>
-      </div>
-      <span class="Flex Center">Cost: {{changeMemberPrice|currency}}</span>
-    </div>
+    <br />
   </div>
   <div id="user-list" class="Flex Column" *ngIf="state.users">
     <span class="Title Small">Users</span>
     <div *ngFor="let user of state.users" class="Flex Column TopBlack">
       <div class="User Name Flex">{{ user }}</div>
       <div class="Flex Row">
-        <div class="User Own Flex">
+        <div class="User Flex">
           Own: {{ state.user[user].own[comShort] }} ({{projected.user[user].own[comShort]}})
         </div>
-        <div class="Flex">Tier: {{ state.user[user].member[conglomerate] }}</div>
       </div>
     </div>
   </div>

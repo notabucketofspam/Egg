@@ -53,10 +53,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     "\u{1F52B}"
   ];
   @Input() stateSubjects!: Record<string, Subject<void>>;
-  changeMemberPrice = 0;
-  tierPrices = [0, 400, 550, 650, 800];
-  @Output() memberEE = new EventEmitter<string>();
-  destroyer = new ReplaySubject<boolean>(1);
+  private destroyer = new ReplaySubject<boolean>(1);
   @Input() projected2!: Projected;
   constructor(private time: TimeService, private console: ConsoleService) { }
   ngOnChanges(changes: SimpleChanges) {
@@ -103,7 +100,6 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       }
       if (changes["state"].currentValue.pw) {
         this.titleBlockClass = this.flavorClasses[this.state.pw[this.comShort]];
-        this.resetChangeMemberPrice();
       }
     }
   }
@@ -131,9 +127,6 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions["accepted-offers"] = this.localSubjects["accepted-offers"].pipe(takeUntil(this.destroyer))
       .subscribe(() => this.resetFromLocal(this.acceptedOffers));
     this.comShort = this.conglomerate + ':' + this.company;
-    this.subscriptions["pw"] = this.stateSubjects["pw"].pipe(takeUntil(this.destroyer)).subscribe(() => {
-      this.resetChangeMemberPrice();
-    });
     this.tradeOfferForm.controls["tx"].setValue(this.user);
     this.subscriptions["delta"] = this.stateSubjects["delta"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetDelta();
@@ -163,14 +156,6 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       this.state.users.forEach(user => {
         this.available -= this.state.user[user].own[this.comShort];
       });
-    }
-  }
-  resetChangeMemberPrice() {
-    if (this.state.pw) {
-    this.changeMemberPrice = 0;
-      const conSiblings: string[] = Object.keys(this.state.pw)
-        .filter(value => this.conglomerate === value.split(":")[0]);
-      conSiblings.forEach(con => this.changeMemberPrice += this.tierPrices[this.state.pw[con]]);
     }
   }
   resetDelta() {

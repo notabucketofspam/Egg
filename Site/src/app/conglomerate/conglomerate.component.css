@@ -7,8 +7,24 @@
 }
 .Title.Large {
   font-size: 200%;
+  text-align: center;
 }
 .Title.Block {
   align-items: center;
   justify-content: center;
+  flex-basis: 33%;  
+}
+.Memberships {
+  flex-basis: 39%;
+}
+.Title.Small {
+  font-size: 110%;
+  align-items: center;
+  justify-content: center;
+}
+ol {
+  margin-bottom: 0px;
+}
+.Form.Submit.Large {
+  font-size: 115%;
 }

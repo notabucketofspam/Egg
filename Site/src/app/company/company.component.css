@@ -7,7 +7,7 @@
   font-size: 120%;
 }
 .Title.Normal {
-  font-size: 140%;
+  font-size: 150%;
 }
 .Title.Block {
   align-items: center;
@@ -84,8 +84,9 @@
   font-size: 150%;
 }
 #icon-span {
-  font-size: 165%;
+  font-size: 140%;
 }
+/*
 @media only screen and (min-width: 1366px) {
   .Title.Small {
     font-size: 115%;
@@ -94,6 +95,7 @@
     font-size: 125%;
   }
 }
+*/
 #available-div {
   font-size: 80%;
 }
