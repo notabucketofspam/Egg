@@ -87,10 +87,19 @@ if gameExists then
     local member = (redis.call("HGETALL", memberKey) as Hash).map
     redis.call("DEL", lastMemberKey)
     redis.call("DEL", memberKey)
+    -- Check if the keys are empty
+    if next(lastMember) ~= nil then
     redis.call("HSET", lastMemberKey, "Cathy", lastMember["Cathy:BEER"], "Terri", lastMember["Terri:TIME"],
       "Gary", lastMember["Gary:GPU"], "Doug", lastMember["DOUG:CANN"])
-    redis.call("HSET", memberKey, "Cathy", member["Cathy:BEER"], "Terri", member["Terri:TIME"],
-      "Gary", member["Gary:GPU"], "Doug", member["DOUG:CANN"])
+    else
+      redis.call("HSET", lastMemberKey, "Cathy", "0", "Terri", "0", "Gary", "0", "Doug", "0")
+    end
+    if next(member) ~= nil then
+      redis.call("HSET", memberKey, "Cathy", member["Cathy:BEER"], "Terri", member["Terri:TIME"],
+        "Gary", member["Gary:GPU"], "Doug", member["DOUG:CANN"])
+    else
+      redis.call("HSET", memberKey, "Cathy", "0", "Terri", "0", "Gary", "0", "Doug", "0")
+    end
   elseif ver == 10 then
     -- Add last-time
     local time = (redis.call("TIME") as {string})[1]
