@@ -13,7 +13,7 @@ export async function exec(req: Request, res: Response) {
   try {
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as RemoveUser;
-    const fields = ["users", "ready", "pledge", "can-trade", "pa", "cash", "init", "second-init"];
+    const fields = ["users", "ready", "pledge", "can-trade", "pa", "cash", "init"];
     const users = [data.user];
     const userFields = ["last-member", "last-own", "member", "offers", "own"];
     const keys = toScriptKeys(data.game, fields, users, userFields);

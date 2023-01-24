@@ -10,7 +10,6 @@ local canTradeKey = KEYS[4]
 local paKey = KEYS[5]
 local cashKey = KEYS[6]
 local initKey = KEYS[7]
-local secondInitKey = KEYS[8]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local username = ARGV[3]
@@ -42,7 +41,6 @@ if gameExists then
     redis.call("HDEL", paKey, username)
     redis.call("HDEL", cashKey, username)
     redis.call("ZREM", initKey, username)
-    redis.call("ZREM", secondInitKey, username)
     redis.call("DEL", unpack(KEYS, 9))
     send = redis.status_reply("OK")
   else
