@@ -9,6 +9,7 @@ local hsetConglomerates = {
   "Gary:CALC", "0", "Gary:GUI", "0", "Gary:GLIT", "0", "Gary:GPU", "0",
   "Doug:CANN", "0", "Doug:DOOD", "0", "Doug:DUG", "0", "Doug:CLUB", "0"
 }
+local hsetMember = {"Cathy", "0", "Terri", "0", "Gary", "0", "Doug", "0"}
 -- Script params
 local usersKey = KEYS[1]
 local pledgeKey = KEYS[2]
@@ -38,8 +39,8 @@ if gameExists then
   redis.call("HSET", cashKey, username, "3000")
   redis.call("ZADD", initKey, "0", username)
   redis.call("HSET", lastCashKey, username, "3000")
-  redis.call("HSET", KEYS[8], unpack(hsetConglomerates))
-  redis.call("HSET", KEYS[9], unpack(hsetConglomerates))
+  redis.call("HSET", KEYS[8], unpack(hsetMember))
+  redis.call("HSET", KEYS[9], unpack(hsetMember))
   redis.call("HSET", KEYS[10], unpack(hsetConglomerates))
   send = redis.status_reply("OK")
 else

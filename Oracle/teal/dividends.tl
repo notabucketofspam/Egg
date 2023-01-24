@@ -33,9 +33,9 @@ for game in pairs(games.set) do
 end
 if gameExists then
   -- Setup new state params
-  local partial = {
-    cash: {string: number} = {},
-  }
+  local record partial
+    cash: {string: number}
+  end
   -- Payout of stock based on which public work is built
   local flavor = {0.15, 0.25, 0.35, 0.5}
   -- Bonuses of Doug tiers
@@ -49,17 +49,20 @@ if gameExists then
     local user = zusers[i]
     local newcash = tonumber(cash[user])
     local member = (redis.call("HGETALL", getKey(i, "member")) as Hash).map
+    local dougTier = tonumber(member["Doug"]) as integer
     local own = (redis.call("HGETALL", getKey(i, "own")) as Hash).map
     for com, count in pairs(own) do
       local pwFlavor = tonumber(pw[com]) as integer
       if pwFlavor > 0 then
-        local basediv = tonumber(own[com])*tonumber(price[com])*flavor[pwFlavor]
-        local memberTier = tonumber(member[com]) as integer
-        if getCon(com) == "Doug" and memberTier > 0 then
-          basediv = basediv*dougMult[memberTier]
+        local payout = tonumber(own[com])*tonumber(price[com])*flavor[pwFlavor]
+        if dougTier > 0 and getCon(com) == "Doug" then
+          payout = payout*dougMult[dougTier]
         end
-        newcash = newcash + basediv
+        newcash = newcash + payout
       end
+    end
+    if partial.cash == nil then
+      partial.cash = {}
     end
     partial.cash[user] = newcash
     redis.call("HSET", cashKey, user, tostring(newcash))

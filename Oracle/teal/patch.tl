@@ -79,6 +79,18 @@ if gameExists then
     for i = 2, #KEYS do
       toTerri(KEYS[i])
     end
+  elseif ver == 9 then
+    -- One membership value per conglomerate
+    local lastMemberKey = KEYS[2]
+    local memberKey = KEYS[3]
+    local lastMember = (redis.call("HGETALL", lastMemberKey) as Hash).map
+    local member = (redis.call("HGETALL", memberKey) as Hash).map
+    redis.call("DEL", lastMemberKey)
+    redis.call("DEL", memberKey)
+    redis.call("HSET", lastMemberKey, "Cathy", lastMember["Cathy:BEER"], "Terri", lastMember["Terri:TIME"],
+      "Gary", lastMember["Gary:GPU"], "Doug", lastMember["DOUG:CANN"])
+    redis.call("HSET", memberKey, "Cathy", member["Cathy:BEER"], "Terri", member["Terri:TIME"],
+      "Gary", member["Gary:GPU"], "Doug", member["DOUG:CANN"])
   end
   -- increment version ###
   redis.call("INCR", verKey)

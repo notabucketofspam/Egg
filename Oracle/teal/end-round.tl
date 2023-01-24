@@ -83,8 +83,8 @@ if gameExists then
       contribution = userCash
     end
     -- Handle Terri (one-time match on contribution)
-    local terriTier = tonumber(member["Terri:TIME"]) as integer
-    local terriLastTier = tonumber(lastMember["Terri:TIME"]) as integer
+    local terriTier = tonumber(member["Terri"]) as integer
+    local terriLastTier = tonumber(lastMember["Terri"]) as integer
     if terriTier > 0 and terriLastTier < terriTier then
       local newTerriMult = 1.0
       for ii = terriLastTier + 1, terriTier do
@@ -105,7 +105,7 @@ if gameExists then
       end
     end
     -- Handle Cathy (cash back on contribution)
-    local cathyTier = tonumber(member["Cathy:BEER"]) as integer
+    local cathyTier = tonumber(member["Cathy"]) as integer
     if cathyTier > 0 then
       newCash = newCash + contribution*cathyMult[cathyTier]
     end
@@ -174,7 +174,7 @@ if gameExists then
     end
     local memberKey = getKey(i, "member")
     local member = (redis.call("HGETALL", memberKey) as Hash).map
-    local garyTier = tonumber(member["Gary:CALC"]) as integer
+    local garyTier = tonumber(member["Gary"]) as integer
     if garyTier > 0 then
       goodwill = goodwill*garyMult[garyTier]
     end
