@@ -223,7 +223,11 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     const tx = this.tradeOfferForm.controls['tx'].value;
     if (amount !== null && tx !== this.user) {
       // Non-self user selected and amount exists
-      if (tx === null) {
+      if (this.projected2.cash[this.user] !== undefined
+        && this.projected2.cash[this.user] < (amount + increase)*this.state.price[this.comShort]) {
+        // User cannot afford this many stocks
+        // Do nothing
+      } else if (tx === null) {
         // User has selected "The Market"
         if (amount + increase <= this.projected.available
           && amount + increase >= -this.projected.user[this.user].own[this.comShort]) {
