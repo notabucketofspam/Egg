@@ -37,6 +37,7 @@ if gameExists then
     user: {string: {string: {string: number}}}
     soup: number
     ["can-trade"]: {string}
+    ["good-will"]: {string: number | string}
   end
   local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1]) as {string}
   local cash = (redis.call("HGETALL", cashKey) as Hash).map
@@ -181,6 +182,12 @@ if gameExists then
     local newCash = partial.cash[goodwillWinner] + goodwill
     redis.call("HSET", cashKey, goodwillWinner, tostring(newCash))
     partial.cash[goodwillWinner] = newCash
+    -- Record for later
+    if partial["good-will"] == nil then
+      partial["good-will"] = {}
+    end
+    partial["good-will"]["winner"] = goodwillWinner
+    partial["good-will"]["value"] = goodwill
   else
     -- No user met their pledge
     -- Store good will in soup key until at least one user meets their pledge
