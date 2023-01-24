@@ -104,6 +104,7 @@ wss.on("message", function (client: WebSocket, data: WebSocket.RawData, isBinary
 });
 export async function terminate() {
   let code = 0;
+  ioredis.off("error", () => void 0);
   wss.off("message", () => void 0);
   wss.terminate();
   await Promise.all<void>([
