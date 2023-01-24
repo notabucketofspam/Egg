@@ -123,7 +123,6 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     } else if (newPhase === 5 && round.phase !== newPhase) {
       // Do good will / pledge update
       const pledge = fromHgetall(await ioredis.hgetall(`game:${data.game}:pledge`));
-      const canTrade = await ioredis.smembers(`game:${data.game}:can-trade`);
       const fields = ["init", "cash", "pledge", "pa", "can-trade", "last-cash", "soup"];
       const userCount = await ioredis.scard(`game:${data.game}:users`);
       const zusers = await ioredis.zrange(`game:${data.game}:init`, 0, userCount);
@@ -155,7 +154,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         partial["can-trade"] = endRound["can-trade"];
         const message = new Message(round, newPhase);
         message.data["can-trade"] = endRound["can-trade"];
-        message.data["cannot-trade"] = zusers.filter(user => !canTrade.includes(user));
+        message.data["cannot-trade"] = zusers.filter(user => !endRound["can-trade"].includes(user));
         postMessage(data.game, ioredis, messages, message);
       }
       if (endRound["good-will"]) {
