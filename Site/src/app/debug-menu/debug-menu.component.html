@@ -165,13 +165,11 @@
         <br />
         <ng-container [ngSwitch]="debugForm.controls['userField'].value">
           <ng-container *ngSwitchCase="debugForm.controls['userField'].value==='last-member'||debugForm.controls['userField'].value==='member'?debugForm.controls['userField'].value:''">
-            Must set same tier for all four companies in a conglomerate for the change to take effect.
-            <br />
             Stock:
             <select formControlName="prop">
               <option [ngValue]="null">---</option>
-              <ng-container *ngFor="let stock of stockList">
-                <option [ngValue]="stock">{{stock}}</option>
+              <ng-container *ngFor="let con of conList">
+                <option [ngValue]="con">{{con}}</option>
               </ng-container>
             </select>
             <br />

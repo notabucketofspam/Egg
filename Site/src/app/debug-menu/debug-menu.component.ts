@@ -25,6 +25,7 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
     "Gary:CALC", "Gary:GUI", "Gary:GLIT", "Gary:GPU",
     "Doug:CANN", "Doug:DOOD", "Doug:DUG", "Doug:CLUB"
   ];
+  conList = ["Cathy", "Terri", "Gary", "Doug"];
   stockAvailability: Record<string, number> = {};
   notReady: string[] = [];
   canNotTrade: string[] = [];

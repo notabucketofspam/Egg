@@ -279,9 +279,9 @@ export class GameComponent implements OnInit, OnDestroy {
     });
   }
   changeMember($event: string) {
-    this.console.log("user", this.user, "| stock", $event, "| newTier",
+    this.console.log("user", this.user, "| con", $event, "| newTier",
       this.state.user[this.user].member[$event] + 1);
-    this.websocket.nextJ({ cmd: Cmd.Member, game: this.game, user: this.user, stock: $event });
+    this.websocket.nextJ({ cmd: Cmd.Member, game: this.game, user: this.user, con: $event });
   }
   modifyOffer() {
     this.localSubjects["accepted-offers"].next();

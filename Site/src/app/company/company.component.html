@@ -60,8 +60,8 @@
         Available in {{state&&state.round&&state.round.phase===4?"this phase!":"a later phase"}}
       </span>
       <div class="Flex Row">
-        <button (click)="memberEE.emit(comShort)" class="Flex Center Form Submit Large"
-                [disabled]="!changeMemberPrice||!state.user||state.user[user].member[comShort]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
+        <button (click)="memberEE.emit(conglomerate)" class="Flex Center Form Submit Large"
+                [disabled]="!changeMemberPrice||!state.user||state.user[user].member[conglomerate]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
           Yes
         </button>
       </div>
@@ -76,7 +76,7 @@
         <div class="User Own Flex">
           Own: {{ state.user[user].own[comShort] }} ({{projected.user[user].own[comShort]}})
         </div>
-        <div class="Flex">Tier: {{ state.user[user].member[comShort] }}</div>
+        <div class="Flex">Tier: {{ state.user[user].member[conglomerate] }}</div>
       </div>
     </div>
   </div>
