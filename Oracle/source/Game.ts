@@ -1,12 +1,11 @@
 // Redis / KeyDB setup (...again)
 import IORedis from "ioredis";
 const ioredis = new IORedis({ lazyConnect: true });
-try {
-  await ioredis.connect();
-} catch (err) {
-  console.log("Failed to connect");
+ioredis.once("error", (err) => {
+  console.error(err, "\nIORedis error");
   process.exit(1);
-}
+});
+await ioredis.connect();
 await Promise.all<void>([
   new Promise<void>(resolve => ioredis.set("global-ver", 11, () => resolve())),
   new Promise<void>(resolve => ioredis.script("FLUSH", () => resolve()))
