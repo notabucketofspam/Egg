@@ -170,4 +170,4 @@ const patches: ((ioredis: Redis, scripts: Record<string, string>,
         return true;
       }
     }
-];
+  ];
