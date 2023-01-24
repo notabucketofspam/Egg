@@ -5,15 +5,12 @@ import { environment } from "../environments/environment";
   providedIn: 'root'
 })
 export class ConsoleService {
-  constructor() { }
   /** Log if in development */
-  log(...args: any[]) {
-    if (!environment.production) {
-      console.log(...args);
-    }
-  }
+  log = console.log;
   /** Force log, even if outside of development */
-  logf(...args: any[]) {
-    console.log(...args);
+  logf = console.log;
+  constructor() {
+    if (environment.production)
+      this.log = (...args: any[]) => void 0;
   }
 }
