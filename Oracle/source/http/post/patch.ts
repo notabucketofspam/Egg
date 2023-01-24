@@ -149,7 +149,7 @@ const patches: ((ioredis: Redis, scripts: Record<string, string>,
       try {
         // ver 9 -> 10
         // One membership value per conglomerate
-        const fields = ["ver"];
+        const fields = ["ver", "init"];
         const userFields = ["last-member", "member"];
         const keys = toScriptKeys(game, fields, users, userFields);
         await ioredis.evalsha(scripts["patch"], keys.length, ...keys, users.length, game, ver);

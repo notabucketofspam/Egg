@@ -81,23 +81,25 @@ if gameExists then
     end
   elseif ver == 9 then
     -- One membership value per conglomerate
-    local lastMemberKey = KEYS[2]
-    local memberKey = KEYS[3]
-    local lastMember = (redis.call("HGETALL", lastMemberKey) as Hash).map
-    local member = (redis.call("HGETALL", memberKey) as Hash).map
-    redis.call("DEL", lastMemberKey)
-    redis.call("DEL", memberKey)
-    -- Check if the keys are empty
-    if next(lastMember) ~= nil then
-    redis.call("HSET", lastMemberKey, "Cathy", lastMember["Cathy:BEER"], "Terri", lastMember["Terri:TIME"],
-      "Gary", lastMember["Gary:GPU"], "Doug", lastMember["DOUG:CANN"])
-    else
-      redis.call("HSET", lastMemberKey, "Cathy", "0", "Terri", "0", "Gary", "0", "Doug", "0")
+    local initKey = KEYS[2]
+    -- User fields are: last-member, member
+    local function getKey(i: number, key: string): string 
+      if key == "last-member" then
+        return KEYS[1 + 2*i as integer]
+      elseif key == "member" then
+        return KEYS[2 + 2*i as integer]
+      end
     end
-    if next(member) ~= nil then
-      redis.call("HSET", memberKey, "Cathy", member["Cathy:BEER"], "Terri", member["Terri:TIME"],
-        "Gary", member["Gary:GPU"], "Doug", member["DOUG:CANN"])
-    else
+    local zusers = redis.call("ZRANGE", initKey, "0", ARGV[1]) as {string}
+    for i = 1, userCount do
+      local lastMemberKey = getKey(i, "last-member")
+      local memberKey = getKey(i, "member")
+      local lastMember = (redis.call("HGETALL", lastMemberKey) as Hash).map
+      local member = (redis.call("HGETALL", memberKey) as Hash).map
+      redis.call("DEL", lastMemberKey)
+      redis.call("DEL", memberKey)
+      -- Reset the keys entirely
+      redis.call("HSET", lastMemberKey, "Cathy", "0", "Terri", "0", "Gary", "0", "Doug", "0")
       redis.call("HSET", memberKey, "Cathy", "0", "Terri", "0", "Gary", "0", "Doug", "0")
     end
   elseif ver == 10 then
