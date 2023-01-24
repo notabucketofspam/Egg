@@ -13,7 +13,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     const round = fromHgetall(await ioredis.hgetall(`game:${data.game}:round`));
     const messages: Messages = {
       cmd: "message",
-      data: {}
+      events: {}
     };
     // Do round update
     let readyJson = "";
@@ -198,7 +198,7 @@ class Message {
 }
 type Messages = {
   cmd: "message",
-  data: Record<string, Message>
+  events: Record<string, Message>
 };
 /**
  * Post a message to the game's message log
@@ -206,9 +206,9 @@ type Messages = {
 function postMessage(game: string, ioredis: Util["ioredis"],
   messages: Messages, message: Message) {
   let time = Date.now();
-  while (typeof messages.data[String(time)] !== "undefined")
+  while (typeof messages.events[String(time)] !== "undefined")
     time += 1;
-  messages.data[String(time)] = message;
+  messages.events[String(time)] = message;
   const messageJson = JSON.stringify(message);
   ioredis.hset(`game:${game}:messages`, time, messageJson);
 }
