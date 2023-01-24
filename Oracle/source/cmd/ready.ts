@@ -155,7 +155,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
         partial["can-trade"] = endRound["can-trade"];
         const message = new Message(round, newPhase);
         message.data["can-trade"] = endRound["can-trade"];
-        message.data["cannot-trade"] = zusers.filter(user => canTrade.includes(user));
+        message.data["cannot-trade"] = zusers.filter(user => !canTrade.includes(user));
         postMessage(data.game, ioredis, messages, message);
       }
       if (endRound["good-will"]) {
