@@ -89,9 +89,9 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       postMessage(data.game, ioredis, messages, message);
       // Compute next stock price and either hold it until next phase
       // or overwrite current stock price
-      const fields2 = ["price", "next-price", "delta", "pw", "index"];
+      const fields2 = ["price", "next-price", "delta", "pw", "index", "last-time"];
       const keys2 = toScriptKeys(data.game, fields2).concat(trade.list.map(value => value.key));
-      const argv = ["0", data.game, String(newPhase), String(fields2.length + 1), "unused",
+      const argv = ["0", data.game, String(newPhase), String(fields2.length + 1), "unused", "unused2",
         ...trade.list.map(value => value.json)];
       const stockPriceJson = await ioredis.evalsha(scripts["stock-price"], keys2.length, ...keys2, ...argv) as string;
       if (newPhase === 4) {

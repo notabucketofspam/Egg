@@ -13,7 +13,7 @@ export async function exec(req: Request, res: Response) {
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as Delete;
     const fields = ["index", "users", "pledge", "can-trade", "pa", "cash", "init", "second-init",
-      "price", "delta", "pw", "round", "ready", "ver", "next-price", "soup", "messages"];
+      "price", "delta", "pw", "round", "ready", "ver", "next-price", "soup", "messages", "last-time"];
     const users = await ioredis.smembers(`game:${data.game}:users`);
     const userFields = ["last-member", "cart-json", "member", "offers-json", "own"];
     const keys = toScriptKeys(data.game, fields, users, userFields);

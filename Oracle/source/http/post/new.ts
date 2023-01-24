@@ -13,7 +13,7 @@ export async function exec(req: Request, res: Response) {
     const gameId = Date.now().toString(16).padStart(14, "0");
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as New;
-    const fields = ["index", "price", "delta", "pw", "round", "ver", "next-price", "soup"];
+    const fields = ["index", "price", "delta", "pw", "round", "ver", "next-price", "soup", "last-time"];
     const keys = toScriptKeys(gameId, fields);
     await ioredis.evalsha(scripts["new"], keys.length, ...keys, 0, gameId, `game:${gameId}:trade:`);
     try {

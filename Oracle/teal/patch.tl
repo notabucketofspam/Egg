@@ -91,6 +91,10 @@ if gameExists then
       "Gary", lastMember["Gary:GPU"], "Doug", lastMember["DOUG:CANN"])
     redis.call("HSET", memberKey, "Cathy", member["Cathy:BEER"], "Terri", member["Terri:TIME"],
       "Gary", member["Gary:GPU"], "Doug", member["DOUG:CANN"])
+  elseif ver == 10 then
+    -- Add last-time
+    local time = (redis.call("TIME") as {string})[1]
+    redis.call("SET", KEYS[2], time)
   end
   -- increment version ###
   redis.call("INCR", verKey)

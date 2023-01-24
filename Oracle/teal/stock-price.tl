@@ -8,12 +8,14 @@ local nextPriceKey = KEYS[2]
 local deltaKey = KEYS[3]
 local pwKey = KEYS[4]
 local indexKey = KEYS[5]
+local lastTimeKey = KEYS[6]
 -- Remaining keys refer to trades
 local userCount = tonumber(ARGV[1])
 local gameKey = ARGV[2]
 local phase = ARGV[3]
 local startKeys = tonumber(ARGV[4]) as integer
 local unused = ARGV[5]
+local unused2 = ARGV[6]
 -- Remaining args are trade JSON strings
 local record Trade
   time: number
@@ -82,7 +84,7 @@ if gameExists then
     -- Parse search results into trade objects
     local results: {string: {Trade}} = {}
     local pwmult: {string: number} = {}
-    local lastTime: number
+    local lastTime = redis.call("INCRBY", lastTimeKey, "0") as integer
     for con, list in pairs(search) do
       table.remove(list, 1)
       results[con] = map(list, function(itemkey: string): Trade
@@ -98,14 +100,6 @@ if gameExists then
       table.sort(results[con], function(a: Trade, b: Trade): (boolean)
         return a.time > b.time
       end)
-      -- Get last time that any trade for any con was made
-      for i = 1, #results[con] do
-        local thisTime = results[con][i].time
-        if thisTime ~= time and (lastTime == nil or lastTime < thisTime) then
-          lastTime = thisTime
-          break
-        end
-      end
       -- Also, calculate PW price volatility multiplier
       local pwsum = 0.0
       for stock, fv in pairs(pw) do
@@ -133,7 +127,7 @@ if gameExists then
           if otherTrade.com == com then
             com_delta = otherTrade.total
           end
-        elseif lastTime ~= nil and otherTrade.time == lastTime then
+        elseif otherTrade.time == lastTime then
           -- Deltas for last turn
           con_lastdelta = con_lastdelta + otherTrade.total
           if otherTrade.com == com then
@@ -149,6 +143,8 @@ if gameExists then
       local newprice = tonumber(price[stock])*finalmult
       redis.call("HSET", nextPriceKey, stock, tostring(newprice))
     end
+    -- Reset last-time to the current time
+    redis.call("SET", lastTimeKey, timeString)
     -- Return value isn't used in this phase
     send = redis.status_reply("OK")
   elseif phase == "4" then
