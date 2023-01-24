@@ -46,6 +46,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       if (dividends["cash"]) {
         partial["cash"] = dividends["cash"];
         const message = new Message(round, newPhase);
+        message.data["dividends"] = {};
         for (const [user, value] of Object.entries(cash))
           message.data["dividends"][user] = dividends["cash"][user] - value;
         postMessage(data.game, ioredis, messages, message);
