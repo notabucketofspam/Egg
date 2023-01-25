@@ -19,7 +19,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     const keys = toScriptKeys(data.game, fields, users, userFields);
     const userCount = data.user && data.userField ? 1 : 0;
     const partialJson = await ioredis.evalsha(scripts["debug"], keys.length, ...keys,
-      userCount, data.game, String(data.user), field, data.prop, data.value);
+      userCount, data.game, String(data.user), field, data.prop, data.value) as string;
     for (const [aliveClient, clientMeta] of aliveClients)
       if (clientMeta.game === data.game)
         aliveClient.send(partialJson);
