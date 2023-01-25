@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "update-dependencies": "ncu -u && npm i"
+    "update-dependencies": "ncu -u && npm i",
+    "delete-dependencies": "npm cache clean --force && RD /Q /S node_modules && RD /Q /S .angular"
   },
   "private": true,
   "dependencies": {
