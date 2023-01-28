@@ -2,3 +2,4 @@ build/***
 html/***
 lua/***
 package.json
+passwd.txt
