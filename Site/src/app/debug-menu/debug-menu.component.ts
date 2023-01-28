@@ -36,6 +36,7 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
   Number = Number;
   String = String;
   initList: string[] = [];
+  @Output() passwdEE = new EventEmitter<Record<string, string|boolean>>();
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["state"] && changes["state"].currentValue["users"]) {
@@ -73,11 +74,26 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
     const userField = this.debugForm.controls["userField"].value;
     const prop = this.debugForm.controls["prop"].value;
     let value = this.debugForm.controls["value"].value;
-    // Special case for soup
-    if (field === "soup")
+    if (field === "passwd") {
+      // change-passwd is a different command from debug, but uses the debug form
+      // for convenience
+      if (prop !== null || value !== null) {
+        const form = {
+          cmd: Cmd.ChangePasswd,
+          game: this.game,
+          field,
+          prop: Boolean(prop),
+          value: String(value)
+        };
+        this.passwdEE.emit(form);
+        this.debugForm.reset();
+        return;
+      }
+    } else if (field === "soup") {
+      // Special case for soup
       value = "false";
-    // Other special case for passwd (which either value or prop may be null, but not both)
-    if (field !== null && (prop !== null && value !== null || field === "passwd")) {
+    }
+    if (field !== null && prop !== null && value !== null) {
       const form: DebugForm = {
         cmd: Cmd.Debug,
         game: this.game,
@@ -85,8 +101,6 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
         prop: String(prop),
         value: String(value)
       };
-      if (field === "passwd")
-        form.prop = String(Boolean(prop));
       if (user !== null && userField !== null) {
         form.user = user;
         form.userField = userField;

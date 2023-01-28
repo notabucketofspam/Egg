@@ -59,7 +59,7 @@
   [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"
   [acceptedOffers]="acceptedOffers" [projected]="projected"></app-cash>
   <app-debug-menu appMenu [state]="state" (debugEE)="debug($event)" [game]="game"
-  [stateSubjects]="stateSubjects"></app-debug-menu>
+  [stateSubjects]="stateSubjects" (passwdEE)="changePasswd($event)"></app-debug-menu>
   <!--<app-cart appMenu [cart]="cart" (cartEE)="removeItem()" [state]="state" [localSubjects]="localSubjects"
   [user]="user" [stateSubjects]="stateSubjects"></app-cart>-->
   <app-trade-offer appMenu [state]="state" [user]="user"

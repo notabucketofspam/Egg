@@ -62,6 +62,7 @@ export class GameComponent implements OnInit, OnDestroy {
     const lastGame = localStorage.getItem("lastGame")!;
     if (!lastGame) {
       this.next({ cmd: Cmd.Load, err: "ESTORAGE", why: "Error reading from localStorage" });
+      return;
     }
     [this.game, this.user, this.passwd] = JSON.parse(lastGame);
     this.title.setTitle(`Game ${this.game} | Eggonomics`);
@@ -148,6 +149,11 @@ export class GameComponent implements OnInit, OnDestroy {
       case Cmd.Disconnect: {
         // Alert user of disconnect
         this.next({ cmd: Cmd.Disconnect, err: "EDC", why: (value as Disconnect).reason });
+        break;
+      }
+      case Cmd.ChangePasswd: {
+        this.passwd = (value as ChangePasswd).passwd;
+        localStorage.setItem("lastGame", JSON.stringify([this.game, this.user, this.passwd]));
         break;
       }
       default: {
@@ -294,5 +300,8 @@ export class GameComponent implements OnInit, OnDestroy {
   modifyOffer() {
     this.localSubjects["accepted-offers"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:accepted-offers`, JSON.stringify(this.acceptedOffers));
+  }
+  changePasswd($event: any) {
+    this.websocket.nextJ($event);
   }
 }

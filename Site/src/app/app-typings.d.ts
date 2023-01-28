@@ -14,7 +14,8 @@ declare const enum Cmd {
   Member = "member",
   Raise = "raise",
   Reload = "reload",
-  Messages = "message"
+  Messages = "message",
+  ChangePasswd = "change-passwd"
 }
 declare type Next = {
   cmd: Cmd,
@@ -69,6 +70,10 @@ declare interface NewGame extends Next {
 declare interface Disconnect extends Next {
   cmd: Cmd.Disconnect;
   reason: string;
+}
+declare interface ChangePasswd extends Next {
+  cmd: Cmd.ChangePasswd;
+  passwd: string;
 }
 declare interface CartItem {
   id: string;
