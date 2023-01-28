@@ -76,6 +76,7 @@ if gameExists then
     if userCash < 0 then
       -- Game glitched somehow, so forgive the player
       redis.call("HSET", cashKey, user, "300")
+      redis.call("HSET", pledgeKey, user, "0")
       redis.call("SADD", canTradeKey, user)
       do break end
     end
