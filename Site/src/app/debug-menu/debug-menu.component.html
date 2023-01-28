@@ -379,7 +379,7 @@
     </ng-container>
     <ng-container *ngSwitchCase="'passwd'">
       Current value:
-      <ng-container *ngIf="this.passwd; else noPasswd">
+      <ng-container *ngIf="passwd; else noPasswd">
         {{this.passwd}}
       </ng-container>
       <ng-template #noPasswd>
@@ -393,7 +393,7 @@
       Delete:
       <input type="checkbox" formControlName="prop" />
       <br />
-      <button type="submit" [disabled]="(debugForm.controls['value'].value===null||debugForm.controls['value'].value.trim().length===0)&&(debugForm.controls['prop'].value===null||String(debugForm.controls['prop'].value)==='false')||(debugForm.controls['value'].value!==null&&debugForm.controls['value'].value.trim().length!==0)&&(debugForm.controls['prop'].value!==null&&String(debugForm.controls['prop'].value)==='true')">Submit</button>
+      <button type="submit" [disabled]="(!passwd&&debugForm.controls['prop'].value!==null&&String(debugForm.controls['prop'].value)==='true')||(debugForm.controls['value'].value===null||debugForm.controls['value'].value.trim().length===0)&&(debugForm.controls['prop'].value===null||String(debugForm.controls['prop'].value)==='false')||(debugForm.controls['value'].value!==null&&debugForm.controls['value'].value.trim().length!==0)&&(debugForm.controls['prop'].value!==null&&String(debugForm.controls['prop'].value)==='true')">Submit</button>
     </ng-container>
     <ng-container *ngSwitchDefault></ng-container>
   </ng-container>
