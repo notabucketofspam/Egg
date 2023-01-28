@@ -61,6 +61,10 @@ if gameExists then
   local newPaTotal = 0.0
   for i = 1 as integer, #zusers do repeat
     local user = zusers[i]
+    local userPa = tonumber(pa[user])
+    -- PA will be at least as large as it was when it started the phase; it needs
+    -- to be a positive value for calculating good will
+    newPaTotal = newPaTotal + userPa
     local userPledge = tonumber(pledge[user])
     -- Skip this user if they didn't pledge enough this round
     if userPledge < 0.01 then
@@ -69,7 +73,12 @@ if gameExists then
       do break end
     end
     local userCash = tonumber(cash[user])
-    local userPa = tonumber(pa[user])
+    if userCash < 0 then
+      -- Game glitched somehow, so forgive the player
+      redis.call("HSET", cashKey, user, "300")
+      redis.call("SADD", canTradeKey, user)
+      do break end
+    end
     local userLastCash = tonumber(lastCash[user])
     local lastMemberKey = getKey(i, "last-member")
     local lastMember = (redis.call("HGETALL", lastMemberKey) as Hash).map
@@ -153,10 +162,13 @@ if gameExists then
   -- Determine who wins good will
   local goodwillWinner: string
   local highestContribution = 0.0
-  for user, contribution in pairs(metPledge) do
-    if contribution > highestContribution then
-      goodwillWinner = user
-      highestContribution = contribution
+  -- People have to have pledged in order to win
+  if next(metPledge) ~= nil then
+    for user, contribution in pairs(metPledge) do
+      if contribution > highestContribution then
+        goodwillWinner = user
+        highestContribution = contribution
+      end
     end
   end
   if goodwillWinner ~= nil then
