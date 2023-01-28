@@ -21,6 +21,7 @@
     <option [ngValue]="'ver'">ver</option>
     <option [ngValue]="'global-ver'">global-ver</option>
     <option [ngValue]="'soup'">soup</option>
+    <option [ngValue]="'passwd'">passwd</option>
   </select>
   <br />
   <ng-container [ngSwitch]="debugForm.controls['field'].value">
@@ -374,10 +375,25 @@
       New value:
       <input type="number" formControlName="value" placeholder="100" min="0" step="100" />
       <br />
-      Yes:
+      <button type="submit" [disabled]="debugForm.controls['value'].value===null||Number(debugForm.controls['value'].value)<0">Submit</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'passwd'">
+      Current value:
+      <ng-container *ngIf="this.passwd; else noPasswd">
+        {{this.passwd}}
+      </ng-container>
+      <ng-template #noPasswd>
+        <i>none</i>
+      </ng-template>
+      <br />
+      New password:
+      <input type="text" formControlName="value" placeholder="Enter text" pattern="^\S*\S$" />
+      <span></span>
+      <br />
+      Delete:
       <input type="checkbox" formControlName="prop" />
       <br />
-      <button type="submit" [disabled]="debugForm.controls['value'].value===null||debugForm.controls['prop'].value===null||String(debugForm.controls['prop'].value)==='false'||Number(debugForm.controls['value'].value)<0">Submit</button>
+      <button type="submit" [disabled]="(debugForm.controls['value'].value===null||debugForm.controls['value'].value.trim().length===0)&&(debugForm.controls['prop'].value===null||String(debugForm.controls['prop'].value)==='false')||(debugForm.controls['value'].value!==null&&debugForm.controls['value'].value.trim().length!==0)&&(debugForm.controls['prop'].value!==null&&String(debugForm.controls['prop'].value)==='true')">Submit</button>
     </ng-container>
     <ng-container *ngSwitchDefault></ng-container>
   </ng-container>

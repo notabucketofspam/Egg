@@ -38,3 +38,6 @@ dt {
 dd {
   margin-left: 60px;
 }
+button {
+  width: 100%;
+}

@@ -14,6 +14,7 @@ import { WebSocketService } from '../websocket.service';
 export class GameComponent implements OnInit, OnDestroy {
   game!: string;
   user!: string;
+  passwd?: string;
   subscriptions: Record<string, Subscription> = {};
   messages: string[] = [];
   state = {} as State;
@@ -57,8 +58,12 @@ export class GameComponent implements OnInit, OnDestroy {
     private console: ConsoleService) { }
   ngOnInit(): void {
     // lastGame is guaranteed to be non-null, because it was set in storage immediately before routing here
+    // Or, at least, that's what's supposed to happen...
     const lastGame = localStorage.getItem("lastGame")!;
-    [this.game, this.user] = JSON.parse(lastGame);
+    if (!lastGame) {
+      this.next({ cmd: Cmd.Load, err: "ESTORAGE", why: "Error reading from localStorage" });
+    }
+    [this.game, this.user, this.passwd] = JSON.parse(lastGame);
     this.title.setTitle(`Game ${this.game} | Eggonomics`);
     const next = (value: WebSocketMessage) => this.next(JSON.parse(value as string));
     // Load from localStorage
@@ -75,7 +80,10 @@ export class GameComponent implements OnInit, OnDestroy {
     // Prepare WebSocket
     this.subscriptions["alive"] = this.websocket.aliveSubject.pipe(takeUntil(this.destroyer)).subscribe(alive => {
       if (alive) {
-        this.websocket.nextJ({ cmd: Cmd.Load, game: this.game, user: this.user });
+        const toLoad: Record<string, string> = { cmd: Cmd.Load, game: this.game, user: this.user };
+        if (this.passwd)
+          toLoad["passwd"] = this.passwd;
+        this.websocket.nextJ(toLoad);
       } else {
         this.next({ cmd: Cmd.Disconnect, err: "ENOWSS", why: "WebSocket connection closed; reload page to reopen." });
       }

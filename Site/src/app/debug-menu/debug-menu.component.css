@@ -7,3 +7,7 @@ button.Action {
 button.Action:hover {
   background-color: #dcc;
 }
+input:invalid + span::before {
+  font-size: 80%;
+  content: "\274C";
+}

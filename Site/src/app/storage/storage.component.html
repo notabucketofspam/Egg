@@ -1,45 +1,102 @@
 <div class="StorageDiv">
   <div id="storage-inputs-div">
     <form [formGroup]="storageForm" (ngSubmit)="onSubmit()" class="Form">
-      <b>Join online game...</b>
-      <br />
-      <label for="key-input">Game: </label>
-      <input id="key-input" type="text" formControlName="game" />
-      <br />
-      <label for="value-input">User: </label>
-      <input id="value-input" type="text" formControlName="user" />
-      <br />
-      <button type="submit" [disabled]="!storageForm.valid">
-        Continue <span class="Underline">old</span> game
-      </button>
-      <button type="submit"
-              [disabled]="this.storageForm.controls['game'].valid||!this.storageForm.controls['user'].valid">
-        Create <span class="Underline">new</span> game
-      </button>
-      <br />
-      <button type="submit"
-              [disabled]="!this.lastGame||!this.lastUser||this.storageForm.controls['game'].valid||this.storageForm.controls['user'].valid">
-        Continue <span class="Underline">last</span> game
-      </button>
-      <button type="submit"
-              [disabled]="this.storageForm.valid||!this.storageForm.controls['game'].valid"
-              (click)="this.storageForm.controls['delete'].setValue(true)">
-        Delete <span class="Underline">this</span> game
-      </button>
-      <br />
-      <button type="submit" [disabled]="!storageForm.valid"
-              (click)="this.storageForm.controls['remove-user'].setValue(true)">
-        Remove <span class="Underline">that</span> user
-      </button>
+      <table>
+        <thead>
+          <tr>
+            <td colspan="2">
+              <b>Join online game...</b>
+            </td>
+          </tr>
+        </thead>
+        <tr>
+          <td>
+            Game:
+          </td>
+          <td>
+            <input id="key-input" type="text" formControlName="game" />
+            <sup appTooltip
+                 [options]="[{expr:true,text:'To create a new game, input only a username\nTo load an old game, input both the game ID and your username\nTo delete a game, input only the game ID'}]">
+              ?
+            </sup>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            User:
+          </td>
+          <td>
+            <input id="value-input" type="text" formControlName="user" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Password:
+          </td>
+          <td>
+            <input id="passwd-input" type="text" formControlName="passwd" placeholder="Optional" />
+            <sup appTooltip
+              [options]="[{expr:true,text:'You can create a new game without a password, but some games might require a password to join'}]">
+              ?
+            </sup>
+          </td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td>
+            <button type="submit" [disabled]="!storageForm.valid">
+              Continue <span class="Underline">old</span> game
+            </button>
+          </td>
+          <td>
+            <button type="submit"
+                    [disabled]="this.storageForm.controls['game'].valid||!this.storageForm.controls['user'].valid">
+              Create <span class="Underline">new</span> game
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="submit"
+                    [disabled]="!this.lastGame||!this.lastUser||this.storageForm.controls['game'].valid||this.storageForm.controls['user'].valid">
+              Continue <span class="Underline">last</span> game
+            </button>
+          </td>
+          <td>
+            <button type="submit"
+                    [disabled]="this.storageForm.valid||!this.storageForm.controls['game'].valid"
+                    (click)="this.storageForm.controls['delete'].setValue(true)">
+              Delete <span class="Underline">this</span> game
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="submit" [disabled]="!storageForm.valid"
+                    (click)="this.storageForm.controls['remove-user'].setValue(true)">
+              Remove <span class="Underline">that</span> user
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td><br /></td>
+        </tr>
+        <tr>
+          <td>
+            <button type="button" (click)="getStorage()">Get local games</button>
+          </td>
+          <td>
+            <button type="button" (click)="clearStorage()">Clear local games</button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="button" (click)="onlineListEE.emit()">List online games</button>
+          </td>
+        </tr>
+      </table>
     </form>
-    <br />
-    <div class="StorageDiv">
-      <button (click)="getStorage()">Get local games</button>
-      <button (click)="clearStorage()">Clear local games</button>
-    </div>
-    <div class="StorageDiv">
-      <button (click)="onlineListEE.emit()">List online games</button>
-    </div>
   </div>
   <div id="lists">
     <div *ngIf="showLists['online']">

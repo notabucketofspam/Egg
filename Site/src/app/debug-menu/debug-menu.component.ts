@@ -10,6 +10,7 @@ import { ReplaySubject, Subject, Subscription, takeUntil } from 'rxjs';
 export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
   @Input() game!: string;
   @Input() state!: State;
+  @Input() passwd?: string;
   @Input() stateSubjects!: Record<string, Subject<void>>;
   @Output() debugEE = new EventEmitter<DebugForm>();
   debugForm = new FormGroup({
@@ -71,8 +72,12 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
     const user = this.debugForm.controls["user"].value;
     const userField = this.debugForm.controls["userField"].value;
     const prop = this.debugForm.controls["prop"].value;
-    const value = this.debugForm.controls["value"].value;
-    if (field !== null && prop !== null && value !== null) {
+    let value = this.debugForm.controls["value"].value;
+    // Special case for soup
+    if (field === "soup")
+      value = "false";
+    // Other special case for passwd (which either value or prop may be null, but not both)
+    if (field !== null && (prop !== null && value !== null || field === "passwd")) {
       const form: DebugForm = {
         cmd: Cmd.Debug,
         game: this.game,
@@ -80,6 +85,8 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
         prop: String(prop),
         value: String(value)
       };
+      if (field === "passwd")
+        form.prop = String(Boolean(prop));
       if (user !== null && userField !== null) {
         form.user = user;
         form.userField = userField;

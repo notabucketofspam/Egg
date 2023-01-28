@@ -2,11 +2,17 @@
   <h1 class="Ultra">Eggonomics</h1>
   <img src="/assets/EggLogoV3.png" style="height: 80px; width: auto;">
   <div class="Flex ColumnReverse">
-    <div class="Flex Row">
-      <b>Game: {{ game }}</b>
-      <button id="exit-button" routerLink="">Exit</button>
-    </div>
-    <b>User: {{ user }}</b>
+    <table>
+      <tr>
+        <td><b>User:</b></td>
+        <td><b>{{ user }}</b></td>
+      </tr>
+      <tr>
+        <td><b>Game:</b></td>
+        <td><b>{{ game }}</b></td>
+        <td><button id="exit-button" routerLink="">Exit</button></td>
+      </tr>
+    </table>
   </div>
 </div>
 <ng-container>
@@ -29,6 +35,16 @@
       </div>
       <div *ngSwitchCase="'EOLDVER'">
         <button (click)="patch()">Apply patch</button>
+      </div>
+      <div *ngSwitchCase="'ESTORAGE'">
+        Return to home and load again.
+        <br />
+        <button routerLink="">Exit</button>
+      </div>
+      <div *ngSwitchCase="'EPASSWD'">
+        Return to home and enter the correct password.
+        <br />
+        <button routerLink="">Exit</button>
       </div>
       <div *ngSwitchDefault>
         <!--<button routerLink="">Exit</button>-->
