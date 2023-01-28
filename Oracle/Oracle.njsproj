@@ -83,6 +83,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="old\cmd\add-user.ts" />
     <TypeScriptCompile Include="old\cmd\patch.ts" />
+    <TypeScriptCompile Include="source\cmd\change-passwd.ts" />
     <TypeScriptCompile Include="source\cmd\debug.ts" />
     <TypeScriptCompile Include="old\cmd\delete.ts" />
     <TypeScriptCompile Include="old\cmd\new.ts" />
