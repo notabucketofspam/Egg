@@ -72,7 +72,8 @@ if gameExists then
       -- prop is ignored here, since strings don't have sub-fields like hash / set
       redis.call("SET", debugKey, value)
       -- Don't check userCount, since no user sub-fields have type string
-      partial[fieldname] = value
+      -- All strings in State are actually numbers, so parse accordingly
+      partial[fieldname] = tonumber(value)
       send = redis.status_reply(cjson.encode(partial))
     elseif keyType == "set" then
       -- Add / remove set member, or delete set entirely
