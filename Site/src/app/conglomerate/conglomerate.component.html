@@ -34,7 +34,7 @@
         </div>
         <div class="Flex Center">
           <button type="submit" class="Flex Center Form Submit Large"
-                  [disabled]="ownsStocks===false||memberForm.controls['yes'].value===null||memberForm.controls['yes'].value===false||!changeMemberPrice||!state.user||state.user[user].member[conglomerate]===3||!state.round||state.round.phase!==4||state.cash[user]<changeMemberPrice">
+                  [disabled]="ownsStocks===false||memberForm.controls['yes'].value===null||memberForm.controls['yes'].value===false||!changeMemberPrice||!state.user||state.user[user].member[conglomerate]===3||!state.round||state.round.phase!==4||!projected||projected.cash[user]<changeMemberPrice">
             Submit
           </button>
         </div>
