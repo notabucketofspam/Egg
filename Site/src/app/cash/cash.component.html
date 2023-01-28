@@ -14,11 +14,11 @@
       <td class="Right">{{state.cash[username] | currency}}</td>
       <td class="Right">
         <ng-container *ngIf="state&&state.round&&state.round.phase===3; else notPhase3">
-          <abbr style="text-decoration: none;"
-            title="Cannot calculate projected cash in this phase, as it relies on (intentionally hidden) player input.">
+          <span appTooltip
+                [options]="[{expr:true,text:'Cannot calculate projected cash in this phase, as it relies on (intentionally hidden) player input'}]">
             <span class="Strikethrough">{{projected.cash[username] | currency}}</span>
             <sup>?</sup>
-          </abbr>
+          </span>
         </ng-container>
         <ng-template #notPhase3>
           {{projected.cash[username] | currency}}
