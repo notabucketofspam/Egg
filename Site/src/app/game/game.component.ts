@@ -153,7 +153,10 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       case Cmd.ChangePasswd: {
         this.passwd = (value as ChangePasswd).passwd;
-        localStorage.setItem("lastGame", JSON.stringify([this.game, this.user, this.passwd]));
+        const toSet = [this.game, this.user];
+        if (this.passwd)
+          toSet.push(this.passwd)
+        localStorage.setItem("lastGame", JSON.stringify(toSet));
         break;
       }
       default: {
