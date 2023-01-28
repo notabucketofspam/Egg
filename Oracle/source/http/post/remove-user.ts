@@ -4,7 +4,8 @@ import { Request, Response } from "express";
 type RemoveUser = {
   cmd: "remove-user",
   game: string,
-  user: string
+  user: string,
+  passwd?: string
 };
 export const cmd = "remove-user";
 export const method = "post";
@@ -13,6 +14,14 @@ export async function exec(req: Request, res: Response) {
   try {
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as RemoveUser;
+    // Check game password
+    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
+    if (gamePasswd !== null) {
+      const mainPasswd = await ioredis.get("main-passwd");
+      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
+        throw new Error("EPASSWD");
+      }
+    }
     const fields = ["users", "ready", "pledge", "can-trade", "pa", "cash", "init"];
     const users = [data.user];
     const userFields = ["last-member", "last-own", "member", "offers", "own"];

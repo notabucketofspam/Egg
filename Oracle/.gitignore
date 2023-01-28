@@ -10,3 +10,5 @@ httpd-private-key
 /lua/**
 # HTML temporary files
 /html/temp/**
+# Redis skeleton key
+passwd.txt

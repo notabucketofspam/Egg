@@ -127,6 +127,14 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
           why: "Wrong phase for operation", proof
         });
       }
+      case "EPASSWD": {
+        return JSON.stringify({
+          cmd,
+          err: err.message,
+          why: "Missing or invalid password for game",
+          proof
+        });
+      }
       default: {
         // Unknown error
         return JSON.stringify({ cmd, err: err.name, why: err.message, proof });

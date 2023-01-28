@@ -3,7 +3,8 @@ import { fromHgetall, fromZrange, fromScriptError, Util } from "../Util.js";
 type Load = {
   cmd: "load",
   game: string,
-  user: string
+  user: string,
+  passwd?: string
 };
 export const cmd = "load";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Load) {
@@ -15,9 +16,19 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
     cmd: "load",
     user: { }
   };
+  // Check that game exists
   const games = await ioredis.smembers("games");
   if (!games.includes(data.game))
     return client.send(fromScriptError("load", new Error("ENOGAME"), { games, game: data.game }));
+  // Check for game password
+  const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
+  if (gamePasswd !== null) {
+    const mainPasswd = await ioredis.get("main-passwd");
+    if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
+      return client.send(fromScriptError("load", new Error("EPASSWD")));
+    }
+  }
+  // Check that user exists
   send.users = await ioredis.smembers(`game:${data.game}:users`);
   if (!send.users.includes(data.user))
     return client.send(fromScriptError("load", new Error("ENOUSER"),

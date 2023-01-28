@@ -1,3 +1,7 @@
+// Check for Redis password first
+import path from "node:path";
+import fs from "node:fs";
+const passwd = fs.readFileSync(path.normalize(`${process.cwd()}/passwd.txt`), { encoding: "utf8" });
 // Redis / KeyDB setup (...again)
 import IORedis from "ioredis";
 const ioredis = new IORedis({ lazyConnect: true });
@@ -8,11 +12,10 @@ ioredis.once("error", (err) => {
 await ioredis.connect();
 await Promise.all<void>([
   new Promise<void>(resolve => ioredis.set("global-ver", 11, () => resolve())),
+  new Promise<void>(resolve => ioredis.set("main-passwd", passwd, () => resolve())),
   new Promise<void>(resolve => ioredis.script("FLUSH", () => resolve()))
 ]);
 // Script setup
-import path from "node:path";
-import fs from "node:fs";
 import { fromScriptError, readdirRecursive } from "./Util.js";
 const scripts: Record<string, string> = {};
 do {

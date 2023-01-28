@@ -12,9 +12,12 @@ local verKey = KEYS[6]
 local nextPriceKey = KEYS[7]
 local soupKey = KEYS[8]
 local lastTimeKey = KEYS[9]
+local passwdKey = KEYS[10]
 local userCount = tonumber(ARGV[1])
 local gameId = ARGV[2]
 local indexPrefix = ARGV[3]
+-- passwd may be nil; if so, don't set it in Redis
+local passwd = ARGV[4]
 -- List of conglomerates / stocks (products) and their initial prices / values
 local hsetConglomerates = {
   "Cathy:CREAM", "0", "Cathy:BEER", "0", "Cathy:CRUNCH", "0", "Cathy:ROLL", "0",
@@ -40,6 +43,9 @@ redis.call("HSET", nextPriceKey, unpack(hsetConglomeratesPrice))
 redis.call("SET", soupKey, "0")
 local time = (redis.call("TIME") as {string})[1]
 redis.call("SET", lastTimeKey, time)
+if passwd ~= nil then
+  redis.call("SET", passwdKey, passwd)
+end
 -- Final reply
 send = redis.status_reply("OK")
 return send

@@ -3,7 +3,8 @@ import { Request, Response } from "express";
 // Command
 type Delete = {
   cmd: "delete",
-  game: string
+  game: string,
+  passwd?: string
 };
 export const cmd = "delete";
 export const method = "post";
@@ -12,8 +13,17 @@ export async function exec(req: Request, res: Response) {
   try {
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as Delete;
-    const fields = ["index", "users", "pledge", "can-trade", "pa", "cash", "init", "second-init",
-      "price", "delta", "pw", "round", "ready", "ver", "next-price", "soup", "messages", "last-time"];
+    // Check game password
+    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
+    if (gamePasswd !== null) {
+      const mainPasswd = await ioredis.get("main-passwd");
+      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
+        throw new Error("EPASSWD");
+      }
+    }
+    const fields = ["index", "users", "pledge", "can-trade", "pa", "cash", "init", "last-cash",
+      "price", "delta", "pw", "round", "ready", "ver", "next-price", "soup", "messages", "last-time",
+      "passwd"];
     const users = await ioredis.smembers(`game:${data.game}:users`);
     const userFields = ["last-member", "cart-json", "member", "offers-json", "own"];
     const keys = toScriptKeys(data.game, fields, users, userFields);

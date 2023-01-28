@@ -3,7 +3,8 @@ import { Request, Response } from "express";
 // Command
 type New = {
   cmd: "new",
-  user: string
+  user: string,
+  passwd?: string
 };
 export const cmd = "new";
 export const method = "post";
@@ -13,9 +14,12 @@ export async function exec(req: Request, res: Response) {
     const gameId = Date.now().toString(16).padStart(14, "0");
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as New;
-    const fields = ["index", "price", "delta", "pw", "round", "ver", "next-price", "soup", "last-time"];
+    const fields = ["index", "price", "delta", "pw", "round", "ver", "next-price", "soup", "last-time", "passwd"];
     const keys = toScriptKeys(gameId, fields);
-    await ioredis.evalsha(scripts["new"], keys.length, ...keys, 0, gameId, `game:${gameId}:trade:`);
+    const argv: string[] = ["0", gameId, `game:${gameId}:trade:`];
+    if (data.passwd)
+      argv.push(data.passwd);
+    await ioredis.evalsha(scripts["new"], keys.length, ...keys, ...argv);
     try {
       const fields = ["users", "pledge", "can-trade", "pa", "cash", "init", "last-cash"];
       const users = [data.user];
