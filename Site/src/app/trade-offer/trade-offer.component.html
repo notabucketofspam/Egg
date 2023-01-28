@@ -23,20 +23,22 @@
   </dl>
   <dl class="List" *ngIf="state.user&&state.round.phase===3">
     <ng-template ngFor let-item [ngForOf]="state.user[user].offers" let-i="index">
-      <dt>
-        <span class="ModifyButton Add" (click)="modifyItem(i)" appTooltip
-              [options]="[{text:'You are not on the list of users that can trade! Next time, don\'t fail your pledge!',expr:state&&state['can-trade']&&!state['can-trade'].includes(user)},{text:'Locked in! Can\'t modify your accepted offers once ready; must un-ready to make changes.',expr:state&&state['can-trade']&&state['can-trade'].includes(user)&&state.ready.includes(user)}]"
-              [class.Disabled]="state.ready&&state.ready.includes(user)"
-              [class]="{Add:!acceptedOffersIds.includes(state.user[user].offers[i].id),Remove:acceptedOffersIds.includes(state.user[user].offers[i].id)}">
-          {{acceptedOffersIds.includes(state.user[user].offers[i].id) ? "X" : "+"}}
-        </span>
-        <span [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)" class="ItemNo">Item {{item.id}}</span>
-        <span [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)" style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
-      </dt>
-      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Conglomerate: {{item.con}}</dd>
-      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Company: {{item.com}}</dd>
-      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">To: {{item.rx}}</dd>
-      <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Amount: {{item.ct}}</dd>
+      <ng-container *ngIf="item.ct">
+        <dt>
+          <span class="ModifyButton Add" (click)="modifyItem(i)" appTooltip
+                [options]="[{text:'You are not on the list of users that can trade! Next time, don\'t fail your pledge!',expr:state&&state['can-trade']&&!state['can-trade'].includes(user)},{text:'Locked in! Can\'t modify your accepted offers once ready; must un-ready to make changes.',expr:state&&state['can-trade']&&state['can-trade'].includes(user)&&state.ready.includes(user)}]"
+                [class.Disabled]="state.ready&&state.ready.includes(user)"
+                [class]="{Add:!acceptedOffersIds.includes(state.user[user].offers[i].id),Remove:acceptedOffersIds.includes(state.user[user].offers[i].id)}">
+            {{acceptedOffersIds.includes(state.user[user].offers[i].id) ? "X" : "+"}}
+          </span>
+          <span [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)" class="ItemNo">Item {{item.id}}</span>
+          <span [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)" style="margin-left: auto;" *ngIf="state.price">{{item.ct*state.price[item.con+':'+item.com] | currency}}</span>
+        </dt>
+        <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Conglomerate: {{item.con}}</dd>
+        <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Company: {{item.com}}</dd>
+        <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">To: {{item.rx}}</dd>
+        <dd [class.Accepted]="acceptedOffersIds.includes(state.user[user].offers[i].id)">Amount: {{item.ct}}</dd>
+      </ng-container>
     </ng-template>
   </dl>
 </div>
