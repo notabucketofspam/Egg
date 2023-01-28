@@ -81,9 +81,8 @@ export class DebugMenuComponent implements OnInit, OnDestroy, OnChanges {
         const form = {
           cmd: Cmd.ChangePasswd,
           game: this.game,
-          field,
-          prop: Boolean(prop),
-          value: String(value)
+          del: Boolean(prop),
+          passwd: String(value)
         };
         this.passwdEE.emit(form);
         this.debugForm.reset();
