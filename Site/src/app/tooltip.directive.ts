@@ -20,6 +20,7 @@ export class TooltipDirective implements OnChanges {
           tooltip.span = document.createElement("span");
           tooltip.span.className = "Tooltip";
           tooltip.span.innerText = item.text ? item.text : "sample text";
+          tooltip.span.style.fontFamily = "ITC Legacy Sans Std Book";
           tooltip.delay = item.delay ? item.delay : 5000;
           this.tooltips[index] = tooltip;
         }
