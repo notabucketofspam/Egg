@@ -74,8 +74,9 @@ export class ConglomerateComponent implements OnInit, OnDestroy, OnChanges {
   }
   onSubmit() {
     const yes = this.memberForm.controls["yes"].value;
-    if (yes !== null && yes == true) {
+    if (yes === true) {
       this.memberEE.emit(this.conglomerate);
+      this.memberForm.reset({ yes: false });
     }
   }
   checkOwnsStocks() {
