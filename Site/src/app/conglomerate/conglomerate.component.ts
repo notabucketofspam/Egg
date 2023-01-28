@@ -48,6 +48,7 @@ export class ConglomerateComponent implements OnInit, OnDestroy, OnChanges {
     });
     this.subscriptions["user"] = this.stateSubjects["user"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetChangeMemberPrice();
+      this.checkOwnsStocks();
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
