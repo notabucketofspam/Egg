@@ -15,3 +15,6 @@ th.BorderTop {
   border-top-width: 1px;
   border-top-color: black;
 }
+.Strikethrough {
+  text-decoration-line: line-through;
+}
