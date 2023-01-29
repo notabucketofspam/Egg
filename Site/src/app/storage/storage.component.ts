@@ -24,7 +24,7 @@ export class StorageComponent implements OnInit, OnDestroy {
   storageForm = new FormGroup({
     game: new FormControl("", this.emptyStringValidator),
     user: new FormControl("", this.emptyStringValidator),
-    passwd: new FormControl("", this.emptyStringValidator),
+    passwd: new FormControl("", this.emptyStringValidator2),
     delete: new FormControl(false),
     ["remove-user"]: new FormControl(false)
   });
@@ -69,15 +69,15 @@ export class StorageComponent implements OnInit, OnDestroy {
     }
   }
   onSubmit() {
-    if (this.storageForm.controls["passwd"].valid)
-      this.passwd = this.storageForm.controls["passwd"].value!.trim();
+    if (this.storageForm.controls["passwd"].value && this.storageForm.controls["passwd"].valid)
+      this.passwd = this.storageForm.controls["passwd"].value.trim();
     let cmd: string;
     if (this.storageForm.value.delete) {
       // Delete game
       this.game = this.storageForm.value.game!.trim();
       cmd = Cmd.Delete;
     } else if (this.lastGame && this.lastUser && !this.storageForm.controls['game'].valid
-      && !this.storageForm.controls['user'].valid && !this.storageForm.controls["passwd"].valid) {
+      && !this.storageForm.controls['user'].valid) {
       // Continue last game
       [this.game, this.user, this.passwd] = [this.lastGame, this.lastUser, this.lastPasswd];
       cmd = Cmd.Load;
@@ -114,7 +114,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
-        }).then(res => res.json()).then(this.checkFetchError).then(reply => {
+        }).then(res => res.json()).then(reply => this.checkFetchError(reply)).then(reply => {
           this.game = (reply as NewGame).newGame;
           [this.lastGame, this.lastUser, this.lastPasswd] = [this.game, this.user, this.passwd];
           this.setStorage();
@@ -130,7 +130,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
-        }).then(res => res.json()).then(this.checkFetchError).then(reply => {
+        }).then(res => res.json()).then(reply => this.checkFetchError(reply)).then(reply => {
           let gamesFound = 0;
           const removeGames = (storage: string[][]) => {
             const gameIndex = storage.findIndex(gameSet => gameSet[0] === this.game);
@@ -167,7 +167,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
-        }).then(res => res.json()).then(this.checkFetchError).then(reply => {
+        }).then(res => res.json()).then(reply => this.checkFetchError(reply)).then(reply => {
           const matchedGameIndex = this.storage
             .findIndex(gameSet => gameSet[0] === this.game && gameSet[1] === this.user);
           if (matchedGameIndex >= 0) {
@@ -217,5 +217,9 @@ export class StorageComponent implements OnInit, OnDestroy {
   private emptyStringValidator(control: AbstractControl<string, string>): ValidationErrors | null {
     const trimmedLength = control.value && control.value.trim().length;
     return trimmedLength ? null : { emptyString: { value: control.value }};
+  }
+  private emptyStringValidator2(control: AbstractControl<string, string>): ValidationErrors | null {
+    const trimmedLength = control.value && control.value.trim().length;
+    return (!control.value || trimmedLength) ? null : { emptyString: { value: control.value } };
   }
 }
