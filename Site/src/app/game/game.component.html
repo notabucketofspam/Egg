@@ -46,6 +46,9 @@
         <br />
         <button routerLink="">Exit</button>
       </div>
+      <div *ngSwitchCase="'EDELETE'">
+        <button routerLink="">Exit</button>
+      </div>
       <div *ngSwitchDefault>
         <!--<button routerLink="">Exit</button>-->
         <button (click)="reloadPage()">Reload page</button>
