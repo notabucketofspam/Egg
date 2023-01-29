@@ -81,7 +81,7 @@ if gameExists then
           owningUsersCount = owningUsersCount + 1
         end
       end
-      if totalOwn >= 50 and owningUsersCount >= 3 then
+      if totalOwn >= 30 and owningUsersCount >= userCount/2 then
         redis.call("HSET", pwKey, stock, "2")
         if partial.pw == nil then
           partial.pw = {}

@@ -108,7 +108,7 @@ if gameExists then
           pwsum = pwsum + flavor[fvn]
         end
       end
-      pwmult[con] = pwsum + 1
+      pwmult[con] = (pwsum + 1)*1.3
     end
     -- Process trades with applied mathematics
     for stock in pairs(price) do
