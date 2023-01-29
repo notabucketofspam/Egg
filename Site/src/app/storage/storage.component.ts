@@ -157,6 +157,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           this.showListEE.emit("messages");
           localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
           localStorage.removeItem(`game:${this.game}:user:${this.user}:accepted-offers`);
+          delete this.passwd;
         });
         break;
       }
@@ -186,6 +187,7 @@ export class StorageComponent implements OnInit, OnDestroy {
           this.showListEE.emit("messages");
           localStorage.removeItem(`game:${this.game}:user:${this.user}:cart`);
           localStorage.removeItem(`game:${this.game}:user:${this.user}:accepted-offers`);
+          delete this.passwd;
         });
         break;
       }
