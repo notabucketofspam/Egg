@@ -41,3 +41,7 @@ dd {
 button {
   width: 100%;
 }
+.Locked::after {
+  font-size: 80%;
+  content: "\A0\1F512";
+}

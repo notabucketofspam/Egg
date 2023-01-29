@@ -28,6 +28,7 @@ export class StorageComponent implements OnInit, OnDestroy {
     delete: new FormControl(false),
     ["remove-user"]: new FormControl(false)
   });
+  @Input() lockList?: Record<string, boolean>;
   constructor(private router: Router) { }
   ngOnInit() {
     const games = localStorage.getItem("games")

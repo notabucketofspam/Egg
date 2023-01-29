@@ -103,7 +103,7 @@
       <b>Online games:</b>
       <dl class="List" *ngIf="onlineList">
         <ng-container *ngFor="let game of Object.keys(onlineList)">
-          <dt>{{game}}</dt>
+          <dt [class.Locked]="lockList&&lockList[game]">{{game}}</dt>
           <dd *ngFor="let user of onlineList[game]">{{user}}</dd>
         </ng-container>
       </dl>

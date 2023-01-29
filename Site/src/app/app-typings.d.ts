@@ -26,6 +26,7 @@ declare type Next = {
 declare interface List extends Next {
   cmd: Cmd.Ls;
   games: Record<string, string[]>;
+  locks: Record<string, boolean>;
 }
 declare interface State extends Next {
   cmd: Cmd.Load;

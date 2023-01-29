@@ -16,6 +16,7 @@ export class HomeComponent implements OnDestroy {
     message: false
   };
   onlineList?: Record<string, string[]>;
+  lockList?: Record<string, boolean>;
   listOnlineGames() {
     fetch(environment.cmdUrl, {
       method: "POST",
@@ -26,6 +27,7 @@ export class HomeComponent implements OnDestroy {
       this.showLists["local"] = false;
       this.showLists["messages"] = false;
       this.onlineList = list.games;
+      this.lockList = list.locks;
     });
   }
   ngOnDestroy() { }
