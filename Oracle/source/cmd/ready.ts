@@ -198,7 +198,7 @@ class Message {
 }
 type Messages = {
   cmd: "message",
-  events: Record<string, Message>
+  events: Record<string, string>
 };
 /**
  * Post a message to the game's message log
@@ -208,7 +208,7 @@ function postMessage(game: string, ioredis: Util["ioredis"],
   let time = Date.now();
   while (typeof messages.events[String(time)] !== "undefined")
     time += 1;
-  messages.events[String(time)] = message;
   const messageJson = JSON.stringify(message);
+  messages.events[String(time)] = messageJson;
   ioredis.hset(`game:${game}:messages`, time, messageJson);
 }
