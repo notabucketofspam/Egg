@@ -135,6 +135,14 @@ export function fromScriptError(cmd: string, err?: Error, proof?: Record<string,
           proof
         });
       }
+      case "EDELETE": {
+        return JSON.stringify({
+          cmd,
+          err: err.message,
+          why: "Game deleted from games set",
+          proof
+        });
+      }
       default: {
         // Unknown error
         return JSON.stringify({ cmd, err: err.name, why: err.message, proof });

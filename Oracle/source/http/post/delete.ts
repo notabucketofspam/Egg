@@ -28,10 +28,10 @@ export async function exec(req: Request, res: Response) {
     const userFields = ["last-member", "cart-json", "member", "offers-json", "own"];
     const keys = toScriptKeys(data.game, fields, users, userFields);
     await ioredis.evalsha(scripts["delete"], keys.length, ...keys, users.length, data.game);
-    const disconnectMessage = JSON.stringify({ cmd: "disconnect", reason: "Game deleted from games set" });
+    const deleteMessage = fromScriptError("delete", new Error("EDELETE"));
     for (const [aliveClient, clientMeta] of aliveClients) {
       if (clientMeta.game === data.game) {
-        aliveClient.send(disconnectMessage);
+        aliveClient.send(deleteMessage);
         aliveClient.off("message", () => void 0);
         aliveClient.off("close", () => void 0);
         aliveClient.terminate();
