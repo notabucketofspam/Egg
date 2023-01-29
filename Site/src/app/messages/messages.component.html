@@ -5,66 +5,66 @@
     <span>{{time | date:'YYYY-MM-ddTHH:mm:ssZZZZZ' }}</span>
     <br />
     Round {{String(messages.events[time].round)}}, {{whichPhase[messages.events[time].phase]}}
-  <dl class="List">
-    <ng-container *ngIf="messages.events[time].data['dividends']">
-      <dt>It's payday!</dt>
-      <dd *ngFor="let name of Object.keys(messages.events[time].data['dividends'])">
-        {{name}}: +{{messages.events[time].data['dividends'][name] | currency}}
-      </dd>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['init']">
-      <dt>Initiative has been rolled!</dt>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['trade']">
-      <dt>{{messages.events[time].phase===3?"Stock":"More stock"}} trading has happened!</dt>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['price']">
-      <dt>Stock prices have been updated!</dt>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['pw']">
-      <dt>Public works have been built!</dt>
-      <dd *ngFor="let com of Object.keys(messages.events[time].data['pw'])">
-        {{stockList[com]}}: {{flavor[messages.events[time].data['pw'][com]]}}
-      </dd>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['pledge']">
-      <dt>Pledges have been revealed!</dt>
-      <dd *ngFor="let name of Object.keys(messages.events[time].data['pledge'])">
-        {{name}}: {{messages.events[time].data['pledge'][name] | currency}}
-      </dd>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['soup']!==undefined">
-      <ng-container *ngIf="messages.events[time].data['soup']>0; else noSoup">
-        <dt>Nobody won good will, so the soup gets bigger!</dt>
-        <dd>
-          Soup: {{messages.events[time].data['soup'] | currency}}
+    <dl class="List">
+      <ng-container *ngIf="messages.events[time].data['dividends']">
+        <dt>It's payday!</dt>
+        <dd *ngFor="let name of Object.keys(messages.events[time].data['dividends'])">
+          {{name}}: +{{messages.events[time].data['dividends'][name] | currency}}
         </dd>
       </ng-container>
-      <ng-template #noSoup>
-        <dt>The soup has been consumed!</dt>
-      </ng-template>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['can-trade']&&messages.events[time].data['can-trade'].length>0">
-      <dt>Here are the players that can trade next round:</dt>
-      <dd *ngFor="let name of messages.events[time].data['can-trade']">
-        {{name}}
-      </dd>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['cannot-trade']&&messages.events[time].data['cannot-trade'].length>0">
-      <dt>Here are the players that <i>cannot</i> trade next round:</dt>
-      <dd *ngFor="let name of messages.events[time].data['cannot-trade']">
-        {{name}}
-      </dd>
-    </ng-container>
-    <ng-container *ngIf="messages.events[time].data['good-will']">
-      <dt>A player has won good will!</dt>
-      <dd>
-        Winner: {{messages.events[time].data['good-will']['winner']}}
-      </dd>
-      <dd>
-        Value: {{messages.events[time].data['good-will']['value'] | currency}}
-      </dd>
-    </ng-container>
-  </dl>
+      <ng-container *ngIf="messages.events[time].data['init']">
+        <dt>Initiative has been rolled!</dt>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['trade']">
+        <dt>{{messages.events[time].phase===3?"Stock":"More stock"}} trading has happened!</dt>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['price']">
+        <dt>Stock prices have been updated!</dt>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['pw']">
+        <dt>Public works have been built!</dt>
+        <dd *ngFor="let com of Object.keys(messages.events[time].data['pw'])">
+          {{stockList[com]}}: {{flavor[messages.events[time].data['pw'][com]]}}
+        </dd>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['pledge']">
+        <dt>Pledges have been revealed!</dt>
+        <dd *ngFor="let name of Object.keys(messages.events[time].data['pledge'])">
+          {{name}}: {{messages.events[time].data['pledge'][name] | currency}}
+        </dd>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['soup']!==undefined">
+        <ng-container *ngIf="messages.events[time].data['soup']>0; else noSoup">
+          <dt>Nobody won good will, so the soup gets bigger!</dt>
+          <dd>
+            Soup: {{messages.events[time].data['soup'] | currency}}
+          </dd>
+        </ng-container>
+        <ng-template #noSoup>
+          <dt>The soup has been consumed!</dt>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['can-trade']&&messages.events[time].data['can-trade'].length>0">
+        <dt>Here are the players that can trade next round:</dt>
+        <dd *ngFor="let name of messages.events[time].data['can-trade']">
+          {{name}}
+        </dd>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['cannot-trade']&&messages.events[time].data['cannot-trade'].length>0">
+        <dt>Here are the players that <i>cannot</i> trade next round:</dt>
+        <dd *ngFor="let name of messages.events[time].data['cannot-trade']">
+          {{name}}
+        </dd>
+      </ng-container>
+      <ng-container *ngIf="messages.events[time].data['good-will']">
+        <dt>A player has won good will!</dt>
+        <dd>
+          Winner: {{messages.events[time].data['good-will']['winner']}}
+        </dd>
+        <dd>
+          Value: {{messages.events[time].data['good-will']['value'] | currency}}
+        </dd>
+      </ng-container>
+    </dl>
   </ng-container>
 </div>
