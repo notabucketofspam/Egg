@@ -1,0 +1,12 @@
+dt {
+  margin: auto auto auto 2ch;
+}
+dd {
+  margin: auto auto auto 4ch;
+}
+dd::before, dt::before {
+  content: "\2013\A0";
+}
+dl {
+  margin-bottom: 0px;
+}

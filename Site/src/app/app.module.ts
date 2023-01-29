@@ -20,6 +20,7 @@ import { CashComponent } from './cash/cash.component';
 import { DebugMenuComponent } from './debug-menu/debug-menu.component';
 import { MenuDirective } from './menu.directive';
 import { TooltipDirective } from './tooltip.directive';
+import { MessagesComponent } from './messages/messages.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { TooltipDirective } from './tooltip.directive';
     CashComponent,
     DebugMenuComponent,
     MenuDirective,
-    TooltipDirective
+    TooltipDirective,
+    MessagesComponent
   ],
   imports: [
     BrowserModule,

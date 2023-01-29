@@ -16,7 +16,7 @@ export class GameComponent implements OnInit, OnDestroy {
   user!: string;
   passwd?: string;
   subscriptions: Record<string, Subscription> = {};
-  messages: string[] = [];
+  errorMessages: string[] = [];
   state = {} as State;
   value = {} as Next;
   conglomerates = [["Cathy", "Cash Back Cathy"], ["Terri", "One-Time Terri"],
@@ -53,6 +53,9 @@ export class GameComponent implements OnInit, OnDestroy {
   acceptedOffers: CartItem[] = [];
   projected: Projected = {
     cash: {}
+  };
+  messages: Messages = {
+    events: {}
   };
   constructor(private title: Title, private websocket: WebSocketService,
     private console: ConsoleService) { }
@@ -101,13 +104,13 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   private next(value: Next) {
     this.console.log(value);
-    this.messages.length = 0;
+    this.errorMessages.length = 0;
     this.value = value;
     if (value.err && value.why) {
       // Display error message to user
-      this.messages.push(`cmd: ${value.cmd}`, value.err, value.why);
+      this.errorMessages.push(`cmd: ${value.cmd}`, value.err, value.why);
       if (value.proof)
-        this.messages.push(JSON.stringify(value.proof));
+        this.errorMessages.push(JSON.stringify(value.proof));
       this.ngOnDestroy();
       return;
     }
@@ -126,7 +129,7 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       case Cmd.Messages: {
         // Parse incoming messages
-        this.parseMessages();
+        this.parseMessages(value as MessagesJson);
         break;
       }
       case Cmd.Update: {
@@ -166,8 +169,10 @@ export class GameComponent implements OnInit, OnDestroy {
       }
     }
   }
-  parseMessages() {
-    
+  parseMessages(value: MessagesJson) {
+    for (const [time, event] of Object.entries(value.events)) {
+      this.messages.events[time] = JSON.parse(event);
+    }
   }
   parseOffers() {
     this.state.users.forEach(user => {
@@ -184,8 +189,8 @@ export class GameComponent implements OnInit, OnDestroy {
       body: JSON.stringify({ cmd: Cmd.AddUser, game: this.game, user: this.user })
     }).then(res => res.json()).then((reply: Next) => {
       if (reply.err && reply.why) {
-        this.messages.length = 0;
-        this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why);
+        this.errorMessages.length = 0;
+        this.errorMessages.push(`cmd: ${reply.cmd}`, reply.err, reply.why);
         this.ngOnDestroy();
       } else {
         this.ngOnDestroy();
@@ -286,8 +291,8 @@ export class GameComponent implements OnInit, OnDestroy {
       body: JSON.stringify({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver })
     }).then(res => res.json()).then((reply: Next) => {
       if (reply.err && reply.why) {
-        this.messages.length = 0;
-        this.messages.push(`cmd: ${reply.cmd}`, reply.err, reply.why);
+        this.errorMessages.length = 0;
+        this.errorMessages.push(`cmd: ${reply.cmd}`, reply.err, reply.why);
         this.ngOnDestroy();
       } else {
         this.ngOnDestroy();

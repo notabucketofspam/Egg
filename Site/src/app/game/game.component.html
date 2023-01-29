@@ -17,7 +17,7 @@
 </div>
 <ng-container>
   <div *ngIf="value.err; else conglomeratesTemplate">
-    <div *ngFor="let message of messages">{{ message }}<br /></div>
+    <div *ngFor="let message of errorMessages">{{ message }}<br /></div>
     <div [ngSwitch]="value.err">
       <div *ngSwitchCase="'ENOGAME'">
         <hr />
@@ -54,6 +54,7 @@
   </div>
 </ng-container>
 <ng-template #conglomeratesTemplate>
+  <app-messages appMenu [messages]="messages"></app-messages>
   <!--<app-public-work [state]="state" (raiseEE)="raisePublicWork($event)" [user]="user"></app-public-work>-->
   <app-cash appMenu (reportEE)="reportPledge($event)" [localSubjects]="localSubjects"
   [cart]="cart" [user]="user" [stateSubjects]="stateSubjects" [state]="state"

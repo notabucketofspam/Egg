@@ -92,3 +92,15 @@ declare interface DebugForm {
   prop: string,
   value: string
 }
+interface Message {
+  round: number;
+  phase: number;
+  data: Record<string, any>;
+}
+type Messages = {
+  events: Record<string, Message>
+};
+type MessagesJson = {
+  cmd: Cmd.Messages,
+  events: Record<string, string>
+};
