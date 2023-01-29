@@ -45,7 +45,8 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
       const dividends = JSON.parse(dividendsJson);
       if (dividends["cash"]) {
         partial["cash"] = dividends["cash"];
-        const message = new Message(partial["round"]["round"], newPhase);
+        const newRound = { round: partial["round"]["round"], phase: newPhase };
+        const message = new Message(newRound, newPhase);
         message.data["dividends"] = {};
         for (const [user, value] of Object.entries(cash))
           message.data["dividends"][user] = dividends["cash"][user] - value;
