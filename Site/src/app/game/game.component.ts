@@ -175,9 +175,13 @@ export class GameComponent implements OnInit, OnDestroy {
     }
   }
   parseOffers() {
-    this.state.users.forEach(user => {
-      this.state.user[user].offers = this.state.user[user]["offers-json"].map(offer => JSON.parse(offer));
-    });
+    this.state.user[this.user].offers = this.state.user[this.user]["offers-json"]
+      .map(offer => {
+        const item = JSON.parse(offer) as CartItem;
+        if (this.state.user[this.user].own[item.con + ":" + item.com] - item.ct < 0)
+          item.ct = this.state.user[this.user].own[item.con + ":" + item.com];
+        return item;
+      });
   }
   reloadPage() {
     window.location.reload();

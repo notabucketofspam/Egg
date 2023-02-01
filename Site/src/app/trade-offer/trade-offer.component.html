@@ -23,7 +23,7 @@
   </dl>
   <dl class="List" *ngIf="state.user&&state.round.phase===3">
     <ng-template ngFor let-item [ngForOf]="state.user[user].offers" let-i="index">
-      <ng-container *ngIf="item.ct">
+      <ng-container *ngIf="item.ct>0">
         <dt>
           <span class="ModifyButton Add" (click)="modifyItem(i)" appTooltip
                 [options]="[{text:'You are not on the list of users that can trade! Next time, don\'t fail your pledge!',expr:state&&state['can-trade']&&!state['can-trade'].includes(user)},{text:'Locked in! Can\'t modify your accepted offers once ready; must un-ready to make changes.',expr:state&&state['can-trade']&&state['can-trade'].includes(user)&&state.ready.includes(user)}]"
