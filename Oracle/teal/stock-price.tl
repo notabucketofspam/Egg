@@ -76,10 +76,10 @@ if gameExists then
     end
     -- Get results first so that searches don't have to be re-run each loop
     local search: {string: {string}} = {
-      Cathy = redis.call("FT.SEARCH", indexKey, "@con:{Cathy}", "NOCONTENT") as {string},
-      Terri = redis.call("FT.SEARCH", indexKey, "@con:{Terri}", "NOCONTENT") as {string},
-      Gary = redis.call("FT.SEARCH", indexKey, "@con:{Gary}", "NOCONTENT") as {string},
-      Doug = redis.call("FT.SEARCH", indexKey, "@con:{Doug}", "NOCONTENT") as {string},
+      Cathy = redis.call("FT.SEARCH", indexKey, "@con:{Cathy}", "SORTBY", "time", "DESC", "NOCONTENT") as {string},
+      Terri = redis.call("FT.SEARCH", indexKey, "@con:{Terri}", "SORTBY", "time", "DESC", "NOCONTENT") as {string},
+      Gary = redis.call("FT.SEARCH", indexKey, "@con:{Gary}", "SORTBY", "time", "DESC", "NOCONTENT") as {string},
+      Doug = redis.call("FT.SEARCH", indexKey, "@con:{Doug}", "SORTBY", "time", "DESC", "NOCONTENT") as {string},
     }
     -- Parse search results into trade objects
     local results: {string: {Trade}} = {}

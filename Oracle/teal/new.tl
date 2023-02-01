@@ -33,7 +33,8 @@ local hsetConglomeratesPrice = {
 }
 -- Add game data
 redis.call("SADD", "games", gameId)
-redis.call("FT.CREATE", indexKey, "PREFIX", "1", indexPrefix, "SCHEMA", "con", "TAG", "CASESENSITIVE")
+redis.call("FT.CREATE", indexKey, "PREFIX", "1", indexPrefix, "SCHEMA", "con", "TAG", "CASESENSITIVE",
+  "time", "NUMERIC", "SORTABLE")
 redis.call("HSET", priceKey, unpack(hsetConglomeratesPrice))
 redis.call("HSET", deltaKey, unpack(hsetConglomerates))
 redis.call("HSET", pwKey, unpack(hsetConglomerates))
