@@ -1,4 +1,4 @@
-import { fromScriptError, toScriptKeys, Util } from "../Util.js";
+import { checkPasswd, fromScriptError, toScriptKeys, Util } from "../Util.js";
 // Command
 type Debug = {
   cmd: "debug",
@@ -13,14 +13,7 @@ type Debug = {
 export const cmd = "debug";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Debug) {
   try {
-    // Check game password
-    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
-    if (gamePasswd !== null) {
-      const mainPasswd = await ioredis.get("main-passwd");
-      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
-        throw new Error("EPASSWD");
-      }
-    }
+    await checkPasswd(ioredis, data);
     const field = data.user && data.userField ? data.userField : data.field;
     const fields = data.user && data.userField ? ["users"] : ["users", data.field];
     const users = data.user && data.userField ? [data.user] : undefined;

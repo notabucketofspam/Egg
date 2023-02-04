@@ -1,4 +1,4 @@
-import { fromScriptError, toScriptKeys, Util } from "../Util.js";
+import { checkPasswd, fromScriptError, toScriptKeys, Util } from "../Util.js";
 // Command
 type Pledge = {
   cmd: "pledge",
@@ -12,14 +12,7 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   const fields: string[] = ["users", "pledge"];
   const keys = toScriptKeys(data.game, fields);
   try {
-    // Check game password
-    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
-    if (gamePasswd !== null) {
-      const mainPasswd = await ioredis.get("main-passwd");
-      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
-        throw new Error("EPASSWD");
-      }
-    }
+    await checkPasswd(ioredis, data);
     await ioredis.evalsha(scripts["pledge"], keys.length, ...keys, 0, data.game, data.user, data.pledge);
     const pledge: Record<string, number> = {};
     pledge[data.user] = data.pledge;

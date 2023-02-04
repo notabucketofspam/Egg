@@ -1,4 +1,4 @@
-import { fromScriptError, Util } from "../Util.js";
+import { checkPasswd, fromScriptError, Util } from "../Util.js";
 // Command
 type ChangePasswd = {
   cmd: "change-passwd",
@@ -10,14 +10,7 @@ type ChangePasswd = {
 export const cmd = "change-passwd";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: ChangePasswd) {
   try {
-    // Check game password
-    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
-    if (gamePasswd !== null) {
-      const mainPasswd = await ioredis.get("main-passwd");
-      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
-        throw new Error("EPASSWD");
-      }
-    }
+    await checkPasswd(ioredis, data);
     const changePasswd: Record<string, string> = { cmd };
     if (data.del) {
       // Delete the password

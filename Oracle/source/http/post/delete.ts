@@ -1,4 +1,4 @@
-import { fromScriptError, toScriptKeys, Util } from "../../Util.js";
+import { checkPasswd, fromScriptError, toScriptKeys, Util } from "../../Util.js";
 import { Request, Response } from "express";
 // Command
 type Delete = {
@@ -13,14 +13,7 @@ export async function exec(req: Request, res: Response) {
   try {
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as Delete;
-    // Check game password
-    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
-    if (gamePasswd !== null) {
-      const mainPasswd = await ioredis.get("main-passwd");
-      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
-        throw new Error("EPASSWD");
-      }
-    }
+    await checkPasswd(ioredis, data);
     const fields = ["index", "users", "pledge", "can-trade", "pa", "cash", "init", "last-cash",
       "price", "delta", "pw", "round", "ready", "ver", "next-price", "soup", "messages", "last-time",
       "passwd"];

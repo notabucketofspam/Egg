@@ -174,3 +174,18 @@ export function toScriptKeys(game: string, fields: string[], users?: string[], u
   }
   return keys;
 }
+/**
+ * Check game password against client request
+ * @param {Redis} ioredis It's Redis
+ * @param {Record<string, any>} data Object from client
+ * @returns {void} Nothing, but might throw an error if the password doesn't match
+ */
+export async function checkPasswd(ioredis: Redis, data: Record<string, any>): Promise<void> {
+  const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
+  if (gamePasswd !== null) {
+    const mainPasswd = await ioredis.get("main-passwd");
+    if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
+      throw new Error("EPASSWD");
+    }
+  }
+}
