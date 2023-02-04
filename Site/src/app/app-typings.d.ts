@@ -90,13 +90,14 @@ declare interface CartItem {
   ct: number;
 }
 declare interface DebugForm {
-  cmd: Cmd.Debug,
-  game: string,
-  field: string,
-  user?: string,
-  userField?: string,
-  prop: string,
-  value: string
+  cmd: Cmd.Debug;
+  game: string;
+  passwd?: string;
+  field: string;
+  user?: string;
+  userField?: string;
+  prop: string;
+  value: string;
 }
 interface Message {
   round: number;

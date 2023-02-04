@@ -188,10 +188,17 @@ export class GameComponent implements OnInit, OnDestroy {
     window.location.reload();
   }
   addUser() {
+    const toPost: Record<string, string> = {
+      cmd: Cmd.AddUser,
+      game: this.game,
+      user: this.user
+    };
+    if (this.passwd)
+      toPost["passwd"] = this.passwd;
     fetch(environment.cmdUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cmd: Cmd.AddUser, game: this.game, user: this.user })
+      body: JSON.stringify(toPost)
     }).then(res => res.json()).then((reply: Next) => {
       if (reply.err && reply.why) {
         this.errorMessages.length = 0;
@@ -263,37 +270,56 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   ready($event: boolean) {
     this.console.log(`user ${this.user} ready: ${$event}`);
+    const toSend: Record<string, any> = {
+      cmd: Cmd.Ready,
+      game: this.game,
+      user: this.user,
+      ready: $event
+    };
+    if (this.passwd)
+      toSend["passwd"] = this.passwd;
     if (this.state.round.phase === 2) {
       const cartJson = this.cart.map(item => JSON.stringify(item));
-      this.websocket.nextJ({
-        cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
-        "cart-json": cartJson
-      });
+      toSend["cart-json"] = cartJson;
+      this.websocket.nextJ(toSend);
     } else if (this.state.round.phase === 3) {
       const acceptedOffersJson = this.acceptedOffers.map(item => JSON.stringify(item));
-      this.websocket.nextJ({
-        cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event,
-        "cart-json": acceptedOffersJson
-      });
+      toSend["cart-json"] = acceptedOffersJson;
+      this.websocket.nextJ(toSend);
     } else {
-      this.websocket.nextJ({
-        cmd: Cmd.Ready, game: this.game, user: this.user, ready: $event
-      });
+      this.websocket.nextJ(toSend);
     }
   }
   reportPledge($event: number) {
     this.console.log(`user ${this.user} pledge ${$event}`);
-    this.websocket.nextJ({ cmd: Cmd.Pledge, game: this.game, user: this.user, pledge: $event });
+    const toSend: Record<string, string | number> = {
+      cmd: Cmd.Pledge,
+      game: this.game,
+      user: this.user,
+      pledge: $event
+    };
+    if (this.passwd)
+      toSend["passwd"] = this.passwd;
+    this.websocket.nextJ(toSend);
   }
   debug($event: DebugForm) {
     this.console.log("debug", $event);
+    if (this.passwd)
+      $event.passwd = this.passwd;
     this.websocket.nextJ($event);
   }
   patch() {
+    const toPost: Record<string, string | number> = {
+      cmd: Cmd.Patch,
+      game: this.game,
+      ver: this.state.ver
+    };
+    if (this.passwd)
+      toPost["passwd"] = this.passwd;
     fetch(environment.cmdUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cmd: Cmd.Patch, game: this.game, ver: this.state.ver })
+      body: JSON.stringify(toPost)
     }).then(res => res.json()).then((reply: Next) => {
       if (reply.err && reply.why) {
         this.errorMessages.length = 0;
@@ -308,13 +334,19 @@ export class GameComponent implements OnInit, OnDestroy {
   changeMember($event: string) {
     this.console.log("user", this.user, "| con", $event, "| newTier",
       this.state.user[this.user].member[$event] + 1);
-    this.websocket.nextJ({ cmd: Cmd.Member, game: this.game, user: this.user, con: $event });
+    const toSend: Record<string, string> = { cmd: Cmd.Member, game: this.game, user: this.user, con: $event };
+    if (this.passwd)
+      toSend["passwd"] = this.passwd;
+    this.websocket.nextJ(toSend);
   }
   modifyOffer() {
     this.localSubjects["accepted-offers"].next();
     localStorage.setItem(`game:${this.game}:user:${this.user}:accepted-offers`, JSON.stringify(this.acceptedOffers));
   }
   changePasswd($event: any) {
-    this.websocket.nextJ($event);
+    const toSend: Record<string, any> = $event;
+    if (this.passwd)
+      toSend["passwd"] = this.passwd;
+    this.websocket.nextJ(toSend);
   }
 }
