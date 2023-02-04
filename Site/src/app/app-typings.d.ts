@@ -60,6 +60,11 @@ declare interface State extends Next {
 }
 declare interface Projected {
   cash: State["cash"];
+  user: {
+    [user: string]: {
+      own: Record<string, number>;
+    };
+  };
 }
 declare interface PartialState {
   [key: string | number]: string | number | PartialState;

@@ -29,11 +29,11 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   @Input() localSubjects!: Record<string, Subject<void>>;
   private subscriptions: Record<string, Subscription> = {};
   withdraw = {
-    user: {} as State["user"],
+    user: {} as Projected["user"],
     available: 0
   }
   projected = {
-    user: {} as State["user"],
+    user: {} as Projected["user"],
     available: 0
   }
   comShort!: string;
@@ -54,6 +54,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
   ];
   @Input() stateSubjects!: Record<string, Subject<void>>;
   private destroyer = new ReplaySubject<boolean>(1);
+  /** The Projected that the rest of the game can access (no 'available' property) */
   @Input() projected2!: Projected;
   constructor(private time: TimeService, private console: ConsoleService) { }
   ngOnChanges(changes: SimpleChanges) {
@@ -67,24 +68,21 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
           this.available -= this.state.user[user].own[this.comShort];
           if (!this.withdraw.user[user]) {
             this.withdraw.user[user] = {
-              own: {},
-              member: {},
-              offers: [],
-              "last-member": {},
-              "offers-json": []
+              own: {}
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)
                 this.withdraw.user[user].own[this.comShort] = 0;
             });
           }
+          if (!this.projected2.user[user]) {
+            this.projected2.user[user] = {
+              own: {}
+            };
+          }
           if (!this.projected.user[user]) {
             this.projected.user[user] = {
-              own: {},
-              member: {},
-              offers: [],
-              "last-member": {},
-              "offers-json": []
+              own: this.projected2.user[user].own
             };
             Object.keys(this.state.user[user].own).forEach((com) => {
               if (com === this.comShort)

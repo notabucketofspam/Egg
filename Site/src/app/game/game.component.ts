@@ -52,7 +52,8 @@ export class GameComponent implements OnInit, OnDestroy {
   destroyer = new ReplaySubject<boolean>(1);
   acceptedOffers: CartItem[] = [];
   projected: Projected = {
-    cash: {}
+    cash: {},
+    user: {}
   };
   messages: Messages = {
     events: {}
