@@ -206,3 +206,6 @@ button:hover, .MenuButton:hover, .MenuButton.Open {
   font-family: "ITC Legacy Sans Std Medium";
   padding: 1px 3px;
 }
+.Pointer {
+  cursor: pointer;
+}

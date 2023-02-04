@@ -15,7 +15,7 @@
           </td>
           <td>
             <input id="key-input" type="text" formControlName="game" />
-            <sup appTooltip
+            <sup appTooltip class="Pointer"
                  [options]="[{expr:true,text:'To create a new game, input only a username\nTo load an old game, input both the game ID and your username\nTo delete a game, input only the game ID'}]">
               ?
             </sup>
@@ -35,7 +35,7 @@
           </td>
           <td>
             <input id="passwd-input" type="text" formControlName="passwd" placeholder="Optional" />
-            <sup appTooltip
+            <sup appTooltip class="Pointer"
               [options]="[{expr:true,text:'You can create a new game without a password, but some games might require a password to join'}]">
               ?
             </sup>
