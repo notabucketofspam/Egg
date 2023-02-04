@@ -112,14 +112,14 @@
       <div *ngIf="lastGame">
         <b>Last local game:</b>
         <dl class="List">
-          <dt>{{lastGame}}</dt>
+          <dt [class.Locked]="lastPasswd">{{lastGame}}</dt>
           <dd>{{lastUser}}</dd>
         </dl>
       </div>
       <b>Local games:</b>
       <dl class="List">
         <ng-container *ngFor="let gameSet of storage">
-          <dt>{{gameSet[0]}}</dt>
+          <dt [class.Locked]="gameSet[2]">{{gameSet[0]}}</dt>
           <dd>{{gameSet[1]}}</dd>
         </ng-container>
       </dl>
