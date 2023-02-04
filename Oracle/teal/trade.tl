@@ -179,16 +179,21 @@ if gameExists then
         local comshort = item.con..":"..item.com
         -- Take from sending user
         local txOwn = tonumber(allUserOwn[txUser][comshort])
-        local txNewOwn = tostring(txOwn - item.ct)
-        allUserOwn[txUser][comshort] = txNewOwn
+        local txNewOwn: number
+        if txOwn - item.ct >= 0 then
+         txNewOwn = txOwn - item.ct
+        else
+          txNewOwn = 0
+        end
+        allUserOwn[txUser][comshort] = tostring(txNewOwn)
         if user[txUser] == nil then
           user[txUser] = {}
         end
         if user[txUser].own == nil then
           user[txUser].own = {}
         end
-        user[txUser].own[comshort] = txOwn - item.ct
-        redis.call("HSET", getKey(txi, "own"), comshort, txNewOwn)
+        user[txUser].own[comshort] = txNewOwn
+        redis.call("HSET", getKey(txi, "own"), comshort, tostring(txNewOwn))
         -- Give to receiving user
         local rxi: number
         for i = 1, #zusers do
@@ -199,16 +204,22 @@ if gameExists then
         end
         local rxUser = zusers[rxi as integer]
         local rxOwn = tonumber(allUserOwn[rxUser][comshort])
-        local rxNewOwn = tostring(rxOwn + item.ct)
-        allUserOwn[rxUser][comshort] = rxNewOwn
+        local rxNewOwn: number
+        if txOwn - item.ct >= 0 then
+          rxNewOwn= rxOwn + item.ct
+         else
+          -- tx has no stocks left after this
+          rxNewOwn = rxOwn + txOwn
+         end
+        allUserOwn[rxUser][comshort] = tostring(rxNewOwn)
         if user[rxUser] == nil then
           user[rxUser] = {}
         end
         if user[rxUser].own == nil then
           user[rxUser].own = {}
         end
-        user[rxUser].own[comshort] = rxOwn + item.ct
-        redis.call("HSET", getKey(rxi, "own"), comshort, rxNewOwn)
+        user[rxUser].own[comshort] = rxNewOwn
+        redis.call("HSET", getKey(rxi, "own"), comshort, tostring(rxNewOwn))
         -- Handle cash
         local txNewCash = cash[txUser] + item.ct*tonumber(price[comshort])
         cash[txUser] = txNewCash
