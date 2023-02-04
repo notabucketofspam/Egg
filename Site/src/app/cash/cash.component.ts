@@ -16,9 +16,7 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   });
   @Input() cart!: CartItem[];
   @Input() acceptedOffers!: CartItem[];
-  @Input() projected = {
-    cash: {} as State["cash"]
-  };
+  @Input() projected!: Projected;
   paTotal = 0;
   @Input() user!: string;
   subscriptions: Record<string, Subscription> = {};
@@ -26,7 +24,13 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
   @Input() localSubjects!: Record<string, Subject<void>>;
   @Input() state!: State;
   destroyer = new ReplaySubject<boolean>(1);
-  constructor(private currencyPipe: CurrencyPipe) { }
+  portfolio: State["cash"] = {};
+  tooltipOptions: TooltipOption[] = [];
+  reload = true;
+  currencyPipe: CurrencyPipe
+  constructor(currencyPipe: CurrencyPipe) {
+    this.currencyPipe = currencyPipe;
+  }
   ngOnInit(): void {
     this.subscriptions["cash"] = this.stateSubjects["cash"].pipe(takeUntil(this.destroyer)).subscribe(() => {
       this.resetProjectedCash();
@@ -45,7 +49,9 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
     this.subscriptions["pledge"] = this.stateSubjects["pledge"].pipe(takeUntil(this.destroyer))
       .subscribe(() => {
       this.resetProjectedCash();
-    });
+      });
+    this.subscriptions["user"] = this.stateSubjects["user"].pipe(takeUntil(this.destroyer))
+      .subscribe(() => this.resetPortfolio());
   }
   resetPaTotal() {
     this.paTotal = 0;
@@ -84,6 +90,11 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
           this.resetPaTotal();
         }
       }
+      if (changes["state"].currentValue["user"]) {
+        if (this.state.users) {
+          this.resetPortfolio();
+        }
+      }
     }
   }
   report() {
@@ -99,4 +110,25 @@ export class CashComponent implements OnInit, OnChanges, OnDestroy {
       else
         this.reportForm.controls["amount"].setValue(0);
   }
+  resetPortfolio() {
+    if (this.state && this.state.users) {
+      this.state.users.forEach(user => {
+        this.portfolio[user] = 0;
+        for (const [com, value] of Object.entries(this.state.user[user].own)) {
+          this.portfolio[user] += this.state.price[com] * value;
+        }
+        this._reload();
+      });
+    }
+  }
+  _reload() {
+    setTimeout(() => this.reload = false);
+    setTimeout(() => this.reload = true);
+  }
 }
+
+type TooltipOption = {
+  expr: (...args: any[]) => boolean,
+  text: string,
+  args: any[]
+};

@@ -11,7 +11,10 @@
     </tr>
     <tr *ngFor="let username of state.users">
       <td>{{username}}</td>
-      <td class="Right">{{state.cash[username] | currency}}</td>
+      <td class="Right Pointer" appTooltip [options]="[{expr:true,text:'Stock portfolio: '+currencyPipe.transform(this.portfolio[username])!}]" *ngIf="reload">
+        {{state.cash[username] | currency}}
+        <sup>?</sup>
+      </td>
       <td class="Right">
         <ng-container *ngIf="state&&state.round&&state.round.phase===3; else notPhase3">
           <span appTooltip class="Pointer"
