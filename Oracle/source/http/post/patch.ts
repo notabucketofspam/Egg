@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 type Patch = {
   cmd: "patch",
   game: string,
+  passwd?: string,
   ver: number
 };
 export const cmd = "patch";
@@ -13,6 +14,14 @@ export const path = "/cmd";
 export async function exec(req: Request, res: Response) {
   const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
   const data = req.body as Patch;
+  // Check game password
+  const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
+  if (gamePasswd !== null) {
+    const mainPasswd = await ioredis.get("main-passwd");
+    if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
+      throw new Error("EPASSWD");
+    }
+  }
   const users = await ioredis.smembers(`game:${data.game}:users`);
   let scriptError = false;
   // Start patching based on the current version

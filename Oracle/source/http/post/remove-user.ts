@@ -4,8 +4,8 @@ import { Request, Response } from "express";
 type RemoveUser = {
   cmd: "remove-user",
   game: string,
-  user: string,
-  passwd?: string
+  passwd?: string,
+  user: string
 };
 export const cmd = "remove-user";
 export const method = "post";

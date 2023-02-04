@@ -3,8 +3,8 @@ import { fromHgetall, fromZrange, fromScriptError, Util } from "../Util.js";
 type Load = {
   cmd: "load",
   game: string,
-  user: string,
-  passwd?: string
+  passwd?: string,
+  user: string
 };
 export const cmd = "load";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Load) {

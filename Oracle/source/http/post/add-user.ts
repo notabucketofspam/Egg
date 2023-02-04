@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 type AddUser = {
   cmd: "add-user",
   game: string,
+  passwd?: string,
   user: string
 };
 export const cmd = "add-user";
@@ -13,6 +14,14 @@ export async function exec(req: Request, res: Response) {
   try {
     const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
     const data = req.body as AddUser;
+    // Check game password
+    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
+    if (gamePasswd !== null) {
+      const mainPasswd = await ioredis.get("main-passwd");
+      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
+        throw new Error("EPASSWD");
+      }
+    }
     const fields = ["users", "pledge", "can-trade", "pa", "cash", "init", "last-cash"];
     const users = [data.user];
     const userFields = ["last-member", "member", "own"];

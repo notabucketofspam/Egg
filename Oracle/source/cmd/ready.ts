@@ -3,6 +3,7 @@ import { fromHgetall, fromScriptError, toScriptKeys, Util } from "../Util.js";
 type Ready = {
   cmd: "ready",
   game: string,
+  passwd?: string,
   user: string,
   ready: boolean,
   "cart-json"?: string[]
@@ -10,6 +11,14 @@ type Ready = {
 export const cmd = "ready";
 export async function exec({ client, aliveClients, ioredis, scripts }: Util, data: Ready) {
   try {
+    // Check game password
+    const gamePasswd = await ioredis.get(`game:${data.game}:passwd`);
+    if (gamePasswd !== null) {
+      const mainPasswd = await ioredis.get("main-passwd");
+      if (data.passwd !== gamePasswd && data.passwd !== mainPasswd) {
+        throw new Error("EPASSWD");
+      }
+    }
     const round = fromHgetall(await ioredis.hgetall(`game:${data.game}:round`));
     const messages: Messages = {
       cmd: "message",
