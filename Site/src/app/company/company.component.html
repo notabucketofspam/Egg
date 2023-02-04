@@ -21,7 +21,10 @@
         </div>
       </div>
       <div id="delta-graph" class="Flex">
-        {{ deltaEmoji }}
+        <ng-container *ngIf="deltaPercent; else noDelta">{{ deltaEmoji }}</ng-container>
+        <ng-template #noDelta>
+          <img src="/assets/NoDelta.png" style="width: auto; height: 35px; padding-top: 5px;" />
+        </ng-template>
       </div>
     </div>
     <form [formGroup]="tradeOfferForm" (ngSubmit)="tradeOffer()" class="TopBlack Flex Column">
