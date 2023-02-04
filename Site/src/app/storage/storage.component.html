@@ -109,13 +109,6 @@
       </dl>
     </div>
     <div *ngIf="showLists['local']">
-      <b>Local games:</b>
-      <dl class="List">
-        <ng-container *ngFor="let gameSet of storage">
-          <dt>{{gameSet[0]}}</dt>
-          <dd>{{gameSet[1]}}</dd>
-        </ng-container>
-      </dl>
       <div *ngIf="lastGame">
         <b>Last local game:</b>
         <dl class="List">
@@ -123,6 +116,13 @@
           <dd>{{lastUser}}</dd>
         </dl>
       </div>
+      <b>Local games:</b>
+      <dl class="List">
+        <ng-container *ngFor="let gameSet of storage">
+          <dt>{{gameSet[0]}}</dt>
+          <dd>{{gameSet[1]}}</dd>
+        </ng-container>
+      </dl>
     </div>
     <div *ngIf="showLists['messages']">
       <div class="Message" *ngFor="let message of messages">{{ message }}<br /></div>
