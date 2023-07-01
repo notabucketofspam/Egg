@@ -14,7 +14,12 @@ export const path = "/cmd";
 export async function exec(req: Request, res: Response) {
   const { client, aliveClients, ioredis, scripts } = req.app.locals as Util;
   const data = req.body as Patch;
-  await checkPasswd(ioredis, data);
+  try {
+    await checkPasswd(ioredis, data);
+  } catch (err) {
+    client.send(fromScriptError("patch", err as Error));
+    return;
+  }
   const users = await ioredis.smembers(`game:${data.game}:users`);
   let scriptError = false;
   // Start patching based on the current version

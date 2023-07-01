@@ -20,7 +20,12 @@ export async function exec({ client, aliveClients, ioredis, scripts }: Util, dat
   const games = await ioredis.smembers("games");
   if (!games.includes(data.game))
     return client.send(fromScriptError("load", new Error("ENOGAME"), { games, game: data.game }));
-  await checkPasswd(ioredis, data);
+  try {
+    await checkPasswd(ioredis, data);
+  } catch (err) {
+    client.send(fromScriptError("load", err as Error));
+    return;
+  }
   // Check that user exists
   send.users = await ioredis.smembers(`game:${data.game}:users`);
   if (!send.users.includes(data.user))
