@@ -181,7 +181,7 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
       };
       if (this.state.price) {
         const tradeTotal = this.state.price[this.comShort] * amount;
-        if (this.state.cash[this.user] && this.state.cash[this.user] < tradeTotal) {
+        if (this.projected2.cash[this.user] && this.projected2.cash[this.user] < tradeTotal) {
           //alert("You cannot afford this many stocks!");
           return;
         }
@@ -206,8 +206,8 @@ export class CompanyComponent implements OnInit, OnDestroy, OnChanges {
     const tx = this.tradeOfferForm.controls['tx'].value;
     if (amount !== null && tx !== this.user) {
       // Non-self user selected and amount exists
-      if (this.state.cash[this.user]
-        && this.state.cash[this.user] < (amount + increase)*this.state.price[this.comShort]) {
+      if (this.projected2.cash[this.user] !== undefined
+        && this.projected2.cash[this.user] < (amount + increase)*this.state.price[this.comShort]) {
         // User cannot afford this many stocks
         // Do nothing
       } else if (tx === null) {
